@@ -1,33 +1,31 @@
 import numpy as np
-import tensorflow as tf
-from tensorflow.keras.layers import MultiHeadAttention, LayerNormalization, Dropout, \
-    Layer, Input, Embedding, GlobalAveragePooling1D, Dense, Layer
+from data import get_data, process_data, MAX_TRAJ_STEPS, EMBED_DIM
+from layer import TransformerBlock
 
-from data import get_data, MAX_TRAJECTORY_LENGHT, TRAJECTORY_FEATURES_NUM
-
-'''
-T max = 10 second
-dt = 0.02 second
-max trajectory lenght = 10/0.02 = 500
-number of features per step = 15 (x, xdot, xddot, o, odot) x=(x, y, z), o=(phi, thetha, psi)
-'''
+from tensorflow.keras.layers import Input, GlobalAveragePooling1D, Dense, Dropout
+from tensorflow.keras.models import Model
 
 
-def get_angles(pos, k, d):
-    i = k // 2
-    angles = pos/(np.power(10000,2*i/d))
-    return angles
+NUM_HEADS = 8
+FF_DIM = 32
+transformer_block = TransformerBlock(EMBED_DIM, NUM_HEADS, FF_DIM)
 
-def positional_encoding(positions, d): 
-    angle_rads = get_angles(np.arange(positions)[:, np.newaxis],
-                            np.arange(d)[np.newaxis, :],
-                            d)
-    angle_rads[:, 0::2] = np.sin(angle_rads[:, 0::2])
-    angle_rads[:, 1::2] = np.cos(angle_rads[:, 1::2])
-    pos_encoding = angle_rads[np.newaxis, ...]
-    return tf.cast(pos_encoding, dtype=tf.float32) # (1, MAX_TRAJECTORY_LENGHT, TRAJECTORY_FEATURES_NUM)
+inputs = Input(shape=(MAX_TRAJ_STEPS, EMBED_DIM))
+
+x = transformer_block(inputs)
+x = GlobalAveragePooling1D()(x)
+x = Dropout(0.1)(x)
+x = Dense(20, activation="relu")(x)
+x = Dropout(0.1)(x)
+outputs = Dense(2, activation="softmax")(x)
+model = Model(inputs=inputs, outputs=outputs)
 
 
-x_train, y_train, x_val, y_val = get_data(debug=True)
-pos_encoding = positional_encoding(MAX_TRAJECTORY_LENGHT, TRAJECTORY_FEATURES_NUM)
-x_train = x_train + pos_encoding[:, :, :]
+x_train_raw, y_train, x_val_raw, y_val = get_data(debug=True)
+x_train, x_val = process_data(x_train_raw, x_val_raw)
+
+# model.summary()
+# history = model.fit(x_train, y_train, 
+#                     batch_size=64, epochs=2, 
+#                     validation_data=(x_val, y_val)
+#                    )
