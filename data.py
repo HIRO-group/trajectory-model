@@ -17,19 +17,19 @@ def get_initials(data_num):
         x, y, z = 0.2, -1, 0.1
         xdot, ydot, zdot = 0, 0, 0
         xddot, yddot, zddot = 0, 0.4, 0.3
-        y_train = 1
+        y_train = 1 # slosh free
     else:
         x, y, z = 0.2, -1, 0.1
         xdot, ydot, zdot = 0, 0, 0
         xddot, yddot, zddot = 1, 3, 10
-        y_train = 0
+        y_train = 0 # slosh
     return y_train, x, y, z, xdot, ydot, zdot, xddot, yddot, zddot
 
 
 def generate_fake_data():
     # Rough estimate of Panda's reachable area: x: (0, 1.57), y: (-1, 1), z: (0, 1)
     x_train = np.zeros((DATA_NUM, MAX_TRAJ_STEPS, EMBED_DIM), dtype=np.float64)
-    y_train = np.zeros((DATA_NUM, 1, 1))
+    y_train = np.zeros((DATA_NUM, 1))
     
     phi, theta, psi = 0, 0, 0
     phidot, thetadot, psidot = 0, 0, 0
@@ -77,10 +77,12 @@ def visualize_data(x_train, y_train):
 
 def get_data(debug=False):
     if debug:
-        x_train = np.random.uniform(5, size=(DATA_NUM, MAX_TRAJ_STEPS, EMBED_DIM))
-        y_train = np.random.randint(1, size=(DATA_NUM, 1, 1))
-        x_val = np.random.uniform(5, size=(DATA_NUM, MAX_TRAJ_STEPS, EMBED_DIM))
-        y_val = np.random.randint(1, size=(DATA_NUM, 1, 1))
+        # x_train = np.random.uniform(5, size=(DATA_NUM, MAX_TRAJ_STEPS, EMBED_DIM))
+        # y_train = np.random.randint(1, size=(DATA_NUM, 1, 1))
+        # x_val = np.random.uniform(5, size=(DATA_NUM, MAX_TRAJ_STEPS, EMBED_DIM))
+        # y_val = np.random.randint(1, size=(DATA_NUM, 1, 1))
+        x_train, y_train = generate_fake_data()
+        x_val, y_val = x_train, y_train
         return x_train, y_train, x_val, y_val
     else:
         #have to make sure that the data is between a certain range so positional encoding works properly
