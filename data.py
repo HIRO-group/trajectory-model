@@ -17,12 +17,12 @@ def get_initials(data_num):
         x, y, z = 0.2, -1, 0.1
         xdot, ydot, zdot = 0, 0, 0
         xddot, yddot, zddot = 0, 0.4, 0.3
-        y_train = 1 # slosh free
+        y_train = 0 # slosh free
     else:
         x, y, z = 0.2, -1, 0.1
         xdot, ydot, zdot = 0, 0, 0
         xddot, yddot, zddot = 1, 3, 10
-        y_train = 0 # slosh
+        y_train = 1 # slosh
     return y_train, x, y, z, xdot, ydot, zdot, xddot, yddot, zddot
 
 
