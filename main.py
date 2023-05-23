@@ -1,48 +1,38 @@
 import numpy as np
-from data import get_data, process_data, MAX_TRAJ_STEPS, EMBED_DIM
-from layer import TransformerBlock
+from data import get_data
+from model import TrajectoryClassifier
 
-from tensorflow.keras.layers import Input, GlobalAveragePooling1D, Dense, Dropout
-from tensorflow.keras.models import Model
-import tensorflow as tf
-
+T_max = 3
+dt = 0.02
+MAX_TRAJ_STEPS = int(T_max//dt)
 NUM_HEADS = 8
 FF_DIM = 32
-transformer_block = TransformerBlock(EMBED_DIM, NUM_HEADS, FF_DIM)
+EMBED_DIM = 16
+''' 
+embedding = (x, xdot, xddot, o, odot, cup_type) 
+x=(x, y, z)
+o=(phi, thetha, psi)
+cup_type = 1 or 2 or 3
+'''
 
-inputs = Input(shape=(MAX_TRAJ_STEPS, EMBED_DIM))
+if __name__ == '__main__':
+    fit_model = False
 
-x = transformer_block(inputs)
-x = GlobalAveragePooling1D()(x)
-x = Dropout(0.1)(x)
-x = Dense(20, activation="relu")(x)
-x = Dropout(0.1)(x)
-outputs = Dense(1, activation='sigmoid')(x)
-model = Model(inputs=inputs, outputs=outputs)
+    model = TrajectoryClassifier(max_traj_steps=MAX_TRAJ_STEPS, embed_dim=EMBED_DIM, num_heads=NUM_HEADS, ff_dim=FF_DIM)
+    model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
 
+    x_train, y_train, x_val, y_val = get_data(data_num=2, max_traj_steps=MAX_TRAJ_STEPS, embed_dim=EMBED_DIM, dt=dt, debug=True)
 
-x_train_raw, y_train, x_val_raw, y_val = get_data(debug=True)
+    if fit_model:
+        history = model.fit(x_train, y_train, 
+                            batch_size=1, epochs=30, 
+                            validation_data=(x_val, y_val)
+                           )
+        model.save_weights("weights/predict_class.h5")
+    else:
+        model.build((None, MAX_TRAJ_STEPS, EMBED_DIM))
+        model.load_weights("weights/predict_class.h5")
 
-x_train, x_val = process_data(x_train_raw, x_val_raw)
-
-
-
-model.compile(optimizer='adam',
-                   loss='binary_crossentropy',
-                   metrics=['accuracy'])
-
-history = model.fit(x_train, y_train, 
-                    batch_size=1, epochs=30, 
-                    validation_data=(x_val, y_val)
-                   )
-# model.save_weights("weights/predict_class.h5")
-
-model.load_weights("weights/predict_class.h5")
-# model.evaluate(x_val, y_val)
-# loss, acc, = model.evaluate(x_val, y_val)
-# print("Dev set accuracy = ", acc)
-# print(x_val.shape)
-# print(x_train[np.newaxis, 0].shape)
-print('data0: ', model.predict(x_train[np.newaxis, 0]))
-print('data1: ', model.predict(x_train[np.newaxis, 1]))
+    print('data 0 is supposed to be slosh free (<0.5): ', model.predict(x_train[np.newaxis, 0]))
+    print('data 1 is supposed to spill (>=0.5): ', model.predict(x_train[np.newaxis, 1]))
 
