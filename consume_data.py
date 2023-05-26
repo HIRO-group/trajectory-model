@@ -20,6 +20,8 @@ import natnet
 
 import csv
 
+from constants import DATA_DIR
+
 @attr.s
 class ClientApp(object):
 
@@ -59,7 +61,7 @@ class ClientApp(object):
         print('{:.1f}s: Received mocap frame'.format(timing.timestamp))
         if rigid_bodies:
             print('Rigid bodies:')
-            with open('data.csv', '+a', newline='\n') as csvfile:
+            with open(DATA_DIR, '+a', newline='\n') as csvfile:
                 for b in rigid_bodies:
                     print('    Id {}: ({: 5.2f}, {: 5.2f}, {: 5.2f}), ({: 5.2f}, {: 5.2f}, {: 5.2f}, {: 5.2f})'.format(
                         b.id_, *(b.position + b.orientation)

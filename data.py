@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-def get_initials(data_num):
+def get_fake_initials(data_num):
     if data_num == 0:
         x, y, z = 0.2, -1, 0.1
         xdot, ydot, zdot = 0, 0, 0
@@ -26,7 +26,7 @@ def generate_fake_data(data_num, max_traj_steps, embed_dim, dt):
     cup_type = 1
 
     for d in range(data_num):
-        y_train[d], x, y, z, xdot, ydot, zdot, xddot, yddot, zddot = get_initials(d)
+        y_train[d], x, y, z, xdot, ydot, zdot, xddot, yddot, zddot = get_fake_initials(d)
         zddot_slow_down = 3.7*zddot/(max_traj_steps//2)
         
         for i in range(max_traj_steps):
@@ -43,20 +43,6 @@ def generate_fake_data(data_num, max_traj_steps, embed_dim, dt):
                 zddot -= zddot_slow_down
     return x_train, y_train
 
-
-def visualize_data(x_train):
-    d = 0
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
-    ax.set_xlim([0, 1.57])
-    ax.set_ylim([-1, 1])
-    ax.set_zlim([0, 1])
-    ax.scatter(x_train[d, :, 0], x_train[d, :, 3], x_train[d, :, 6])
-    ax.set_xlabel('x')
-    ax.set_ylabel('y')
-    ax.set_zlabel('z')
-    # plt.show()
-    # plt.savefig('data_safe_trajectory.png')
 
 def get_data(data_num, max_traj_steps, embed_dim, dt, debug=False):
     if debug:
