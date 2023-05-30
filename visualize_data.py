@@ -43,14 +43,9 @@ def read_experiment(data_dir, experiment_id, num_samples=100):
             e_id, timestamp = int(keys[0]), keys[1]
             x, y, z = np.float64(keys[2]), np.float64(keys[3]), np.float64(keys[4]),
             a, b, c, d = np.float64(keys[5]), np.float64(keys[6]), np.float64(keys[7]), np.float64(keys[8])
-            
-            
-
             # rot = R.from_quat([a, b, c, d])
-
-            
             if e_id == experiment_id:
-                print('euler angle: ', quaternion_to_euler_angle(a, b, c, d))
+                # print('euler angle: ', quaternion_to_euler_angle(a, b, c, d))
 
                 start_point = np.array([[x, y, z]])
                 end_point = calculate_endpoint(start_point, a, b, c, d)
@@ -65,8 +60,7 @@ def read_experiment(data_dir, experiment_id, num_samples=100):
 def visualize_data_with_orientation(experiment_id, start_points, end_points, arrows_lenght=0.001):
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
-    print(start_points[:, 0], start_points[:, 1], start_points[:, 2],
-                end_points[:, 0], end_points[:, 1], end_points[:, 2])
+
     ax.quiver(start_points[:, 0], start_points[:, 1], start_points[:, 2],
                 end_points[:, 0], end_points[:, 1], end_points[:, 2],
                 length = arrows_lenght, normalize = True)
@@ -89,5 +83,5 @@ def visualize_data(x_list, y_list, z_list):
 
 
 experiment_id = E_ID
-starts, ends = read_experiment(data_dir = 'data/data_may_26.csv', experiment_id=experiment_id, num_samples=1000000)
-# visualize_data_with_orientation(experiment_id, starts, ends, arrows_lenght=0.001)
+starts, ends = read_experiment(data_dir = DATA_DIR, experiment_id=experiment_id, num_samples=100)
+visualize_data_with_orientation(experiment_id, starts, ends, arrows_lenght=0.001)

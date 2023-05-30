@@ -22,7 +22,7 @@ import numpy as np
 
 from constants import DATA_DIR, E_ID
 
-csvfile = open('data/data_may_26.csv', '+a', newline='\n')
+csvfile = open(DATA_DIR, '+a', newline='\n')
 writer = csv.writer(csvfile)
 
 def exit_handler():
