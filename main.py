@@ -1,19 +1,8 @@
 import numpy as np
 from data import get_data
 from model import TrajectoryClassifier
+from constants import MAX_TRAJ_STEPS, EMBED_DIM, NUM_HEADS, FF_DIM, dt
 
-T_max = 3
-dt = 0.02
-MAX_TRAJ_STEPS = int(T_max//dt)
-NUM_HEADS = 8
-FF_DIM = 32
-EMBED_DIM = 16
-''' 
-embedding = (x, xdot, xddot, o, odot, cup_type) 
-x=(x, y, z)
-o=(phi, thetha, psi)
-cup_type = 1 or 2 or 3
-'''
 
 if __name__ == '__main__':
     fit_model = False
