@@ -1,11 +1,20 @@
-DATA_DIR = 'data/data_may_30.csv'
-E_ID = 23
+DATA_DIR = 'data/data_may_30_final.csv'
+TRAJECTORY_DURATION = 5
+
+
+E_ID = 35
+
+
 
 
 # I'm gonna start with safe trajectories.
 
+# exclude 4, 6, 11, 12, 13, 14, 15, 16, 22, 23, 25, 31
+
+# 21 spilled on wards untill 35
 
 
+# data_may_30.csv
 # 20, upwards (0.6555968973339276, -0.035601866156174916, -179.9728119325014)
 # 21, downwards (176.9016086092922, 0.12855806074979775, 0.6519752773257345)
 # 22, tilted to the left (34.57178695023557, 45.31732259297031, -163.65679976769698)

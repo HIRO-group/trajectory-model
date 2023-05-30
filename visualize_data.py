@@ -83,5 +83,5 @@ def visualize_data(x_list, y_list, z_list):
 
 
 experiment_id = E_ID
-starts, ends = read_experiment(data_dir = DATA_DIR, experiment_id=experiment_id, num_samples=100)
-visualize_data_with_orientation(experiment_id, starts, ends, arrows_lenght=0.001)
+starts, ends = read_experiment(data_dir = DATA_DIR, experiment_id=experiment_id, num_samples=10000)
+visualize_data_with_orientation(experiment_id, starts, ends, arrows_lenght=0.01)

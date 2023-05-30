@@ -20,7 +20,8 @@ import csv
 import atexit
 import numpy as np
 
-from constants import DATA_DIR, E_ID
+from constants import DATA_DIR, E_ID, TRAJECTORY_DURATION
+
 
 csvfile = open(DATA_DIR, '+a', newline='\n')
 writer = csv.writer(csvfile)
@@ -46,13 +47,15 @@ class ClientApp(object):
         return cls(client, quiet)
 
     def run(self):
+        self.start_time = time.time()
         self._client.set_callback(self.callback)
         self._client.spin()
 
     def callback(self, rigid_bodies, skeletons, markers, timing):
         experiment_id = E_ID
-
-        if rigid_bodies:
+        if time.time() - self.start_time > TRAJECTORY_DURATION:
+            print(f"Time has passed more than {TRAJECTORY_DURATION} seconds")
+        elif rigid_bodies:
             for r in rigid_bodies:
                 x, y, z = r.position
                 a, b, c, d = r.orientation
@@ -62,6 +65,8 @@ class ClientApp(object):
 
 def main():
     try:
+        time.sleep(3)
+        print("starting now ...")
         app = ClientApp.connect()
         app.run()
     
