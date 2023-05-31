@@ -20,10 +20,9 @@ import csv
 import atexit
 import numpy as np
 
-from constants import DATA_DIR, E_ID, TRAJECTORY_DURATION
+from constants import EXPERIMENTS_DATA_DIR, EXPERIMENTS_E_ID, TRAJECTORY_DURATION
 
-
-csvfile = open(DATA_DIR, '+a', newline='\n')
+csvfile = open(EXPERIMENTS_DATA_DIR, '+a', newline='\n')
 writer = csv.writer(csvfile)
 
 def exit_handler():
@@ -52,7 +51,7 @@ class ClientApp(object):
         self._client.spin()
 
     def callback(self, rigid_bodies, skeletons, markers, timing):
-        experiment_id = E_ID
+        experiment_id = EXPERIMENTS_E_ID
         if time.time() - self.start_time > TRAJECTORY_DURATION:
             print(f"Time has passed more than {TRAJECTORY_DURATION} seconds")
         elif rigid_bodies:

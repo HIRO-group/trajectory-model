@@ -1,6 +1,8 @@
 import vrpn
 import numpy as np
 
+# Has not set this up yet
+
 class VRPNclient:
    """
        This client has only been tested in Python3.X, 2.7

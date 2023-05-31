@@ -1,14 +1,16 @@
 import csv
 import numpy as np
 import matplotlib.pyplot as plt
-
 from mpl_toolkits.mplot3d import Axes3D
-
 from scipy.spatial.transform import Rotation as R
-from itertools import islice
 import math
+import numpy as np
+from e_constants import EXPERIMENTS_E_ID, EXPERIMENTS_DATA_DIR
 
-from constants import DATA_DIR, E_ID
+# import importlib
+# trajectory_model = importlib.import_module("trajectory-model")
+# from trajectory_model import helper
+
 
 def rotate_vector(vector, rotation_matrix):
     return np.dot(rotation_matrix, vector)
@@ -46,7 +48,6 @@ def read_experiment(data_dir, experiment_id, num_samples=100):
             # rot = R.from_quat([a, b, c, d])
             if e_id == experiment_id:
                 # print('euler angle: ', quaternion_to_euler_angle(a, b, c, d))
-
                 start_point = np.array([[x, y, z]])
                 end_point = calculate_endpoint(start_point, a, b, c, d)
                 start_points = np.append(start_points, start_point, axis=0)
@@ -82,6 +83,7 @@ def visualize_data(x_list, y_list, z_list):
     plt.show()
 
 
-experiment_id = E_ID
-starts, ends = read_experiment(data_dir = DATA_DIR, experiment_id=experiment_id, num_samples=10000)
-visualize_data_with_orientation(experiment_id, starts, ends, arrows_lenght=0.01)
+if __name__ == "__main__":
+    experiment_id = EXPERIMENTS_E_ID
+    starts, ends = read_experiment(data_dir = EXPERIMENTS_DATA_DIR, experiment_id=experiment_id, num_samples=10000)
+    visualize_data_with_orientation(experiment_id, starts, ends, arrows_lenght=0.01)
