@@ -243,3 +243,4 @@ pyrightconfig.json
 # End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,python,git,macos
 test.py
 data/
+panda_data/

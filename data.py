@@ -60,3 +60,16 @@ def get_data(data_num, max_traj_steps, embed_dim, dt, debug=False):
         X_train, Y_train = X[train_index], Y[train_index]
         X_val, Y_val = X[val_index], Y[val_index]
         return X_train, Y_train, X_val, Y_val, max_traj_steps, X, Y
+
+
+def read_panda_data():
+    file_address = '/home/ava/npm/trajectory-model/panda_data/positions_and_orientations_07-06-2023 12-53-12.npz'
+    npz_file = np.load(file_address)
+    positions_and_orientations = npz_file['positions_and_orientations']
+    for p_o in positions_and_orientations:
+        print("position: ", p_o[0:3])
+        print("orientation: ", p_o[3:])
+        print()
+    print("len: ", len(positions_and_orientations))
+
+read_panda_data()
