@@ -63,13 +63,40 @@ def get_data(data_num, max_traj_steps, embed_dim, dt, debug=False):
 
 
 def read_panda_data():
-    file_address = '/home/ava/npm/trajectory-model/panda_data/positions_and_orientations_07-06-2023 12-53-12.npz'
-    npz_file = np.load(file_address)
-    positions_and_orientations = npz_file['positions_and_orientations']
-    for p_o in positions_and_orientations:
-        print("position: ", p_o[0:3])
-        print("orientation: ", p_o[3:])
-        print()
-    print("len: ", len(positions_and_orientations))
+    file_address_prefix = '/home/ava/npm/trajectory-model/panda_data/'
+    safe_data_addr = ['1_safe.npz', '2_safe.npz']
+    unsafe_data_addr = ['3_unsafe.npz', '4_unsafe.npz', '5_safe.npz']
+    
+    num_data = len(safe_data_addr) + len(unsafe_data_addr)
 
-read_panda_data()
+    X = np.zeros((num_data, 2000, 8)) 
+    Y = np.zeros((num_data, 1))
+
+    for data_idx, addr in enumerate(safe_data_addr):
+        npz_file = np.load(file_address_prefix + addr)
+        positions_and_orientations = npz_file['positions_and_orientations']
+        for idx, p_o in enumerate(positions_and_orientations[:2000]):
+            X[data_idx, idx, 0:7] = p_o
+            X[data_idx, idx, 7] = 1
+            Y[data_idx] = 0
+    
+
+    offset = len(safe_data_addr)
+    for data_idx, addr in enumerate(unsafe_data_addr):
+        npz_file = np.load(file_address_prefix + addr)
+        positions_and_orientations = npz_file['positions_and_orientations']
+        for idx, p_o in enumerate(positions_and_orientations[:2000]):
+            X[data_idx+offset, idx, 0:7] = p_o
+            X[data_idx+offset, idx, 7] = 1
+            
+            if data_idx >= 1:
+                Y[data_idx+offset] = 0
+            else:
+                Y[data_idx+offset] = 1
+    
+    X_train, Y_train = X[:4], Y[:4]
+    X_val, Y_val = X[4:], Y[4:]
+    max_traj_steps = 2000
+    return X_train, Y_train, X_val, Y_val, max_traj_steps, X, Y
+
+# read_panda_data()
