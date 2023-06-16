@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from process_data import process_data
+from trajectory_model.process_data import process_data
 
 def get_fake_initials(data_num):
     if data_num == 0:
@@ -52,7 +52,6 @@ def get_data(data_num, max_traj_steps, embed_dim, dt, debug=False):
         return x_train, y_train, x_val, y_val, max_traj_steps
     else:
         X, Y = process_data()
-        
         max_traj_steps = X.shape[1]
         train_id = int(3*X.shape[0]/4)
         train_index = np.random.choice(X.shape[0], train_id, replace=False) 

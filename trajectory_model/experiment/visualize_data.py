@@ -5,7 +5,8 @@ from mpl_toolkits.mplot3d import Axes3D
 from scipy.spatial.transform import Rotation as R
 import math
 import numpy as np
-from e_constants import EXPERIMENTS_E_ID, EXPERIMENTS_DATA_DIR
+
+from trajectory_model.experiment.e_constants import EXPERIMENTS_E_ID, EXPERIMENTS_DATA_DIR
 
 # import importlib
 # trajectory_model = importlib.import_module("trajectory-model")

@@ -1,8 +1,9 @@
 from datetime import datetime
 import csv
 import numpy as np
-from constants import EMBED_DIM, FINAL_RAW_DATA_DIR, FINAL_PROCESSED_DATA_DIR_PREFIX
-from helper import calculate_endpoint, plot_X
+
+from trajectory_model.constants import EMBED_DIM, FINAL_RAW_DATA_DIR, FINAL_PROCESSED_DATA_DIR_PREFIX
+from trajectory_model.helper import calculate_endpoint, plot_X
 
 def read_from_file(data_dir=FINAL_RAW_DATA_DIR):
     exclude_indexes_list = [4, 6, 11, 12, 13, 14, 15, 16, 22, 23, 25, 31]

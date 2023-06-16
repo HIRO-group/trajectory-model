@@ -5,7 +5,7 @@ TRAJECTORY_DURATION = 5 # How long to record the data
 EXPERIMENTS_DATA_DIR = 'data/raw/data_may_30_final.csv' # Where to store the current experiment data
 
 
-
+# Notes:
 # data_may_30_final:
 # exclude 4, 6, 11, 12, 13, 14, 15, 16, 22, 23, 25, 31
 # 21 spilled on wards untill 35
