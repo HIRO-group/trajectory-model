@@ -8,7 +8,6 @@ if __name__ == '__main__':
     fit_model = False
 
     x_train, y_train, x_val, y_val, max_traj_steps, X, Y = get_data(data_num=2, max_traj_steps=MAX_TRAJ_STEPS, embed_dim=EMBED_DIM, dt=dt, debug=False)
-
     model = TrajectoryClassifier(max_traj_steps=max_traj_steps, embed_dim=EMBED_DIM, num_heads=NUM_HEADS, ff_dim=FF_DIM)
     model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
 
