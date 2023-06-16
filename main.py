@@ -30,4 +30,3 @@ if __name__ == '__main__':
     for i in range(X.shape[0]):
         print(f"True label: {Y[i]}, Predicted label: {model.predict(X[np.newaxis, i])}")
 
-
