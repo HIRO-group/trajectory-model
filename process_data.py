@@ -100,12 +100,32 @@ def translate_trajectory(X):
 def rotate_trajectory(X):
     return X
 
+def add_partial_trajectory(X, Y):
+    num_experiments = X.shape[0]
+    traj_lenght = X.shape[1]
+    data_per_experiment = 4
+
+    new_X_num_data = data_per_experiment * num_experiments
+    
+    X_new = np.zeros((new_X_num_data, traj_lenght, EMBED_DIM), dtype=np.float64)
+    Y_new = np.zeros((new_X_num_data, 1), dtype=np.float64)
+    
+    for e_id in range(X.shape[0]):
+        for i in range(data_per_experiment):
+            X_new[e_id * data_per_experiment + i , i * data_per_experiment:(i+1) * data_per_experiment, :] = \
+                 X[e_id, i * data_per_experiment:(i+1) * data_per_experiment, :]
+            Y_new[e_id * data_per_experiment + i, :] = Y[e_id]
+
+    return X_new, Y_new
+
+
 def process_data(data_dir=FINAL_RAW_DATA_DIR):
     X, Y = read_from_file()
-    X_new = fix_trajectory_lenght(X)
-    X_tr = translate_trajectory(X_new)
-    X_r = rotate_trajectory(X_tr)
-    return X_tr, Y
+    X = fix_trajectory_lenght(X)
+    X = translate_trajectory(X)
+    X, Y = add_partial_trajectory(X, Y)
+    X = rotate_trajectory(X)
+    return X, Y
 
 
 if __name__ == "__main__":
