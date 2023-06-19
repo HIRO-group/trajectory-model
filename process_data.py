@@ -32,9 +32,9 @@ def read_from_file(data_dir=FINAL_RAW_DATA_DIR):
                     traj_index = 0
                 else:
                     traj_index += 1
-                
+
             seen_experiments.append(e_id)
-            
+
             if e_id in exclude_indexes_list:
                 continue
 
@@ -58,17 +58,17 @@ def get_biggest_trajectory(X):
         if first_zero_index > max_zero_index:
             max_zero_index = first_zero_index
             max_T_e_id = e_id
-    t2 = datetime.fromtimestamp(X[max_T_e_id, max_zero_index - 1, 0])
-    t1 = datetime.fromtimestamp(X[max_T_e_id, 0, 0])
+    # t2 = datetime.fromtimestamp(X[max_T_e_id, max_zero_index - 1, 0])
+    # t1 = datetime.fromtimestamp(X[max_T_e_id, 0, 0])
     return max_zero_index
 
-def fix_trajectory(X):
+def fix_trajectory_lenght(X):
     max_zero_index = get_biggest_trajectory(X)
     frame_rate = 120
     dt = int(frame_rate/10)
     traj_lenght = int(max_zero_index/dt) + 1
     X_new = np.zeros((X.shape[0], traj_lenght, EMBED_DIM), dtype=np.float64) # No +1 this time
-    X_new[:, :, :] = X[:, 0:max_zero_index:dt, 1:]
+    X_new[:, :, :] = X[:, 0:max_zero_index:dt, 0:EMBED_DIM]
     return X_new
 
 def write_to_csv(X, Y, data_dir_prefix = FINAL_PROCESSED_DATA_DIR_PREFIX):
@@ -78,22 +78,36 @@ def write_to_csv(X, Y, data_dir_prefix = FINAL_PROCESSED_DATA_DIR_PREFIX):
     # np.savetxt(f'{data_dir_prefix}_Y.csv', Y, delimiter=",")
     pass
 
+
+
+def translate(body, translation):
+    translation_matrix = np.eye(4)
+    translation_matrix[:3, 3] = translation
+    translated_body = np.dot(body, translation_matrix.T)
+    return translated_body
+
 def translate_trajectory(X):
+    for e_id in range(X.shape[0]):
+        trajectory = X[e_id, :, 1:4]
+        start_point = trajectory[0, :]
+        translation = -start_point
+        rigid_bodies = np.hstack((trajectory, np.ones((trajectory.shape[0], 1))))
+        trajectory = translate(rigid_bodies, translation)
+        X[e_id, :, 0:3] = trajectory[:, 0:3]
+    return X
+
+
+def rotate_trajectory(X):
     return X
 
 def process_data(data_dir=FINAL_RAW_DATA_DIR):
     X, Y = read_from_file()
-    X_new = fix_trajectory(X)
+    X_new = fix_trajectory_lenght(X)
     X_tr = translate_trajectory(X_new)
-    # Also should translate all the data so they start at the same place 
-    # Have to make sure that the data is between a certain range so positional encoding works properly
+    X_r = rotate_trajectory(X_tr)
     return X_tr, Y
 
 
 if __name__ == "__main__":
-    print("here: process_data.py")
     X, Y = process_data()
     write_to_csv(X, Y)
-
-    # e_id = 1
-    # plot(X_new, e_id, 0.1)

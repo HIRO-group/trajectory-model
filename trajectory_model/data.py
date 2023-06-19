@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from trajectory_model.process_data import process_data
+from process_data import process_data
 
 def get_fake_initials(data_num):
     if data_num == 0:
