@@ -28,6 +28,6 @@ if __name__ == '__main__':
     for name, value in zip(model.metrics_names, results):
         print("%s: %.3f" % (name, value))
     print("Testing: ")
-    for i in range(X.shape[0]):
+    for i in range(X.shape[0]//4):
         print(f"True label: {Y[i]}, Predicted label: {model.predict(X[np.newaxis, i])}")
 
