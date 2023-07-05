@@ -8,13 +8,13 @@ max_traj_steps = 83
 model = TrajectoryClassifier(max_traj_steps=max_traj_steps, embed_dim=EMBED_DIM, num_heads=NUM_HEADS, ff_dim=FF_DIM)
 model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
 model.build((None, max_traj_steps, EMBED_DIM))
-model.load_weights("weights/predict_class_real_data_83.h5")
+model.load_weights("/home/ava/npm/trajectory-model/weights/predict_class_real_data_83.h5")
 
 def spilled(trajectory):
     # Trajectory is a array of joint angles = [[q1, ..., q7], [q1, ..., q7], ...]
-    # Should perform FK
     # Should paramerize the trajectory by time
     # For now it's just gonna return something
+    print("Trajectory is: ", trajectory)
 
     trajectory = np.zeros((1, 83, 8))
     return model.predict(trajectory) >= 0.5

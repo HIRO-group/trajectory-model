@@ -15,7 +15,7 @@ setuptools.setup(
     long_description_content_type='text/markdown',
     url='https://github.com/HIRO-group/trajectory-model',
     packages=setuptools.find_packages(where='trajectory_model*'),
-    install_requires=['numpy', 'tensorflow'],
+    install_requires=['numpy==1.24.2', 'tensorflow==2.13.0-rc1', 'urllib3==1.26.13'],
     classifiers=[
         'Programming Language :: Python :: 3.8',
         'License :: OSI Approved :: MIT License',
