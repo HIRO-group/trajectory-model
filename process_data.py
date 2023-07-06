@@ -1,6 +1,9 @@
 from datetime import datetime
 import csv
+import math
+
 import numpy as np
+from scipy.spatial.transform import Rotation
 
 from trajectory_model.constants import EMBED_DIM, FINAL_RAW_DATA_DIR, FINAL_PROCESSED_DATA_DIR_PREFIX
 from trajectory_model.helper import calculate_endpoint, plot_X
@@ -69,44 +72,37 @@ def fix_trajectory_lenght(X):
     traj_lenght = int(max_zero_index/dt) + 1
     X_new = np.zeros((X.shape[0], traj_lenght, EMBED_DIM), dtype=np.float64) # No +1 this time
     X_new[:, :, :] = X[:, 0:max_zero_index:dt, 0:EMBED_DIM]
+
+    for e_id in range(X_new.shape[0]):
+        embedding = X_new[e_id, :, :] # shape: (T, 4)
+        all_zero_indices = np.where(np.all(embedding == 0, axis=1))
+        if len(all_zero_indices[0]) == 0:
+            continue
+        first_zero_index =  all_zero_indices[0][0]
+        
+        if first_zero_index == 0:
+            X_new[e_id, :, :] = X_new[e_id-1, :, :]
+        else:
+            last_non_zero_index = first_zero_index - 1
+            X_new[e_id, first_zero_index:, :] = X_new[e_id, last_non_zero_index, :]
     return X_new
 
 def write_to_csv(X, Y, data_dir_prefix = FINAL_PROCESSED_DATA_DIR_PREFIX):
+    # TODO: just iterate over each one and write each trajectory in a seperate file?
+    # Or google write 3d np.array to csv
     # write to csv
     # with open(data_dir, mode ='w')as file:
     # np.savetxt(f'{data_dir_prefix}_X.csv', X, delimiter=",")
     # np.savetxt(f'{data_dir_prefix}_Y.csv', Y, delimiter=",")
     pass
 
-
-
-def translate(body, translation):
-    translation_matrix = np.eye(4)
-    translation_matrix[:3, 3] = translation
-    translated_body = np.dot(body, translation_matrix.T)
-    return translated_body
-
-def translate_trajectory(X):
-    for e_id in range(X.shape[0]):
-        trajectory = X[e_id, :, 1:4]
-        start_point = trajectory[0, :]
-        translation = -start_point
-        rigid_bodies = np.hstack((trajectory, np.ones((trajectory.shape[0], 1))))
-        trajectory = translate(rigid_bodies, translation)
-        X[e_id, :, 0:3] = trajectory[:, 0:3]
-    return X
-
-
-def rotate_trajectory(X):
-    return X
-
 def add_partial_trajectory(X, Y):
     num_experiments = X.shape[0]
     traj_lenght = X.shape[1]
-    data_per_experiment = 4
 
+    data_per_experiment = 4
     new_X_num_data = data_per_experiment * num_experiments
-    
+    # print("new_X_num_data: ", new_X_num_data)
     X_new = np.zeros((new_X_num_data, traj_lenght, EMBED_DIM), dtype=np.float64)
     Y_new = np.zeros((new_X_num_data, 1), dtype=np.float64)
     
@@ -115,19 +111,25 @@ def add_partial_trajectory(X, Y):
             X_new[e_id * data_per_experiment + i , i * data_per_experiment:(i+1) * data_per_experiment, :] = \
                  X[e_id, i * data_per_experiment:(i+1) * data_per_experiment, :]
             Y_new[e_id * data_per_experiment + i, :] = Y[e_id]
-
     return X_new, Y_new
+
+def transform_trajectory(X):
+    for e_id in range(X.shape[0]): 
+        xyz = X[e_id, :, 0:3]
+        xyz = xyz - X[e_id, 0, 0:3]
+        X[e_id, :, 0:3] = xyz
+    return X
 
 
 def process_data(data_dir=FINAL_RAW_DATA_DIR):
     X, Y = read_from_file()
     X = fix_trajectory_lenght(X)
-    X = translate_trajectory(X)
-    X, Y = add_partial_trajectory(X, Y)
-    X = rotate_trajectory(X)
+    X = transform_trajectory(X)
+    # X, Y = add_partial_trajectory(X, Y) # should double check
     return X, Y
-
 
 if __name__ == "__main__":
     X, Y = process_data()
     write_to_csv(X, Y)
+    # print(X[0,10,:])
+    # plot_X(X, 1, 0.001)

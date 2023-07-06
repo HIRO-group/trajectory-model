@@ -36,7 +36,6 @@ def get_start_and_end_points(X, e_id):
     for step in range(X.shape[1]):
         x, y, z = X[e_id, step, 0], X[e_id, step, 1], X[e_id, step, 2]
         a, b, c, d = X[e_id, step, 3], X[e_id, step, 4], X[e_id, step, 5], X[e_id, step, 6]
-        
         all_zeros = not np.any(X[e_id, step, :])
         if all_zeros:
             break
@@ -51,6 +50,7 @@ def get_start_and_end_points(X, e_id):
 
 def plot_X(X, e_id, arrows_lenght):
     start_points, end_points = get_start_and_end_points(X, e_id)
+    
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
 

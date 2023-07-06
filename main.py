@@ -15,10 +15,10 @@ if __name__ == '__main__':
 
     if fit_model:
         history = model.fit(x_train, y_train, 
-                        batch_size=1, epochs=200, 
+                        batch_size=1, epochs=50, 
                         validation_data=(x_val, y_val)
                         )
-        model.save_weights(f'weights/predict_class_real_data_{time.time()}.h5')
+        model.save_weights(f'weights/predict_class_real_data_rn.h5')
     else:
         model.build((None, max_traj_steps, EMBED_DIM))
         model.load_weights("weights/predict_class_real_data_83.h5")
@@ -28,6 +28,6 @@ if __name__ == '__main__':
     for name, value in zip(model.metrics_names, results):
         print("%s: %.3f" % (name, value))
     print("Testing: ")
-    for i in range(X.shape[0]):
+    for i in range(X.shape[0]//4):
         print(f"True label: {Y[i]}, Predicted label: {model.predict(X[np.newaxis, i])}")
 
