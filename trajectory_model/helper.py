@@ -8,19 +8,15 @@ from mpl_toolkits.mplot3d import Axes3D
 def rotate_vector(vector, rotation_matrix):
     return np.dot(rotation_matrix, vector)
 
-def quaternion_to_euler_angle(w, x, y, z):
-    ysqr = y * y
-    t0 = +2.0 * (w * x + y * z)
-    t1 = +1.0 - 2.0 * (x * x + ysqr)
-    X = math.degrees(math.atan2(t0, t1))
-    t2 = +2.0 * (w * y - z * x)
-    t2 = +1.0 if t2 > +1.0 else t2
-    t2 = -1.0 if t2 < -1.0 else t2
-    Y = math.degrees(math.asin(t2))
-    t3 = +2.0 * (w * z + x * y)
-    t4 = +1.0 - 2.0 * (ysqr + z * z)
-    Z = math.degrees(math.atan2(t3, t4))
-    return X, Y, Z
+def quat_to_euler(quaternions):
+    rot = R.from_quat(quaternions)
+    rot_euler = rot.as_euler('xyz', degrees=True)
+    return rot_euler
+
+def euler_to_quat(euler_angles):
+    rot = R.from_euler('xyz', euler_angles, degrees=True)
+    rot_quat = rot.as_quat()
+    return rot_quat
 
 def calculate_endpoint(start, a, b, c, d):
     rotation_matrix = R.from_quat([a, b, c, d]).as_matrix()
@@ -48,7 +44,7 @@ def get_start_and_end_points(X, e_id):
     return start_points, end_points
 
 
-def plot_X(X, e_id, arrows_lenght):
+def plot_X(X, e_id, arrows_lenght, verbose=False):
     start_points, end_points = get_start_and_end_points(X, e_id)
     
     fig = plt.figure()

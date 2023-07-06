@@ -5,22 +5,14 @@ import time
 from trajectory_model.data import get_data
 from trajectory_model.model import TrajectoryClassifier
 from trajectory_model.constants import MAX_TRAJ_STEPS, EMBED_DIM, NUM_HEADS, FF_DIM, dt
+from trajectory_model.helper import quat_to_euler, euler_to_quat
+
 
 max_traj_steps = 83
 model = TrajectoryClassifier(max_traj_steps=max_traj_steps, embed_dim=EMBED_DIM, num_heads=NUM_HEADS, ff_dim=FF_DIM)
 model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
 model.build((None, max_traj_steps, EMBED_DIM))
-model.load_weights("/home/ava/npm/trajectory-model/weights/predict_class_real_data_rn.h5")
-
-def quat_to_euler(quaternions):
-    rot = Rotation.from_quat(quaternions)
-    rot_euler = rot.as_euler('xyz', degrees=True)
-    return rot_euler
-
-def euler_to_quat(euler_angles):
-    rot = Rotation.from_euler('xyz', euler_angles, degrees=True)
-    rot_quat = rot.as_quat()
-    return rot_quat
+model.load_weights("/Users/ava/Documents/CU/Research/Repositories/HIRO/trajectory-model/weights/predict_class_real_data_latest.h5")
 
 def convert_to_model_input(trajectory):
     step_size = int(len(trajectory) / 83)
@@ -36,6 +28,7 @@ def translate(trajectory):
     xyz = xyz - trajectory[0, 0, 0:3] # shape: (T, 3)    
     trajectory[0, :, 0:3] = xyz
     return trajectory
+
 
 def rotate(trajectory):
     abcw = trajectory[0, :, 3:7] # shape: (T, 4)    
@@ -53,7 +46,7 @@ def transform_trajectory(trajectory):
 
 
 def save_trajectory(trajectory, prediction):
-    path = f'/home/ava/npm/trajectory-model/data/panda_ompl/data_{round(prediction, 3)}_{time.time()}'
+    path = f'/home/ava/npm/trajectory-model/data/panda_ompl/data_{prediction}_{time.time()}'
     trajectory = trajectory.reshape(83, 8)
     np.savetxt(path, trajectory, delimiter=',')
     print("successfully saved to file")
@@ -62,7 +55,7 @@ def save_trajectory(trajectory, prediction):
 def spilled(trajectory):
     trajectory = convert_to_model_input(trajectory)
     trajectory = transform_trajectory(trajectory)
-    prediction = model.predict(trajectory)[0][0]    
+    prediction = model.predict(trajectory)[0][0]   
     print("Prediction in python function:", prediction)
     save_trajectory(trajectory, prediction)
     return prediction

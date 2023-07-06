@@ -6,7 +6,7 @@ import numpy as np
 from scipy.spatial.transform import Rotation
 
 from trajectory_model.constants import EMBED_DIM, FINAL_RAW_DATA_DIR, FINAL_PROCESSED_DATA_DIR_PREFIX
-from trajectory_model.helper import calculate_endpoint, plot_X
+from trajectory_model.helper import plot_X, euler_to_quat, quat_to_euler
 
 def read_from_file(data_dir=FINAL_RAW_DATA_DIR):
     exclude_indexes_list = [4, 6, 11, 12, 13, 14, 15, 16, 22, 23, 25, 31]
@@ -43,9 +43,9 @@ def read_from_file(data_dir=FINAL_RAW_DATA_DIR):
 
             x, y, z = np.float64(keys[2]), np.float64(keys[3]), np.float64(keys[4]),
             a, b, c, d = np.float64(keys[5]), np.float64(keys[6]), np.float64(keys[7]), np.float64(keys[8])
-            
+
             X[e_id-1-correct_e_id, traj_index, :] = np.array([[timestamp, x, y, z, a, b, c, d, 1]]) # cup type is 1
-            
+
             if e_id in range(safe_data_index_range[0], safe_data_index_range[1]):
                 Y[e_id-1-correct_e_id] = 0
             else:
@@ -71,7 +71,7 @@ def fix_trajectory_lenght(X):
     dt = int(frame_rate/10)
     traj_lenght = int(max_zero_index/dt) + 1
     X_new = np.zeros((X.shape[0], traj_lenght, EMBED_DIM), dtype=np.float64) # No +1 this time
-    X_new[:, :, :] = X[:, 0:max_zero_index:dt, 0:EMBED_DIM]
+    X_new[:, :, :] = X[:, 0:max_zero_index:dt, 1:EMBED_DIM+1]
 
     for e_id in range(X_new.shape[0]):
         embedding = X_new[e_id, :, :] # shape: (T, 4)
@@ -113,11 +113,15 @@ def add_partial_trajectory(X, Y):
             Y_new[e_id * data_per_experiment + i, :] = Y[e_id]
     return X_new, Y_new
 
+
+
 def transform_trajectory(X):
-    for e_id in range(X.shape[0]): 
+    for e_id in range(X.shape[0]):
         xyz = X[e_id, :, 0:3]
         xyz = xyz - X[e_id, 0, 0:3]
         X[e_id, :, 0:3] = xyz
+        
+    
     return X
 
 
@@ -130,6 +134,8 @@ def process_data(data_dir=FINAL_RAW_DATA_DIR):
 
 if __name__ == "__main__":
     X, Y = process_data()
-    write_to_csv(X, Y)
-    # print(X[0,10,:])
-    # plot_X(X, 1, 0.001)
+    print(X[0, 0, :])
+    # [ 0. 0. 0. 0.00484921 -0.0188662   0.035517, -0.99917924  1.]
+    # in visualize saved data: 
+    # [ 0. 0. 0. -0.0033967 0.01908001 -0.03515668 0.99919389 1.]
+    # plot_X(X, 22, 0.1)

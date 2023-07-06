@@ -12,13 +12,12 @@ if __name__ == '__main__':
     model = TrajectoryClassifier(max_traj_steps=max_traj_steps, embed_dim=EMBED_DIM, num_heads=NUM_HEADS, ff_dim=FF_DIM)
     model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
 
-
     if fit_model:
         history = model.fit(x_train, y_train, 
                         batch_size=1, epochs=50, 
                         validation_data=(x_val, y_val)
                         )
-        model.save_weights(f'weights/predict_class_real_data_rn.h5')
+        model.save_weights(f'weights/predict_class_real_data_latest.h5')
     else:
         model.build((None, max_traj_steps, EMBED_DIM))
         model.load_weights("weights/predict_class_real_data_83.h5")
