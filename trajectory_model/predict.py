@@ -1,10 +1,8 @@
 import numpy as np
-from scipy.spatial.transform import Rotation
 import time
 
-from trajectory_model.data import get_data
 from trajectory_model.model import TrajectoryClassifier
-from trajectory_model.constants import MAX_TRAJ_STEPS, EMBED_DIM, NUM_HEADS, FF_DIM, dt
+from trajectory_model.constants import EMBED_DIM, NUM_HEADS, FF_DIM
 from trajectory_model.helper import quat_to_euler, euler_to_quat
 
 

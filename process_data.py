@@ -65,6 +65,7 @@ def get_biggest_trajectory(X):
     # t1 = datetime.fromtimestamp(X[max_T_e_id, 0, 0])
     return max_zero_index
 
+
 def fix_trajectory_lenght(X):
     max_zero_index = get_biggest_trajectory(X)
     frame_rate = 120
@@ -87,6 +88,7 @@ def fix_trajectory_lenght(X):
             X_new[e_id, first_zero_index:, :] = X_new[e_id, last_non_zero_index, :]
     return X_new
 
+
 def write_to_csv(X, Y, data_dir_prefix = FINAL_PROCESSED_DATA_DIR_PREFIX):
     # TODO: just iterate over each one and write each trajectory in a seperate file?
     # Or google write 3d np.array to csv
@@ -96,13 +98,13 @@ def write_to_csv(X, Y, data_dir_prefix = FINAL_PROCESSED_DATA_DIR_PREFIX):
     # np.savetxt(f'{data_dir_prefix}_Y.csv', Y, delimiter=",")
     pass
 
+
 def add_partial_trajectory(X, Y):
     num_experiments = X.shape[0]
     traj_lenght = X.shape[1]
 
     data_per_experiment = 4
     new_X_num_data = data_per_experiment * num_experiments
-    # print("new_X_num_data: ", new_X_num_data)
     X_new = np.zeros((new_X_num_data, traj_lenght, EMBED_DIM), dtype=np.float64)
     Y_new = np.zeros((new_X_num_data, 1), dtype=np.float64)
     
@@ -114,28 +116,40 @@ def add_partial_trajectory(X, Y):
     return X_new, Y_new
 
 
-
 def transform_trajectory(X):
     for e_id in range(X.shape[0]):
         xyz = X[e_id, :, 0:3]
         xyz = xyz - X[e_id, 0, 0:3]
         X[e_id, :, 0:3] = xyz
-        
-    
     return X
+
+
+def add_equivalent_quaternions(X, Y):
+    X_new_shape_0 = 2 * X.shape[0] # q = -q (quaternion)
+    X_new_shape_1 = X.shape[1]
+    X_new = np.zeros((X_new_shape_0, X_new_shape_1, EMBED_DIM), dtype=np.float64)
+    Y_new = np.zeros((X_new_shape_0, 1), dtype=np.float64)
+
+    for e_id in range(0, X.shape[0]):
+        X_new[2 * e_id] = X[e_id]
+        X_new[2 * e_id + 1] = X[e_id]
+        X_new[2 * e_id + 1, :, 3:7] = -X[e_id, :, 3:7]
+        Y_new[2 * e_id] = Y[e_id]
+        Y_new[2 * e_id + 1] = Y[e_id]
+    return X_new, Y_new
 
 
 def process_data(data_dir=FINAL_RAW_DATA_DIR):
     X, Y = read_from_file()
     X = fix_trajectory_lenght(X)
     X = transform_trajectory(X)
+    X, Y = add_equivalent_quaternions(X, Y)
     # X, Y = add_partial_trajectory(X, Y) # should double check
     return X, Y
+
 
 if __name__ == "__main__":
     X, Y = process_data()
     print(X[0, 0, :])
-    # [ 0. 0. 0. 0.00484921 -0.0188662   0.035517, -0.99917924  1.]
-    # in visualize saved data: 
-    # [ 0. 0. 0. -0.0033967 0.01908001 -0.03515668 0.99919389 1.]
-    # plot_X(X, 22, 0.1)
+    print(X[1, 0, :])
+    plot_X(X, 1, 0.01)
