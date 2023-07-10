@@ -1,10 +1,20 @@
 import csv
 import numpy as np
-from trajectory_model.constants import MAX_TRAJ_STEPS, EMBED_DIM, FINAL_RAW_DATA_DIR
+from trajectory_model.constants import MAX_TRAJ_STEPS, EMBED_DIM, FINAL_MOCAP_RAW_DATA_DIR, FINAL_OMPL_RAW_DATA_DIR
 from trajectory_model.helper import plot_X
 
+def read_from_ompl_file(X, Y, data_dir=FINAL_OMPL_RAW_DATA_DIR):
+    unsafe_indexes = [1, 2, 3, 4, 5, 6, 7, 8]
+    for id in unsafe_indexes:
+        path = f'{data_dir}/{id}_unsafe'
+        X_t = np.loadtxt(path, delimiter=',')
+        X_t = X_t.reshape(1, MAX_TRAJ_STEPS, EMBED_DIM)
+        X = np.append(X, X_t, axis=0)
+        Y = np.append(Y, np.array([[1]]), axis=0)
+    return X, Y
+    
 
-def read_from_file(data_dir=FINAL_RAW_DATA_DIR):
+def read_from_mocap_file(data_dir=FINAL_MOCAP_RAW_DATA_DIR):
     exclude_indexes_list = [4, 6, 11, 12, 13, 14, 15, 16, 22, 23, 25, 31]
     safe_data_index_range = (1, 21)
     unsafe_data_index_range = (21, 35)
@@ -113,8 +123,9 @@ def add_equivalent_quaternions(X, Y):
 
 
 def process_data():
-    X, Y = read_from_file()
+    X, Y = read_from_mocap_file()
     X = fix_trajectory_lenght(X)
+    X, Y = read_from_ompl_file(X, Y)
     X = transform_trajectory(X)
     X, Y = add_equivalent_quaternions(X, Y)
     X, Y = add_partial_trajectory(X, Y)

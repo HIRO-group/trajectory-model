@@ -12,5 +12,5 @@ FF_DIM = 32
 EMBED_DIM = 8
 
 data_name = 'data_may_30_final'
-FINAL_RAW_DATA_DIR = f'data/raw/{data_name}.csv'
-FINAL_PROCESSED_DATA_DIR_PREFIX = f'data/processed/{data_name}'
+FINAL_MOCAP_RAW_DATA_DIR = f'data/raw/{data_name}.csv'
+FINAL_OMPL_RAW_DATA_DIR = f'data/panda_ompl/'

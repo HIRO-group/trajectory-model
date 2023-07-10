@@ -8,8 +8,9 @@ from trajectory_model.helper import quat_to_euler, euler_to_quat
 
 model = TrajectoryClassifier(max_traj_steps=MAX_TRAJ_STEPS, embed_dim=EMBED_DIM, num_heads=NUM_HEADS, ff_dim=FF_DIM)
 model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
-# model.build((None, max_traj_steps, EMBED_DIM))
-# model.load_weights("/Users/ava/Documents/CU/Research/Repositories/HIRO/trajectory-model/weights/predict_class_real_data_latest.h5")
+model.build((None, MAX_TRAJ_STEPS, EMBED_DIM))
+model.load_weights("/home/ava/npm/trajectory-model/weights/acc_0.9_loss_0.32_data_num_186_epochs_80.h5")
+
 
 def convert_to_model_input(trajectory):
     step_size = int(len(trajectory) / MAX_TRAJ_STEPS)
@@ -43,10 +44,11 @@ def transform_trajectory(trajectory):
 
 
 def save_trajectory(trajectory, prediction):
-    path = f'/home/ava/npm/trajectory-model/data/panda_ompl/data_{prediction}_{time.time()}'
+    name = f'data_{round(prediction, 2)}_{time.time()}'
+    path = f'/home/ava/npm/trajectory-model/data/panda_ompl/{name}'
     trajectory = trajectory.reshape(MAX_TRAJ_STEPS, EMBED_DIM)
     np.savetxt(path, trajectory, delimiter=',')
-    print("successfully saved to file")
+    print(f'successfully saved to file: {name}')
 
 
 def spilled(trajectory):
