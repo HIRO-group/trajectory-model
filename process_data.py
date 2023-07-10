@@ -1,12 +1,8 @@
-from datetime import datetime
 import csv
-import math
-
 import numpy as np
-from scipy.spatial.transform import Rotation
+from trajectory_model.constants import MAX_TRAJ_STEPS, EMBED_DIM, FINAL_RAW_DATA_DIR
+from trajectory_model.helper import plot_X
 
-from trajectory_model.constants import EMBED_DIM, FINAL_RAW_DATA_DIR, FINAL_PROCESSED_DATA_DIR_PREFIX
-from trajectory_model.helper import plot_X, euler_to_quat, quat_to_euler
 
 def read_from_file(data_dir=FINAL_RAW_DATA_DIR):
     exclude_indexes_list = [4, 6, 11, 12, 13, 14, 15, 16, 22, 23, 25, 31]
@@ -53,27 +49,15 @@ def read_from_file(data_dir=FINAL_RAW_DATA_DIR):
     return X, Y
 
 
-def get_biggest_trajectory(X):
-    max_T_e_id = 0
-    max_zero_index = 0
+def fix_trajectory_lenght(X):    
+    X_new = np.zeros((X.shape[0], MAX_TRAJ_STEPS, EMBED_DIM), dtype=np.float64) # No +1 this time
+    max_index = X.shape[1]
+    step_size = int(max_index / MAX_TRAJ_STEPS)
+    remainder = max_index % MAX_TRAJ_STEPS
     for e_id in range(X.shape[0]):
-        first_zero_index = np.argmin(X[e_id, :, 0])
-        if first_zero_index > max_zero_index:
-            max_zero_index = first_zero_index
-            max_T_e_id = e_id
-    # t2 = datetime.fromtimestamp(X[max_T_e_id, max_zero_index - 1, 0])
-    # t1 = datetime.fromtimestamp(X[max_T_e_id, 0, 0])
-    return max_zero_index
+        X_new[e_id] = np.array([np.array(X[e_id, i, 1:EMBED_DIM+1]) for i in range(0, max_index - remainder, step_size)])
 
-
-def fix_trajectory_lenght(X):
-    max_zero_index = get_biggest_trajectory(X)
-    frame_rate = 120
-    dt = int(frame_rate/10)
-    traj_lenght = int(max_zero_index/dt) + 1
-    X_new = np.zeros((X.shape[0], traj_lenght, EMBED_DIM), dtype=np.float64) # No +1 this time
-    X_new[:, :, :] = X[:, 0:max_zero_index:dt, 1:EMBED_DIM+1]
-
+    # This copies the last non-zero value to the rest of the trajectory
     for e_id in range(X_new.shape[0]):
         embedding = X_new[e_id, :, :] # shape: (T, 4)
         all_zero_indices = np.where(np.all(embedding == 0, axis=1))
@@ -88,31 +72,20 @@ def fix_trajectory_lenght(X):
             X_new[e_id, first_zero_index:, :] = X_new[e_id, last_non_zero_index, :]
     return X_new
 
-
-def write_to_csv(X, Y, data_dir_prefix = FINAL_PROCESSED_DATA_DIR_PREFIX):
-    # TODO: just iterate over each one and write each trajectory in a seperate file?
-    # Or google write 3d np.array to csv
-    # write to csv
-    # with open(data_dir, mode ='w')as file:
-    # np.savetxt(f'{data_dir_prefix}_X.csv', X, delimiter=",")
-    # np.savetxt(f'{data_dir_prefix}_Y.csv', Y, delimiter=",")
-    pass
-
-
 def add_partial_trajectory(X, Y):
     num_experiments = X.shape[0]
-    traj_lenght = X.shape[1]
-
     data_per_experiment = 4
     new_X_num_data = data_per_experiment * num_experiments
-    X_new = np.zeros((new_X_num_data, traj_lenght, EMBED_DIM), dtype=np.float64)
+    X_new = np.zeros((new_X_num_data, X.shape[1], EMBED_DIM), dtype=np.float64)
     Y_new = np.zeros((new_X_num_data, 1), dtype=np.float64)
-    
+
     for e_id in range(X.shape[0]):
         for i in range(data_per_experiment):
-            X_new[e_id * data_per_experiment + i , i * data_per_experiment:(i+1) * data_per_experiment, :] = \
-                 X[e_id, i * data_per_experiment:(i+1) * data_per_experiment, :]
             Y_new[e_id * data_per_experiment + i, :] = Y[e_id]
+
+            X_new[e_id * data_per_experiment + i, 0: int((i+1) * X.shape[1]/data_per_experiment), :] = X[e_id, 0: int((i+1) * X.shape[1]/data_per_experiment), :]
+            # fill the rest with the last value
+            X_new[e_id * data_per_experiment + i, int((i+1) * X.shape[1]/data_per_experiment):, :] = X[e_id, int((i+1) * X.shape[1]/data_per_experiment)-1, :]
     return X_new, Y_new
 
 
@@ -139,17 +112,18 @@ def add_equivalent_quaternions(X, Y):
     return X_new, Y_new
 
 
-def process_data(data_dir=FINAL_RAW_DATA_DIR):
+def process_data():
     X, Y = read_from_file()
     X = fix_trajectory_lenght(X)
     X = transform_trajectory(X)
     X, Y = add_equivalent_quaternions(X, Y)
-    # X, Y = add_partial_trajectory(X, Y) # should double check
+    X, Y = add_partial_trajectory(X, Y)
+    # write_to_csv(X, Y)
     return X, Y
 
 
 if __name__ == "__main__":
     X, Y = process_data()
-    print(X[0, 0, :])
-    print(X[1, 0, :])
-    plot_X(X, 1, 0.01)
+    # print(X[0, 0, :])
+    # print(X[1, 0, :])
+    # plot_X(X, 12, 0.01)

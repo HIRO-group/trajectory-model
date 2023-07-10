@@ -6,12 +6,11 @@ import time
 
 from trajectory_model.helper import plot_X
 from trajectory_model.model import TrajectoryClassifier
-from trajectory_model.constants import EMBED_DIM, NUM_HEADS, FF_DIM
+from trajectory_model.constants import EMBED_DIM, NUM_HEADS, FF_DIM, MAX_TRAJ_STEPS
 
-max_traj_steps = 83
-model = TrajectoryClassifier(max_traj_steps=max_traj_steps, embed_dim=EMBED_DIM, num_heads=NUM_HEADS, ff_dim=FF_DIM)
+model = TrajectoryClassifier(max_traj_steps=MAX_TRAJ_STEPS, embed_dim=EMBED_DIM, num_heads=NUM_HEADS, ff_dim=FF_DIM)
 model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
-model.build((None, max_traj_steps, EMBED_DIM))
+model.build((None, MAX_TRAJ_STEPS, EMBED_DIM))
 model.load_weights("/Users/ava/Documents/CU/Research/Repositories/HIRO/trajectory-model/weights/predict_class_real_data_latest.h5")
 
 
@@ -19,7 +18,7 @@ if __name__ == "__main__":
     path_prefix = "/Users/ava/Documents/CU/Research/Repositories/HIRO/trajectory-model/data/panda_ompl"
     path = f'{path_prefix}/1'
     X = np.loadtxt(path, delimiter=',')
-    X = X.reshape(1, 83, 8)
+    X = X.reshape(1, MAX_TRAJ_STEPS, EMBED_DIM)
     # print(X[0, 0, :])
 
     plot_X(X, 0, 0.1)

@@ -5,8 +5,8 @@ o=(a, b, c, d)
 cup_type = 1 or 2 or 3
 '''
 T_max = 3
-dt = 0.02
-MAX_TRAJ_STEPS = int(T_max//dt)
+DT = 0.02
+MAX_TRAJ_STEPS = int(T_max/DT)  # 150
 NUM_HEADS = 8
 FF_DIM = 32
 EMBED_DIM = 8
