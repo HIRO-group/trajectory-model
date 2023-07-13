@@ -56,6 +56,6 @@ def spilled(trajectory):
     trajectory = transform_trajectory(trajectory)
     prediction = model.predict(trajectory)[0][0]   
     print("Prediction in python function:", prediction)
-    save_trajectory(trajectory, prediction)
+    # save_trajectory(trajectory, prediction)
     return prediction
  
