@@ -59,3 +59,8 @@ def spilled(trajectory):
     # save_trajectory(trajectory, prediction)
     return prediction
  
+
+def sample_point(points_so_far):
+    print("points so far:", points_so_far)
+    # sample in cartesian space
+    return [0.5295887589454651,-0.16105137765407562,0.296753466129303,0.004732200410217047,-0.018793363124132156,0.03531074523925781,-0.9991884827613831]
