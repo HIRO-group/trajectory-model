@@ -1,3 +1,4 @@
+# process data for spill free model
 import csv
 import numpy as np
 from trajectory_model.constants import MAX_TRAJ_STEPS, EMBED_DIM, FINAL_MOCAP_RAW_DATA_DIR, FINAL_OMPL_RAW_DATA_DIR
@@ -6,7 +7,7 @@ from trajectory_model.helper import plot_X
 def read_from_ompl_file(X, Y, data_dir=FINAL_OMPL_RAW_DATA_DIR):
     unsafe_indexes = [1, 2, 3, 4, 5, 6, 7, 8]
     for id in unsafe_indexes:
-        path = f'{data_dir}/{id}_unsafe'
+        path = f'{data_dir}/{id}_spill'
         X_t = np.loadtxt(path, delimiter=',')
         X_t = X_t.reshape(1, MAX_TRAJ_STEPS, EMBED_DIM)
         X = np.append(X, X_t, axis=0)
@@ -59,7 +60,7 @@ def read_from_mocap_file(data_dir=FINAL_MOCAP_RAW_DATA_DIR):
     return X, Y
 
 
-def fix_trajectory_lenght(X):    
+def fix_trajectory_lenght(X):
     X_new = np.zeros((X.shape[0], MAX_TRAJ_STEPS, EMBED_DIM), dtype=np.float64) # No +1 this time
     max_index = X.shape[1]
     step_size = int(max_index / MAX_TRAJ_STEPS)
@@ -125,7 +126,7 @@ def add_equivalent_quaternions(X, Y):
 def process_data():
     X, Y = read_from_mocap_file()
     X = fix_trajectory_lenght(X)
-    X, Y = read_from_ompl_file(X, Y)
+    # X, Y = read_from_ompl_file(X, Y)
     X = transform_trajectory(X)
     X, Y = add_equivalent_quaternions(X, Y)
     X, Y = add_partial_trajectory(X, Y)
@@ -137,4 +138,4 @@ if __name__ == "__main__":
     X, Y = process_data()
     # print(X[0, 0, :])
     # print(X[1, 0, :])
-    # plot_X(X, 12, 0.01)
+    plot_X(X, 18, 0.06)

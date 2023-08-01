@@ -9,7 +9,7 @@ from trajectory_model.helper import quat_to_euler, euler_to_quat
 model = TrajectoryClassifier(max_traj_steps=MAX_TRAJ_STEPS, embed_dim=EMBED_DIM, num_heads=NUM_HEADS, ff_dim=FF_DIM)
 model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
 model.build((None, MAX_TRAJ_STEPS, EMBED_DIM))
-model.load_weights("/home/ava/npm/trajectory-model/weights/acc_0.9_loss_0.32_data_num_186_epochs_80.h5")
+# model.load_weights("/home/ava/npm/trajectory-model/weights/acc_0.9_loss_0.32_data_num_186_epochs_80.h5")
 
 
 def convert_to_model_input(trajectory):
