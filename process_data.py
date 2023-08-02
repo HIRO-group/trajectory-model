@@ -125,8 +125,8 @@ def add_equivalent_quaternions(X, Y):
 
 def process_data():
     X, Y = read_from_mocap_file()
-    X = fix_trajectory_lenght(X)
-    # X, Y = read_from_ompl_file(X, Y)
+    X = fix_trajectory_lenght(X) 
+    X, Y = read_from_ompl_file(X, Y)
     X = transform_trajectory(X)
     X, Y = add_equivalent_quaternions(X, Y)
     X, Y = add_partial_trajectory(X, Y)
