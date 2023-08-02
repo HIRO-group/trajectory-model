@@ -70,7 +70,7 @@ def fix_trajectory_lenght(X):
 
     # This copies the last non-zero value to the rest of the trajectory
     for e_id in range(X_new.shape[0]):
-        embedding = X_new[e_id, :, :] # shape: (T, 4)
+        embedding = X_new[e_id, :, :] 
         all_zero_indices = np.where(np.all(embedding == 0, axis=1))
         if len(all_zero_indices[0]) == 0:
             continue

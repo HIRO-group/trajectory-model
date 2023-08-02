@@ -4,11 +4,13 @@ from trajectory_model.helper import find_significant_curvature_changes, \
     find_significant_orientation_changes, \
     find_significant_position_changes
 
-from trajectory_model.constants import MAX_NUM_WAYPOINTS
-from process_data import read_from_mocap_file, fix_trajectory_lenght
+from trajectory_model.constants import MAX_NUM_WAYPOINTS, MAX_TRAJ_STEPS, EMBED_DIM
+from process_data import read_from_mocap_file
+
+from trajectory_model.helper import plot_X
 
 
-def select_waypoints(X, Y):
+def select_waypoints_hard(X, Y):
     num_of_data = X.shape[0]
     X_new = np.zeros((num_of_data, MAX_NUM_WAYPOINTS, X.shape[2]), dtype=np.float64)
     # Y_new = np.zeros((num_of_data, MAX_NUM_WAYPOINTS, Y.shape[2]), dtype=np.float64)
@@ -38,17 +40,58 @@ def select_waypoints(X, Y):
     return X_new, Y
 
 
+def fix_traj_lenght(X):
+    X_new = np.zeros((X.shape[0], MAX_TRAJ_STEPS, EMBED_DIM), dtype=np.float64) # No +1 this time
+    max_index = X.shape[1]
+    step_size = int(max_index / MAX_TRAJ_STEPS)
+    remainder = max_index % MAX_TRAJ_STEPS
+    for e_id in range(X.shape[0]):
+        X_new[e_id] = np.array([np.array(X[e_id, i, 1:EMBED_DIM+1]) for i in range(0, max_index - remainder, step_size)])
+    return X_new
+
+def select_waypoints(X):
+    X_new = np.zeros((X.shape[0], MAX_NUM_WAYPOINTS, EMBED_DIM), dtype=np.float64) # No +1 this time
+    for e_id in range(X.shape[0]):
+        embedding = X[e_id, :, :]
+        all_zero_indices = np.where(np.all(embedding == 0, axis=1))
+        
+        if  len(all_zero_indices[0]) != 0  and all_zero_indices[0][0] == 0:
+            X_new[e_id] = X_new[e_id - 1]
+            continue
+
+        if len(all_zero_indices[0]) == 0:
+            max_index = X.shape[1] - 1
+        else:
+            max_index = all_zero_indices[0][0] - 1 # The last non zero index
+
+        step_size = int(max_index / MAX_NUM_WAYPOINTS)
+        remainder = max_index % MAX_NUM_WAYPOINTS
+        X_new[e_id] = np.array([np.array(X[e_id, i, :]) for i in range(0, max_index - remainder, step_size)])
+    
+    return X_new
+
+
 def process_data():
     X, Y = read_from_mocap_file()
-
-    # X: (num_of_data, MAX_TRAJ_STEPS, EMBED_DIM), Y: (num_of_data, 1)
-    X = fix_trajectory_lenght(X)
     
+    # print(X[0, :10, :])
+    
+    X = fix_traj_lenght(X)
+    
+    # print(X[0, :10, :])
+    # X: (num_of_data, MAX_TRAJ_STEPS, EMBED_DIM), Y: (num_of_data, 1)
+    # X = fix_trajectory_lenght(X)
+
     # X: (num_of_data, MAX_NUM_WAYPOINTS, EMBED_DIM), 
     # Y: (num_of_data, MAX_NUM_WAYPOINTS, EMBED_DIM)
-    X, Y = select_waypoints(X, Y) 
+    # X, Y = select_waypoints_hard(X, Y) 
+
+    X = select_waypoints(X)
+    # print(X[0, :10, :])
     
     return X, Y
 
 if __name__ == "__main__":
     X, Y = process_data()
+    # print(X[0, :, :])
+    plot_X(X, 0, 0.01)

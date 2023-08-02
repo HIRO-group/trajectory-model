@@ -15,4 +15,4 @@ data_name = 'data_may_30_final'
 FINAL_MOCAP_RAW_DATA_DIR = f'data/raw/{data_name}.csv'
 FINAL_OMPL_RAW_DATA_DIR = f'data/panda_ompl'
 
-MAX_NUM_WAYPOINTS = 150 # Including first and last point
+MAX_NUM_WAYPOINTS = 10 # Including first and last point
