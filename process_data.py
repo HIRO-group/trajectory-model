@@ -1,7 +1,7 @@
 # process data for spill free model
 import csv
 import numpy as np
-from trajectory_model.constants import MAX_TRAJ_STEPS, EMBED_DIM, FINAL_MOCAP_RAW_DATA_DIR, FINAL_OMPL_RAW_DATA_DIR
+from trajectory_model.spill_free.constants import MAX_TRAJ_STEPS, EMBED_DIM, FINAL_MOCAP_RAW_DATA_DIR, FINAL_OMPL_RAW_DATA_DIR
 from trajectory_model.helper import plot_X
 
 def read_from_ompl_file(X, Y, data_dir=FINAL_OMPL_RAW_DATA_DIR):

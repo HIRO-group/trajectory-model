@@ -5,8 +5,8 @@ from scipy.spatial.transform import Rotation
 import time
 
 from trajectory_model.helper import plot_X
-from trajectory_model.model import TrajectoryClassifier
-from trajectory_model.constants import EMBED_DIM, NUM_HEADS, FF_DIM, MAX_TRAJ_STEPS
+from trajectory_model.spill_free.model import TrajectoryClassifier
+from trajectory_model.spill_free.constants import EMBED_DIM, NUM_HEADS, FF_DIM, MAX_TRAJ_STEPS
 
 model = TrajectoryClassifier(max_traj_steps=MAX_TRAJ_STEPS, embed_dim=EMBED_DIM, num_heads=NUM_HEADS, ff_dim=FF_DIM)
 model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])

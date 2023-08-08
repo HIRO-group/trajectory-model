@@ -1,8 +1,8 @@
 import numpy as np
 import time
 
-from trajectory_model.model import TrajectoryClassifier
-from trajectory_model.constants import EMBED_DIM, NUM_HEADS, FF_DIM, MAX_TRAJ_STEPS
+from trajectory_model.spill_free.model import TrajectoryClassifier
+from trajectory_model.spill_free.constants import EMBED_DIM, NUM_HEADS, FF_DIM, MAX_TRAJ_STEPS
 from trajectory_model.helper import quat_to_euler, euler_to_quat
 
 

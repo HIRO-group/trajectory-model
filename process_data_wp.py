@@ -4,7 +4,7 @@ from trajectory_model.helper import find_significant_curvature_changes, \
     find_significant_orientation_changes, \
     find_significant_position_changes
 
-from trajectory_model.constants import MAX_NUM_WAYPOINTS, MAX_TRAJ_STEPS, EMBED_DIM
+from trajectory_model.spill_free.constants import MAX_NUM_WAYPOINTS, MAX_TRAJ_STEPS, EMBED_DIM
 from process_data import read_from_mocap_file, transform_trajectory, add_equivalent_quaternions
 
 from trajectory_model.helper import plot_X
@@ -80,8 +80,8 @@ def select_waypoints(X):
 
 def prepare_model_input(X):
     num_experiments = X.shape[0]
-    data_per_experiment = MAX_NUM_WAYPOINTS 
-    new_X_num_data = data_per_experiment * num_experiments
+    data_per_experiment = MAX_NUM_WAYPOINTS
+    new_X_num_data = MAX_NUM_WAYPOINTS * num_experiments
     
     X_new = np.zeros((new_X_num_data, MAX_NUM_WAYPOINTS, EMBED_DIM), dtype=np.float64)
     Y_new = np.zeros((new_X_num_data, EMBED_DIM - 1), dtype=np.float64) # No cup type
@@ -116,7 +116,6 @@ def process_data():
 
 if __name__ == "__main__":
     X, Y = process_data()
-    print(X[9, :, :])
+    # print(X[9, :, :])
     plot_X(X, 9, 0.01)
     # plot both X and Y
-    

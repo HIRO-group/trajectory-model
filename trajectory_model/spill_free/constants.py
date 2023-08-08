@@ -1,8 +1,10 @@
 ''' 
 embedding = (x, o, cup_type) 
 x=(x, y, z)
-o=(a, b, c, d)
-cup_type = 1 or 2 or 3
+o=(a, b, c, w)
+
+cup_type = 1 or 2 or 3 -> this should not be coupled with the same embedding
+should change the model architecture 
 '''
 T_max = 3
 DT = 0.02
