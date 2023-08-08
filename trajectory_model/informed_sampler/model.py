@@ -5,8 +5,6 @@ from tensorflow.keras.models import Model, Sequential
 import tensorflow as tf
 
 
-
-
 class PositionalEnconding(Layer):
     def __init__(self, max_traj_steps, embed_dim) -> None:
         super(PositionalEnconding, self).__init__()
@@ -55,28 +53,6 @@ class TransformerBlock(Layer):
         return self.layernorm2(out1 + ffn_output)
 
 
-# class TrajectoryClassifier(Model):
-#     def __init__(self, max_traj_steps, embed_dim, num_heads, ff_dim, dropout_rate=0.1, name="trajectory_classifier", **kwargs) -> None:
-#         super(TrajectoryClassifier, self).__init__(name=name, **kwargs)
-#         self.position_encoding = PositionalEnconding(max_traj_steps, embed_dim)
-#         self.transformer_block = TransformerBlock(embed_dim, num_heads, ff_dim, dropout_rate)
-#         self.pooling = GlobalAveragePooling1D()
-#         self.dropout1 = Dropout(dropout_rate)
-#         self.dense1 = Dense(20, activation="relu")
-#         self.dropout2 = Dropout(dropout_rate)
-#         self.dense2 = Dense(1, activation='sigmoid')
-    
-#     def call(self, inputs):
-#         x = self.position_encoding(inputs)
-#         x = self.transformer_block(x)
-#         x = self.pooling(x)
-#         x = self.dropout1(x)
-#         x = self.dense1(x)
-#         x = self.dropout2(x)
-#         x = self.dense2(x)
-#         return x
-
-
 class PositionSampler(Model):
     def __init__(self, max_num_waypoints, waypoints_embed_dim, num_heads, ff_dim, dropout_rate=0.1, name="PositionSampler", **kwargs) -> None:
         super(PositionSampler, self).__init__(name=name, **kwargs)
@@ -87,11 +63,10 @@ class PositionSampler(Model):
         self.dropout1 = Dropout(dropout_rate)
         self.dense1 = Dense(waypoints_embed_dim, activation="relu")
 
-    def call(self, inputs_sequence):
-        x = self.position_encoding(inputs_sequence)
+    def call(self, inputs):
+        x = self.position_encoding(inputs)
         x = self.transformer_block(x)
         x = self.pooling(x)
-        # x = self.layernorm(x + inputs_none_sequence)
         x = self.dropout1(x)
         x = self.dense1(x)
         return x

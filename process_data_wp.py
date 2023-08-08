@@ -4,40 +4,11 @@ from trajectory_model.helper import find_significant_curvature_changes, \
     find_significant_orientation_changes, \
     find_significant_position_changes
 
-from trajectory_model.spill_free.constants import MAX_NUM_WAYPOINTS, MAX_TRAJ_STEPS, EMBED_DIM
+from trajectory_model.spill_free.constants import MAX_TRAJ_STEPS, EMBED_DIM
+from trajectory_model.informed_sampler.constants import MAX_NUM_WAYPOINTS
 from process_data import read_from_mocap_file, transform_trajectory, add_equivalent_quaternions
-
-from trajectory_model.helper import plot_X
-
-
-# def select_waypoints_hard(X, Y):
-#     num_of_data = X.shape[0]
-#     X_new = np.zeros((num_of_data, MAX_NUM_WAYPOINTS, X.shape[2]), dtype=np.float64)
-#     # Y_new = np.zeros((num_of_data, MAX_NUM_WAYPOINTS, Y.shape[2]), dtype=np.float64)
-
-#     for i in range(num_of_data):
-#         num_of_waypoints = 0
-#         for j in range(MAX_NUM_WAYPOINTS):
-#             if j == 0:
-#                 X_new[i, j, :] = X[i, j, :]
-#                 # Y_new[i, j, :] = Y[i, j, :]
-#                 num_of_waypoints += 1
-#             elif j == MAX_NUM_WAYPOINTS - 1:
-#                 X_new[i, j, :] = X[i, -1, :]
-#                 # Y_new[i, j, :] = Y[i, -1, :]
-#                 num_of_waypoints += 1
-#             else:
-#                 if find_significant_position_changes(X[i, :, 0:3]) or \
-#                     find_significant_orientation_changes(X[i, :, 3:7]): 
-#                     # find_significant_curvature_changes(X[i, :, :])[j-1]: # idk how this works
-#                     X_new[i, j, :] = X[i, j, :]
-#                     # Y_new[i, j, :] = Y[i, j, :]
-#                     num_of_waypoints += 1
-#                 else:
-#                     X_new[i, j, :] = X_new[i, j-1, :]
-#                     # Y_new[i, j, :] = Y_new[i, j-1, :]
-#         print(f"Number of waypoints for data {i}: {num_of_waypoints}")
-#     return X_new, Y
+from process_data import process_data as process_data_spill
+from trajectory_model.helper import plot_X, plot_multiple_e_ids, plot_multiple_X
 
 
 def change_trajectory_length(X):
@@ -48,6 +19,7 @@ def change_trajectory_length(X):
     for e_id in range(X.shape[0]):
         X_new[e_id] = np.array([np.array(X[e_id, i, 1:EMBED_DIM+1]) for i in range(0, max_index - remainder, step_size)])
     return X_new
+
 
 def select_waypoints(X):
     X_new = np.zeros((X.shape[0], MAX_NUM_WAYPOINTS, EMBED_DIM), dtype=np.float64)
@@ -108,14 +80,18 @@ def process_data():
     X, Y = read_from_mocap_file()
     X = change_trajectory_length(X) # removes timestamp
     X, Y = store_only_non_spill_trajectory(X, Y)
-    X = transform_trajectory(X) # why is this making it worse?
-    X, Y = add_equivalent_quaternions(X, Y)
-    X = select_waypoints(X)
-    X, Y = prepare_model_input(X)
+    # X = transform_trajectory(X) # why is this making it worse?
+    # X, Y = add_equivalent_quaternions(X, Y)
+    # X = select_waypoints(X)
+    # X, Y = prepare_model_input(X)
     return X, Y
 
 if __name__ == "__main__":
-    X, Y = process_data()
-    # print(X[9, :, :])
-    plot_X(X, 9, 0.01)
+    X_s, Y_s = process_data_spill()
+    X_w, Y_w = process_data()
+    # plot_X(X, 9, 0.01)
+    # plot_multiple_e_ids(X, [9, 2], 0.01)
+    # print(X_s.shape)
+    plot_multiple_X([X_s, X_w], [0, 0], 0.01)
+
     # plot both X and Y

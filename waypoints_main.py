@@ -1,17 +1,20 @@
 # from process_data_wp import process_data
-from trajectory_model.data import get_data
+from trajectory_model.data import get_position_wp_data
 from trajectory_model.informed_sampler.model import PositionSampler
-from trajectory_model.informed_sampler.constants import EMBED_DIM, NUM_HEADS, FF_DIM, MAX_NUM_WAYPOINTS
+from trajectory_model.informed_sampler.constants import EMBED_DIM_POS, NUM_HEADS, FF_DIM, MAX_NUM_WAYPOINTS
 
 # print(X.shape) # 220, 10, 8  (num_trajectories) (num_of_waypoints) (pos, orientation, cup)
 # print(Y.shape) # 220, 7 (pos, orientation)
-    
+
 
 if __name__ == "__main__":
     fit_model = True
-    x_train, y_train, x_val, y_val, X, Y = get_data(spill_free=False)
+    x_train, y_train, x_val, y_val, X, Y = get_position_wp_data()
+    print(X.shape)
+    print(Y.shape)
+    input("Haha")
     
-    model = PositionSampler(max_num_waypoints=MAX_NUM_WAYPOINTS, waypoints_embed_dim=EMBED_DIM, num_heads=NUM_HEADS, ff_dim=FF_DIM)
+    model = PositionSampler(max_num_waypoints=MAX_NUM_WAYPOINTS, waypoints_embed_dim=EMBED_DIM_POS, num_heads=NUM_HEADS, ff_dim=FF_DIM)
     model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
     if fit_model:
         epochs = 80

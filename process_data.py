@@ -93,7 +93,6 @@ def add_partial_trajectory(X, Y):
     for e_id in range(X.shape[0]):
         for i in range(data_per_experiment):
             Y_new[e_id * data_per_experiment + i, :] = Y[e_id]
-
             X_new[e_id * data_per_experiment + i, 0: int((i+1) * X.shape[1]/data_per_experiment), :] = X[e_id, 0: int((i+1) * X.shape[1]/data_per_experiment), :]
             # fill the rest with the last value
             X_new[e_id * data_per_experiment + i, int((i+1) * X.shape[1]/data_per_experiment):, :] = X[e_id, int((i+1) * X.shape[1]/data_per_experiment)-1, :]
@@ -126,11 +125,10 @@ def add_equivalent_quaternions(X, Y):
 def process_data():
     X, Y = read_from_mocap_file()
     X = fix_trajectory_lenght(X) 
-    X, Y = read_from_ompl_file(X, Y)
+    # X, Y = read_from_ompl_file(X, Y)
     X = transform_trajectory(X)
     X, Y = add_equivalent_quaternions(X, Y)
     X, Y = add_partial_trajectory(X, Y)
-    # write_to_csv(X, Y)
     return X, Y
 
 

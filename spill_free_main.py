@@ -5,7 +5,7 @@ from trajectory_model.spill_free.constants import MAX_TRAJ_STEPS, EMBED_DIM, NUM
 if __name__ == '__main__':
     fit_model = True
 
-    x_train, y_train, x_val, y_val, X, Y = get_data(spill_free=True)
+    x_train, y_train, x_val, y_val, X, Y = get_data()
     model = TrajectoryClassifier(max_traj_steps=MAX_TRAJ_STEPS, embed_dim=EMBED_DIM, num_heads=NUM_HEADS, ff_dim=FF_DIM)
     model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
 
