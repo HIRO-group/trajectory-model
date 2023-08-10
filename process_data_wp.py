@@ -80,18 +80,13 @@ def process_data():
     X, Y = read_from_mocap_file()
     X = change_trajectory_length(X) # removes timestamp
     X, Y = store_only_non_spill_trajectory(X, Y)
-    # X = transform_trajectory(X) # why is this making it worse?
-    # X, Y = add_equivalent_quaternions(X, Y)
-    # X = select_waypoints(X)
-    # X, Y = prepare_model_input(X)
+    X = transform_trajectory(X) # why is this making it worse?
+    X, Y = add_equivalent_quaternions(X, Y)
+    X = select_waypoints(X)
+    X, Y = prepare_model_input(X)
     return X, Y
 
 if __name__ == "__main__":
-    X_s, Y_s = process_data_spill()
-    X_w, Y_w = process_data()
-    # plot_X(X, 9, 0.01)
-    # plot_multiple_e_ids(X, [9, 2], 0.01)
-    # print(X_s.shape)
-    plot_multiple_X([X_s, X_w], [0, 0], 0.01)
-
-    # plot both X and Y
+    X, Y = process_data()
+    plot_multiple_e_ids(X, [9], 0.01)
+    # plot_multiple_X([X, X_w, X_i], [0, 0, 9], 0.01)

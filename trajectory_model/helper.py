@@ -20,6 +20,7 @@ def euler_to_quat(euler_angles):
 
 
 def calculate_endpoint(start, a, b, c, d):
+    # print("a, b, c, d: ", a, b, c, d)
     rotation_matrix = R.from_quat([a, b, c, d]).as_matrix()
     unit_vector = np.array([0, 0, 1])
     endpoint = rotate_vector(unit_vector, rotation_matrix)
@@ -36,6 +37,7 @@ def get_start_and_end_points(X, e_id):
                                          4], X[e_id, step, 5], X[e_id, step, 6]
         all_zeros = not np.any(X[e_id, step, :])
         if all_zeros:
+            print("All zeros! at step: ", step)
             break
 
         start_point = np.array([[x, y, z]])
@@ -55,7 +57,6 @@ def plot_multiple_e_ids(X, e_ids, arrows_lenght, verbose=False):
 
     for e_id in e_ids:
         start_points, end_points = get_start_and_end_points(X, e_id)
-
         ax.quiver(start_points[:, 0], start_points[:, 1], start_points[:, 2],
                   end_points[:, 0], end_points[:, 1], end_points[:, 2],
                   length=arrows_lenght, normalize=True, color=colors[color_id])
@@ -69,15 +70,20 @@ def plot_multiple_e_ids(X, e_ids, arrows_lenght, verbose=False):
 def plot_multiple_X(Xs, e_ids, arrows_lenght, verbose=False):
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
-    colors = ['r', 'g', 'b', 'b']
+    colors = ['b', 'r', 'g']
     color_id = 0
-    # ind = 0
     
     for X in Xs:
         if color_id == 0:
             e_id = e_ids[0]
         else:
             e_id = e_ids[1]
+            arrows_lenght += 0.03
+        
+        print("Xs.shape: ", X.shape)
+        print("e_id: ", e_id)
+        print("color: ", colors[color_id])
+        
 
         start_points, end_points = get_start_and_end_points(X, e_id)
 
