@@ -6,7 +6,7 @@ from trajectory_model.helper import find_significant_curvature_changes, \
 
 from trajectory_model.spill_free.constants import MAX_TRAJ_STEPS, EMBED_DIM
 from trajectory_model.informed_sampler.constants import MAX_NUM_WAYPOINTS
-from process_data import read_from_mocap_file, transform_trajectory, add_equivalent_quaternions
+from process_data import read_from_mocap_file, transform_trajectory, add_equivalent_quaternions, read_from_ompl_file
 from process_data import process_data as process_data_spill
 from trajectory_model.helper import plot_X, plot_multiple_e_ids, plot_multiple_X
 
@@ -70,23 +70,44 @@ def prepare_model_input(X):
 
 
 def store_only_non_spill_trajectory(X, Y):
-    non_zero_indices = np.nonzero(Y)[0]
-    X_new = X[non_zero_indices]
-    Y_new = Y[non_zero_indices]
+    # non_zero_indices = np.nonzero(Y)[0]
+    # print(non_zero_indices)
+    no_spill_indices =  np.where(Y == 0)[0]
+    # print(no_spill_indices)
+    X_new = X[no_spill_indices]
+    Y_new = Y[no_spill_indices]
     return X_new, Y_new
+
+
+def convert_to_cm(X):
+    X[:, :, 0:3] = np.round(X[:, :, 0:3] * 100, 0)
+    return X
 
 
 def process_data():
     X, Y = read_from_mocap_file()
+    # X, Y = read_from_ompl_file(X, Y)
+
     X = change_trajectory_length(X) # removes timestamp
     X, Y = store_only_non_spill_trajectory(X, Y)
     X = transform_trajectory(X)
+    X = convert_to_cm(X)
     X, Y = add_equivalent_quaternions(X, Y)
     X = select_waypoints(X)
     X, Y = prepare_model_input(X)
+    
     return X, Y
 
 if __name__ == "__main__":
     X, Y = process_data()
-    plot_multiple_e_ids(X, [9], 0.01)
-    # plot_multiple_X([X, X_w, X_i], [0, 0, 9], 0.01)
+    # print("X[9]: ", X[9, :, 0:3])
+    # plot_multiple_e_ids(X, [9, 2], 3)
+    # X_s, Y_s = process_data_spill()
+    # X_s[:, :, 0:3] = np.round(X_s[:, :, 0:3] * 100, 0)
+    # print("X.shape: ", X.shape)
+    # print("Y.shape: ", Y.shape)
+    # print(X[3])
+    # print(Y[3])
+    Y = Y.reshape(Y.shape[0], 1, Y.shape[1])
+    plot_multiple_X([X, Y], [3, 3], 1)    
+    # plot_X_Y(X, Y, 0, 1)

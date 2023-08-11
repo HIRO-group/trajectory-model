@@ -14,7 +14,7 @@ def get_manual_train_and_val_index():
 def get_train_and_val_set(X, Y, manual=False):
     train_id = int(3*X.shape[0]/4)
     if manual:
-        print("getting manual train and val index")
+        print("Getting manual train and val index...")
         train_index, val_index = get_manual_train_and_val_index()
     else:
         train_index = np.random.choice(X.shape[0], train_id, replace=False) 
@@ -32,6 +32,15 @@ def get_position_wp_data(manual=False):
     X_pos = X_wp[:, :, 0:3] # to get only positional data
     X_cup = X_wp[:, :, 7:8] # to get only cup data
     X = np.concatenate((X_pos, X_cup), axis=2)
+
+    mean_X = np.mean(X, axis=(0, 1), keepdims=True)
+    std_X = np.std(X, axis=(0, 1), keepdims=True)
+    mean_Y = np.mean(Y, axis=0, keepdims=True)
+    std_Y = np.std(Y, axis=0, keepdims=True)
+
+    X = (X - mean_X) / std_X
+    Y = (Y - mean_Y) / std_Y
+
     X_train, Y_train, X_val, Y_val = get_train_and_val_set(X, Y, manual=manual)
     return X_train, Y_train, X_val, Y_val, X, Y
 

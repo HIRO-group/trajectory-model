@@ -41,7 +41,7 @@ class TransformerBlock(Layer):
         super(TransformerBlock, self).__init__()
         self.att = MultiHeadAttention(num_heads=num_heads, key_dim=embed_dim)
         self.ffn = Sequential(
-            [Dense(ff_dim, activation="sigmoid"),
+            [Dense(ff_dim, activation="relu"),
              Dense(embed_dim),]
         )
         self.layernorm1 = LayerNormalization(epsilon=1e-6)
@@ -65,7 +65,7 @@ class PositionSampler(Model):
         num_heads, ff_dim = 8, 8
         tf_block_dropout = 0.1
         dropout1 = 0.05
-        dropout2 = 0.01
+        dropout2 = 0.05
 
         self.position_encoding = PositionalEnconding(max_num_waypoints, waypoints_embed_dim)
         self.transformer_block = TransformerBlock(waypoints_embed_dim, num_heads=num_heads,
@@ -80,19 +80,30 @@ class PositionSampler(Model):
         self.dropout2 = Dropout(dropout2)
         self.dense2 = Dense(waypoints_embed_dim-1, activation="linear")
 
+        self.dropout3 = Dropout(dropout2)
+        self.dense3 = Dense(waypoints_embed_dim-1, activation="linear")
+
     def call(self, inputs):
         x = self.position_encoding(inputs)
 
         x = self.transformer_block(x)
-        x = self.transformer_block(x)
-        x = self.transformer_block(x)
         # x = self.transformer_block(x)
-        x = self.layernorm(x)
+        # x = self.transformer_block(x)
+        # x = self.transformer_block(x)
+
+        # x = self.transformer_block(x)
+        # x = self.transformer_block(x)
+
+        # x = self.layernorm(x)
         x = self.pooling(x)
         x = self.dropout1(x)
         # x = self.layernorm2(x)
         x = self.dense1(x)
 
-        # x = self.dropout2(x)
-        # x = self.dense2(x)
+        x = self.dropout2(x)
+        x = self.dense2(x)
+
+        # x = self.dropout3(x)
+        # x = self.dense3(x)
+
         return x

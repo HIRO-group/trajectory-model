@@ -1,7 +1,7 @@
-from scipy.spatial.transform import Rotation as R
+from datetime import datetime
 import numpy as np
 import matplotlib.pyplot as plt
-
+from scipy.spatial.transform import Rotation as R
 
 def rotate_vector(vector, rotation_matrix):
     return np.dot(rotation_matrix, vector)
@@ -78,15 +78,8 @@ def plot_multiple_X(Xs, e_ids, arrows_lenght, verbose=False):
             e_id = e_ids[0]
         else:
             e_id = e_ids[1]
-            arrows_lenght += 0.03
-        
-        print("Xs.shape: ", X.shape)
-        print("e_id: ", e_id)
-        print("color: ", colors[color_id])
-        
-
+            arrows_lenght += 1
         start_points, end_points = get_start_and_end_points(X, e_id)
-
         ax.quiver(start_points[:, 0], start_points[:, 1], start_points[:, 2],
                 end_points[:, 0], end_points[:, 1], end_points[:, 2],
                 length=arrows_lenght, normalize=True, color=colors[color_id])
@@ -153,3 +146,55 @@ def find_significant_curvature_changes(trajectory, threshold_curvature=0.1):
         if curvature > threshold_curvature:
             significant_changes.append(i)
     return significant_changes
+
+
+
+def plot_loss_function(history):
+    dt = datetime.now()
+    now = dt.strftime("%H:%M:%S")
+
+    train_loss = history.history['loss']
+    val_loss = history.history['val_loss']
+    epochs = range(1, len(train_loss) + 1)
+    plt.plot(epochs, train_loss, 'b', label='Training Loss')
+    plt.plot(epochs, val_loss, 'r', label='Validation Loss')
+    plt.title('Training and Validation Loss')
+    plt.xlabel('Epochs')
+    plt.ylabel('Loss')
+    plt.legend()
+    plt.savefig(f'plots/loss/loss_{now}.png')
+    plt.show()
+
+
+def plot_prediction_vs_real(predicted, real):
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    distance = np.linalg.norm(predicted - real)
+    ax.scatter(predicted[0], predicted[1], predicted[2], color='red', label='Predicted')
+    ax.scatter(real[0], real[1], real[2], color='blue', label='Real')
+    ax.text((predicted[0] + real[0]) / 2, (predicted[1] + real[1]) / 2, (predicted[2] + real[2]) / 2,
+        f'Distance: {distance:.2f}', color='black')
+    ax.set_xlabel('X')
+    ax.set_ylabel('Y')
+    ax.set_zlabel('Z')
+    ax.set_title('3D Scatter Plot')
+    ax.legend()
+    plt.show()
+
+
+
+def plot_xyz(X_xyz, Y_xyz, e_id):
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    
+    for waypoint in X_xyz[e_id]:
+        x, y, z = waypoint[0], waypoint[1], waypoint[2]
+        ax.scatter(x, y, z, color='red', label='X[e_id]')
+
+    x, y, z = Y_xyz[e_id][0], Y_xyz[e_id][1], Y_xyz[e_id][2]
+    ax.scatter(x, y, z, color='blue', label='Y[e_id]')
+
+    ax.set_xlabel('x')
+    ax.set_ylabel('y')
+    ax.set_zlabel('z')
+    plt.show()
