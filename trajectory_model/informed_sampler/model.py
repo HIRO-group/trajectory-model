@@ -5,21 +5,26 @@ from tensorflow.keras.models import Model, Sequential
 import tensorflow as tf
 
 
+np.random.seed(42)
+tf.random.set_seed(42) 
+# random.seed(42)
+
 class PositionalEnconding(Layer):
     def __init__(self, max_traj_steps, embed_dim) -> None:
         super(PositionalEnconding, self).__init__()
         self.max_traj_steps = max_traj_steps
         self.embed_dim = embed_dim
-    
+
     def call(self, inputs):
-        pos_encoding = self.positional_encoding(self.max_traj_steps, self.embed_dim)
+        pos_encoding = self.positional_encoding(
+            self.max_traj_steps, self.embed_dim)
         inputs = inputs + pos_encoding[:, :, :]
         return inputs
 
-    def positional_encoding(self, positions, d): 
+    def positional_encoding(self, positions, d):
         angle_rads = self.get_angles(np.arange(positions)[:, np.newaxis],
-                                    np.arange(d)[np.newaxis, :],
-                                    d)
+                                     np.arange(d)[np.newaxis, :],
+                                     d)
         angle_rads[:, 0::2] = np.sin(angle_rads[:, 0::2])
         angle_rads[:, 1::2] = np.cos(angle_rads[:, 1::2])
         pos_encoding = angle_rads[np.newaxis, ...]
@@ -27,7 +32,7 @@ class PositionalEnconding(Layer):
 
     def get_angles(self, pos, k, d):
         i = k // 2
-        angles = pos/(np.power(10000,2*i/d))
+        angles = pos/(np.power(10000, 2*i/d))
         return angles
 
 
@@ -36,7 +41,7 @@ class TransformerBlock(Layer):
         super(TransformerBlock, self).__init__()
         self.att = MultiHeadAttention(num_heads=num_heads, key_dim=embed_dim)
         self.ffn = Sequential(
-            [Dense(ff_dim, activation="relu"), 
+            [Dense(ff_dim, activation="sigmoid"),
              Dense(embed_dim),]
         )
         self.layernorm1 = LayerNormalization(epsilon=1e-6)
@@ -54,19 +59,40 @@ class TransformerBlock(Layer):
 
 
 class PositionSampler(Model):
-    def __init__(self, max_num_waypoints, waypoints_embed_dim, num_heads, ff_dim, dropout_rate=0.1, name="PositionSampler", **kwargs) -> None:
+    def __init__(self, max_num_waypoints, waypoints_embed_dim, name="PositionSampler", **kwargs) -> None:
         super(PositionSampler, self).__init__(name=name, **kwargs)
+
+        num_heads, ff_dim = 8, 8
+        tf_block_dropout = 0.1
+        dropout1 = 0.05
+        dropout2 = 0.01
+
         self.position_encoding = PositionalEnconding(max_num_waypoints, waypoints_embed_dim)
-        self.transformer_block = TransformerBlock(waypoints_embed_dim, num_heads, ff_dim, dropout_rate)
-        self.pooling = GlobalAveragePooling1D()
+        self.transformer_block = TransformerBlock(waypoints_embed_dim, num_heads=num_heads,
+                                                  ff_dim=ff_dim, dropout_rate=tf_block_dropout)
         self.layernorm = LayerNormalization(epsilon=1e-6)
-        self.dropout1 = Dropout(dropout_rate)
-        self.dense1 = Dense(waypoints_embed_dim, activation="relu")
+        self.layernorm2 = LayerNormalization(epsilon=1e-6)
+
+        self.pooling = GlobalAveragePooling1D()
+        self.dropout1 = Dropout(dropout1)
+        self.dense1 = Dense(waypoints_embed_dim-1, activation="linear")
+
+        self.dropout2 = Dropout(dropout2)
+        self.dense2 = Dense(waypoints_embed_dim-1, activation="linear")
 
     def call(self, inputs):
         x = self.position_encoding(inputs)
+
         x = self.transformer_block(x)
+        x = self.transformer_block(x)
+        x = self.transformer_block(x)
+        # x = self.transformer_block(x)
+        x = self.layernorm(x)
         x = self.pooling(x)
         x = self.dropout1(x)
+        # x = self.layernorm2(x)
         x = self.dense1(x)
+
+        # x = self.dropout2(x)
+        # x = self.dense2(x)
         return x

@@ -80,7 +80,7 @@ def process_data():
     X, Y = read_from_mocap_file()
     X = change_trajectory_length(X) # removes timestamp
     X, Y = store_only_non_spill_trajectory(X, Y)
-    X = transform_trajectory(X) # why is this making it worse?
+    X = transform_trajectory(X)
     X, Y = add_equivalent_quaternions(X, Y)
     X = select_waypoints(X)
     X, Y = prepare_model_input(X)

@@ -104,6 +104,7 @@ def transform_trajectory(X):
         xyz = X[e_id, :, 0:3]
         xyz = xyz - X[e_id, 0, 0:3]
         X[e_id, :, 0:3] = xyz
+
     return X
 
 
