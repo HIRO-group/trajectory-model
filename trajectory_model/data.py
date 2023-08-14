@@ -33,16 +33,25 @@ def get_position_wp_data(manual=False):
     X_cup = X_wp[:, :, 7:8] # to get only cup data
     X = np.concatenate((X_pos, X_cup), axis=2)
 
-    mean_X = np.mean(X, axis=(0, 1), keepdims=True)
-    std_X = np.std(X, axis=(0, 1), keepdims=True)
-    mean_Y = np.mean(Y, axis=0, keepdims=True)
-    std_Y = np.std(Y, axis=0, keepdims=True)
+    # mean_X = np.mean(X, axis=(0, 1), keepdims=True)
+    # std_X = np.std(X, axis=(0, 1), keepdims=True)
+    # mean_Y = np.mean(Y, axis=0, keepdims=True)
+    # std_Y = np.std(Y, axis=0, keepdims=True)
 
-    X = (X - mean_X) / std_X
-    Y = (Y - mean_Y) / std_Y
+    # X = (X - mean_X) / std_X
+    # Y = (Y - mean_Y) / std_Y
 
     X_train, Y_train, X_val, Y_val = get_train_and_val_set(X, Y, manual=manual)
     return X_train, Y_train, X_val, Y_val, X, Y
+
+
+def get_orientation_wp_data(manual=False):
+    X_wp, Y_wp = process_data_wp()
+    X_ori = X_wp[:, :, 3:8] # to get only orientation data + cup data
+    Y = Y_wp[:, 3:7]
+    X = X_ori # Should I put x,y in this or not?
+    return X, Y
+
 
 def get_data():
     X, Y = process_data()

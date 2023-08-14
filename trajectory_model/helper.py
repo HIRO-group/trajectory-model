@@ -198,3 +198,9 @@ def plot_xyz(X_xyz, Y_xyz, e_id):
     ax.set_ylabel('y')
     ax.set_zlabel('z')
     plt.show()
+
+
+def ctime_str():
+    dt = datetime.now()
+    now = dt.strftime("%H:%M:%S")
+    return now

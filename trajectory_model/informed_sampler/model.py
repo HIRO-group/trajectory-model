@@ -70,8 +70,8 @@ class PositionSampler(Model):
         self.position_encoding = PositionalEnconding(max_num_waypoints, waypoints_embed_dim)
         self.transformer_block = TransformerBlock(waypoints_embed_dim, num_heads=num_heads,
                                                   ff_dim=ff_dim, dropout_rate=tf_block_dropout)
-        self.layernorm = LayerNormalization(epsilon=1e-6)
-        self.layernorm2 = LayerNormalization(epsilon=1e-6)
+        # self.layernorm = LayerNormalization(epsilon=1e-6)
+        # self.layernorm2 = LayerNormalization(epsilon=1e-6)
 
         self.pooling = GlobalAveragePooling1D()
         self.dropout1 = Dropout(dropout1)
@@ -80,8 +80,8 @@ class PositionSampler(Model):
         self.dropout2 = Dropout(dropout2)
         self.dense2 = Dense(waypoints_embed_dim-1, activation="linear")
 
-        self.dropout3 = Dropout(dropout2)
-        self.dense3 = Dense(waypoints_embed_dim-1, activation="linear")
+        # self.dropout3 = Dropout(dropout2)
+        # self.dense3 = Dense(waypoints_embed_dim-1, activation="linear")
 
     def call(self, inputs):
         x = self.position_encoding(inputs)
@@ -107,3 +107,9 @@ class PositionSampler(Model):
         # x = self.dense3(x)
 
         return x
+
+
+class OrientationSampler(Model):
+    def __init__(self, max_num_waypoints, waypoints_embed_dim, name="OrientationSampler", **kwargs) -> None:
+        super(OrientationSampler, self).__init__(name=name, **kwargs)
+        pass

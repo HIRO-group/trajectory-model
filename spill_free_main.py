@@ -18,7 +18,7 @@ if __name__ == '__main__':
         eval_val = model.evaluate(x_val, y_val, verbose=2)
         acc_val, loss_val = eval_val[1], eval_val[0]
         training_data_num = x_train.shape[0]
-        model.save_weights(f'weights/acc_{round(acc_val, 2)}_loss_{round(loss_val, 2)}_data_num_{training_data_num}_epochs_{epochs}.h5')
+        model.save_weights(f'weights/spill_free/acc_{round(acc_val, 2)}_loss_{round(loss_val, 2)}_data_num_{training_data_num}_epochs_{epochs}.h5')
 
         eval_tr = model.evaluate(x_train, y_train, verbose=2)
         acc_tr, loss_tr = eval_tr[1],  eval_tr[0]
@@ -28,7 +28,7 @@ if __name__ == '__main__':
         print(f'Saved model to disk.')
     else:
         model.build((None, MAX_TRAJ_STEPS, EMBED_DIM))
-        model.load_weights("weights/predict_class_real_data_latest.h5")
+        model.load_weights("weights/spill_free/predict_class_real_data_latest.h5")
         eval = model.evaluate(x_val, y_val, verbose=2)
         accuracy, loss = eval[1], eval[0]
         print(f'Loded model from disk. accuracy: {round(accuracy, 2)}, loss: {round(loss, 2)}.')
