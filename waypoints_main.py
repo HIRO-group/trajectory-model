@@ -1,5 +1,4 @@
 import numpy as np
-from datetime import datetime
 from trajectory_model.data import get_position_wp_data
 from trajectory_model.informed_sampler.model import PositionSampler
 from trajectory_model.informed_sampler.constants import EMBED_DIM_POS, MAX_NUM_WAYPOINTS
@@ -14,7 +13,7 @@ if __name__ == "__main__":
     model.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy'])
     
     if fit_model:
-        epochs = 5000
+        epochs = 100
         history = model.fit(x_train, y_train, 
                         batch_size=32, epochs=epochs, 
                         validation_data=(x_val, y_val)

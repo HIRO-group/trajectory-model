@@ -3,11 +3,15 @@ from tensorflow.keras.layers import MultiHeadAttention, LayerNormalization, Drop
     Layer, Dense, GlobalAveragePooling1D, Dense
 from tensorflow.keras.models import Model, Sequential
 import tensorflow as tf
+import os
+import random
 
+seed_value= 0
 
-np.random.seed(42)
-tf.random.set_seed(42) 
-# random.seed(42)
+np.random.seed(seed_value)
+tf.random.set_seed(seed_value)
+random.seed(seed_value)
+os.environ['PYTHONHASHSEED']=str(seed_value)
 
 class PositionalEnconding(Layer):
     def __init__(self, max_traj_steps, embed_dim) -> None:
