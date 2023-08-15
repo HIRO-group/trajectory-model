@@ -50,9 +50,25 @@ def get_orientation_wp_data(manual=False):
 
     # X should be (pos, a, b, c, w, cup_type) for now
     # Y should be (a, b, c, w)
-    
     X = X_wp[:, :, :]
     Y = Y_wp[:, 3:7]
+
+    X_new = np.zeros((X.shape[0], X.shape[1], X.shape[2]))
+
+    for e_id in range(X.shape[0]):
+        embedding = X[e_id, :, :]
+        all_zero_indices = np.where(np.all(embedding == 0, axis=1))
+        if len(all_zero_indices[0]) == 0:
+            continue
+        
+        # The last orientation should be 0
+        first_non_zero_index = all_zero_indices[0][0] - 1
+        X_new[e_id, 0:first_non_zero_index, :] = embedding[0:first_non_zero_index, :]
+        X_new[e_id, first_non_zero_index, 0:3] = embedding[first_non_zero_index, 0:3]
+        X_new[e_id, first_non_zero_index, 3:7] = 0
+        X_new[e_id, first_non_zero_index, 7] = embedding[first_non_zero_index, 7]
+
+    X = X_new
 
     mean_X = np.mean(X, axis=(0, 1), keepdims=True)
     std_X = np.std(X, axis=(0, 1), keepdims=True)

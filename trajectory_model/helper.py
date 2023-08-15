@@ -209,14 +209,19 @@ def ctime_str():
 
 
 class SaveBestAccuracy(tf.keras.callbacks.Callback):
+    def __init__(self, file_address="best"):
+        super().__init__()
+        self.file_address = file_address
+
     def on_train_begin(self, logs=None):
         self.val_acc = []
+
     def on_epoch_end(self, epoch, logs=None):
         min_epoch = 0
         current_val_acc = logs.get("val_accuracy")
         self.val_acc.append(logs.get("val_accuracy"))
-        if current_val_acc >= max(self.val_acc) and current_val_acc >= 0.85:
+        if current_val_acc >= max(self.val_acc) and current_val_acc >= 0.87:
             min_epoch = epoch
             print(f'Found best accuracy. Saving entire model. Epoch: {min_epoch}')
             print('Val accuracy: ', current_val_acc, ', Train accuracy: ', logs.get("accuracy"))
-            self.model.save_weights(f'weights/best/best_val_acc_{current_val_acc}_train_acc_{logs.get("accuracy")}.h5')
+            self.model.save_weights(f'weights/{self.file_address}/epoch_{min_epoch}_best_val_acc_{round(current_val_acc, 2)}_train_acc_{round(logs.get("accuracy"),2)}.h5')

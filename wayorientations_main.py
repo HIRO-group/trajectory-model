@@ -6,7 +6,7 @@ from trajectory_model.helper import SaveBestAccuracy, plot_loss_function, plot_p
 
 
 if __name__ == "__main__":
-    fit_model = False
+    fit_model = True
     x_train, y_train, x_val, y_val, X, Y = get_orientation_wp_data(manual=True)
 
     model = OrientationSampler(max_num_waypoints=MAX_NUM_WAYPOINTS,
@@ -17,7 +17,7 @@ if __name__ == "__main__":
 
     if fit_model:
         epochs = 5000
-        custom_cb = SaveBestAccuracy()
+        custom_cb = SaveBestAccuracy("orientation_sampler")
         history = model.fit(x_train, y_train,
                             batch_size=32, epochs=epochs,
                             validation_data=(x_val, y_val),

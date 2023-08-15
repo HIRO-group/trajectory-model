@@ -15,7 +15,7 @@ if __name__ == "__main__":
 
     if fit_model:
         epochs = 6000
-        custom_cb = SaveBestAccuracy()
+        custom_cb = SaveBestAccuracy("position_sampler")
         history = model.fit(x_train, y_train,
                             batch_size=32, epochs=epochs,
                             validation_data=(x_val, y_val),
@@ -49,7 +49,7 @@ if __name__ == "__main__":
 
     else:
         model.build((None, MAX_NUM_WAYPOINTS, EMBED_DIM_POS_X))
-        model.load_weights("weights/position_sampler/best_18:11:26.h5")
+        model.load_weights("weights/position_sampler/val_0.89_train_0.92.h5")
         eval = model.evaluate(x_val, y_val, verbose=2)
         accuracy, loss = eval[1], eval[0]
 
