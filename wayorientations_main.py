@@ -2,10 +2,11 @@ import numpy as np
 from trajectory_model.data import get_orientation_wp_data
 from trajectory_model.informed_sampler.model import OrientationSampler
 from trajectory_model.informed_sampler.constants import EMBED_DIM_ORIENTATION_X, EMBED_DIM_ORIENTATION_Y, MAX_NUM_WAYPOINTS
-from trajectory_model.helper import plot_loss_function, plot_prediction_vs_real, plot_xyz, ctime_str
+from trajectory_model.helper import SaveBestAccuracy, plot_loss_function, plot_prediction_vs_real, plot_xyz, ctime_str
+
 
 if __name__ == "__main__":
-    fit_model = True
+    fit_model = False
     x_train, y_train, x_val, y_val, X, Y = get_orientation_wp_data(manual=True)
 
     model = OrientationSampler(max_num_waypoints=MAX_NUM_WAYPOINTS,
@@ -16,9 +17,11 @@ if __name__ == "__main__":
 
     if fit_model:
         epochs = 5000
+        custom_cb = SaveBestAccuracy()
         history = model.fit(x_train, y_train,
                             batch_size=32, epochs=epochs,
-                            validation_data=(x_val, y_val)
+                            validation_data=(x_val, y_val),
+                            callbacks=[custom_cb],
                             )
         eval_val = model.evaluate(x_val, y_val, verbose=2)
         acc_val, loss_val = eval_val[1], eval_val[0]

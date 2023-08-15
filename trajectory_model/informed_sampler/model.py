@@ -41,11 +41,11 @@ class PositionalEnconding(Layer):
 
 
 class TransformerBlock(Layer):
-    def __init__(self, embed_dim, num_heads, ff_dim, dropout_rate=0.1):
+    def __init__(self, embed_dim, num_heads, ff_dim, dropout_rate=0.1, activation_func="relu"):
         super(TransformerBlock, self).__init__()
         self.att = MultiHeadAttention(num_heads=num_heads, key_dim=embed_dim)
         self.ffn = Sequential(
-            [Dense(ff_dim, activation="relu"),
+            [Dense(ff_dim, activation=activation_func),
              Dense(embed_dim),]
         )
         self.layernorm1 = LayerNormalization(epsilon=1e-6)
@@ -73,7 +73,8 @@ class PositionSampler(Model):
 
         self.position_encoding = PositionalEnconding(max_num_waypoints, embed_X)
         self.transformer_block = TransformerBlock(embed_X, num_heads=num_heads,
-                                                  ff_dim=ff_dim, dropout_rate=tf_block_dropout)
+                                                  ff_dim=ff_dim, dropout_rate=tf_block_dropout,
+                                                  activation_func="relu")
         # self.layernorm = LayerNormalization(epsilon=1e-6)
         # self.layernorm2 = LayerNormalization(epsilon=1e-6)
 
@@ -124,7 +125,21 @@ class OrientationSampler(Model):
         
         self.position_encoding = PositionalEnconding(max_num_waypoints, embed_X)
         self.transformer_block = TransformerBlock(embed_X, num_heads=num_heads,
-                                                  ff_dim=ff_dim, dropout_rate=tf_block_dropout)
+                                                  ff_dim=ff_dim, dropout_rate=tf_block_dropout,
+                                                  activation_func="relu")
         self.pooling = GlobalAveragePooling1D()
         self.dropout1 = Dropout(dropout1)
-        self.dense1 = Dense(embed_Y, activation="linear")
+        self.dense1 = Dense(embed_Y, activation="tanh")
+        self.dropout2 = Dropout(dropout2)
+        self.dense2 = Dense(embed_Y, activation="linear")
+    
+
+    def call(self, inputs):
+        x = self.position_encoding(inputs)
+        x = self.transformer_block(x)
+        x = self.pooling(x)
+        x = self.dropout1(x)
+        x = self.dense1(x)
+        x = self.dropout2(x)
+        x = self.dense2(x)
+        return x
