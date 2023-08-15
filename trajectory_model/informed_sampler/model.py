@@ -6,12 +6,12 @@ import tensorflow as tf
 import os
 import random
 
-seed_value= 0
+# seed_value= 0
 
-np.random.seed(seed_value)
-tf.random.set_seed(seed_value)
-random.seed(seed_value)
-os.environ['PYTHONHASHSEED']=str(seed_value)
+# np.random.seed(seed_value)
+# tf.random.set_seed(seed_value)
+# random.seed(seed_value)
+# os.environ['PYTHONHASHSEED']=str(seed_value)
 
 class PositionalEnconding(Layer):
     def __init__(self, max_traj_steps, embed_dim) -> None:
@@ -84,8 +84,8 @@ class PositionSampler(Model):
         self.dropout2 = Dropout(dropout2)
         self.dense2 = Dense(waypoints_embed_dim-1, activation="linear")
 
-        # self.dropout3 = Dropout(dropout2)
-        # self.dense3 = Dense(waypoints_embed_dim-1, activation="linear")
+        self.dropout3 = Dropout(dropout2)
+        self.dense3 = Dense(waypoints_embed_dim-1, activation="linear")
 
     def call(self, inputs):
         x = self.position_encoding(inputs)

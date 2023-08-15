@@ -2,6 +2,8 @@ from datetime import datetime
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.spatial.transform import Rotation as R
+import tensorflow as tf
+
 
 def rotate_vector(vector, rotation_matrix):
     return np.dot(rotation_matrix, vector)
@@ -204,3 +206,17 @@ def ctime_str():
     dt = datetime.now()
     now = dt.strftime("%H:%M:%S")
     return now
+
+
+class SaveBestAccuracy(tf.keras.callbacks.Callback):
+    def on_train_begin(self, logs=None):
+        self.val_acc = []
+    def on_epoch_end(self, epoch, logs=None):
+        min_epoch = 0
+        current_val_acc = logs.get("val_accuracy")
+        self.val_acc.append(logs.get("val_accuracy"))
+        if current_val_acc >= max(self.val_acc) and current_val_acc >= 0.85:
+            min_epoch = epoch
+            print(f'Found best accuracy. Saving entire model. Epoch: {min_epoch}')
+            print('Val accuracy: ', current_val_acc, ', Train accuracy: ', logs.get("accuracy"))
+            self.model.save_weights(f'weights/position_sampler/best_val_acc_{current_val_acc}_train_acc_{logs.get("accuracy")}.h5')
