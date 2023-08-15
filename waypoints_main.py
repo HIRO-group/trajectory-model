@@ -2,7 +2,7 @@ import numpy as np
 
 from trajectory_model.data import get_position_wp_data
 from trajectory_model.informed_sampler.model import PositionSampler
-from trajectory_model.informed_sampler.constants import EMBED_DIM_POS, MAX_NUM_WAYPOINTS
+from trajectory_model.informed_sampler.constants import EMBED_DIM_POS_X, EMBED_DIM_POS_Y, MAX_NUM_WAYPOINTS
 from trajectory_model.helper import SaveBestAccuracy, plot_loss_function, plot_prediction_vs_real, plot_xyz, ctime_str
 
 
@@ -10,7 +10,7 @@ if __name__ == "__main__":
     fit_model = True
     x_train, y_train, x_val, y_val, X, Y = get_position_wp_data(manual=False)
     model = PositionSampler(
-        max_num_waypoints=MAX_NUM_WAYPOINTS, waypoints_embed_dim=EMBED_DIM_POS)
+        max_num_waypoints=MAX_NUM_WAYPOINTS, embed_X=EMBED_DIM_POS_X, embed_Y=EMBED_DIM_POS_Y)
     model.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy'])
 
     if fit_model:
@@ -48,7 +48,7 @@ if __name__ == "__main__":
             f'Number of training data: {training_data_num}, epochs: {epochs}')
 
     else:
-        model.build((None, MAX_NUM_WAYPOINTS, EMBED_DIM_POS))
+        model.build((None, MAX_NUM_WAYPOINTS, EMBED_DIM_POS_X))
         model.load_weights("weights/position_sampler/best_18:11:26.h5")
         eval = model.evaluate(x_val, y_val, verbose=2)
         accuracy, loss = eval[1], eval[0]

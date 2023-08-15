@@ -63,7 +63,7 @@ class TransformerBlock(Layer):
 
 
 class PositionSampler(Model):
-    def __init__(self, max_num_waypoints, waypoints_embed_dim, name="PositionSampler", **kwargs) -> None:
+    def __init__(self, embed_X, embed_Y, max_num_waypoints, name="PositionSampler", **kwargs) -> None:
         super(PositionSampler, self).__init__(name=name, **kwargs)
 
         num_heads, ff_dim = 8, 8
@@ -71,21 +71,21 @@ class PositionSampler(Model):
         dropout1 = 0.05
         dropout2 = 0.05
 
-        self.position_encoding = PositionalEnconding(max_num_waypoints, waypoints_embed_dim)
-        self.transformer_block = TransformerBlock(waypoints_embed_dim, num_heads=num_heads,
+        self.position_encoding = PositionalEnconding(max_num_waypoints, embed_X)
+        self.transformer_block = TransformerBlock(embed_X, num_heads=num_heads,
                                                   ff_dim=ff_dim, dropout_rate=tf_block_dropout)
         # self.layernorm = LayerNormalization(epsilon=1e-6)
         # self.layernorm2 = LayerNormalization(epsilon=1e-6)
 
         self.pooling = GlobalAveragePooling1D()
         self.dropout1 = Dropout(dropout1)
-        self.dense1 = Dense(waypoints_embed_dim-1, activation="linear")
+        self.dense1 = Dense(embed_Y, activation="linear")
 
         self.dropout2 = Dropout(dropout2)
-        self.dense2 = Dense(waypoints_embed_dim-1, activation="linear")
+        self.dense2 = Dense(embed_Y, activation="linear")
 
         self.dropout3 = Dropout(dropout2)
-        self.dense3 = Dense(waypoints_embed_dim-1, activation="linear")
+        self.dense3 = Dense(embed_Y, activation="linear")
 
     def call(self, inputs):
         x = self.position_encoding(inputs)
@@ -114,6 +114,17 @@ class PositionSampler(Model):
 
 
 class OrientationSampler(Model):
-    def __init__(self, max_num_waypoints, waypoints_embed_dim, name="OrientationSampler", **kwargs) -> None:
+    def __init__(self, embed_X, embed_Y, max_num_waypoints, name="OrientationSampler", **kwargs) -> None:
         super(OrientationSampler, self).__init__(name=name, **kwargs)
-        pass
+        
+        num_heads, ff_dim = 8, 8
+        tf_block_dropout = 0.1
+        dropout1 = 0.05
+        dropout2 = 0.05
+        
+        self.position_encoding = PositionalEnconding(max_num_waypoints, embed_X)
+        self.transformer_block = TransformerBlock(embed_X, num_heads=num_heads,
+                                                  ff_dim=ff_dim, dropout_rate=tf_block_dropout)
+        self.pooling = GlobalAveragePooling1D()
+        self.dropout1 = Dropout(dropout1)
+        self.dense1 = Dense(embed_Y, activation="linear")

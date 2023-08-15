@@ -50,6 +50,9 @@ def get_orientation_wp_data(manual=False):
     X_ori = X_wp[:, :, 3:8] # to get only orientation data + cup data
     Y = Y_wp[:, 3:7]
     X = X_ori # Should I put x,y in this or not?
+    # X should be 
+
+
     return X, Y
 
 
