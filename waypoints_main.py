@@ -7,8 +7,8 @@ from trajectory_model.helper import SaveBestAccuracy, plot_loss_function, plot_p
 
 
 if __name__ == "__main__":
-    fit_model = True
-    x_train, y_train, x_val, y_val, X, Y = get_position_wp_data(manual=False)
+    fit_model = False
+    x_train, y_train, x_val, y_val, X, Y = get_position_wp_data(manual=True)
     model = PositionSampler(
         max_num_waypoints=MAX_NUM_WAYPOINTS, embed_X=EMBED_DIM_POS_X, embed_Y=EMBED_DIM_POS_Y)
     model.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy'])
@@ -40,12 +40,9 @@ if __name__ == "__main__":
 
         eval_tr = model.evaluate(x_train, y_train, verbose=2)
         acc_tr, loss_tr = eval_tr[1],  eval_tr[0]
-        print(
-            f'Training: accuracy: {round(acc_tr, 2)}, loss: {round(loss_tr, 2)}')
-        print(
-            f'Validation: accuracy: {round(acc_val, 2)}, loss: {round(loss_val, 2)}')
-        print(
-            f'Number of training data: {training_data_num}, epochs: {epochs}')
+        print(f'Training: accuracy: {round(acc_tr, 2)}, loss: {round(loss_tr, 2)}')
+        print(f'Validation: accuracy: {round(acc_val, 2)}, loss: {round(loss_val, 2)}')
+        print(f'Number of training data: {training_data_num}, epochs: {epochs}')
 
     else:
         model.build((None, MAX_NUM_WAYPOINTS, EMBED_DIM_POS_X))

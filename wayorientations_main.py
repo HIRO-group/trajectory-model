@@ -8,6 +8,7 @@ from trajectory_model.helper import SaveBestAccuracy, plot_loss_function, plot_p
 if __name__ == "__main__":
     fit_model = True
     x_train, y_train, x_val, y_val, X, Y = get_orientation_wp_data(manual=True)
+    # Should visualize the data here
 
     model = OrientationSampler(max_num_waypoints=MAX_NUM_WAYPOINTS,
                                embed_X=EMBED_DIM_ORIENTATION_X,
@@ -48,13 +49,13 @@ if __name__ == "__main__":
 
     else:
         model.build((None, MAX_NUM_WAYPOINTS, EMBED_DIM_ORIENTATION_X))
-        model.load_weights(
-            "weights/orientation_sampler/acc_0.85_loss_0.01_data_num_165_epochs_400.h5")
+        model.load_weights("weights/orientation_sampler/best_val_acc_0.9090909361839294_train_acc_0.8848484754562378.h5")
+        
         eval = model.evaluate(x_val, y_val, verbose=2)
         accuracy, loss = eval[1], eval[0]
-
         eval_tr = model.evaluate(x_train, y_train, verbose=2)
         accuracy_tr, loss_tr = eval_tr[1], eval_tr[0]
+        
         print("Loaded model from disk.")
         print(f'Validation accuracy: {round(accuracy, 2)}, loss: {round(loss, 2)}.')
         print(f'Training: accuracy: {round(accuracy_tr, 2)}, loss: {round(loss_tr, 2)}')

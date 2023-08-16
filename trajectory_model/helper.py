@@ -224,4 +224,4 @@ class SaveBestAccuracy(tf.keras.callbacks.Callback):
             min_epoch = epoch
             print(f'Found best accuracy. Saving entire model. Epoch: {min_epoch}')
             print('Val accuracy: ', current_val_acc, ', Train accuracy: ', logs.get("accuracy"))
-            self.model.save_weights(f'weights/{self.file_address}/epoch_{min_epoch}_best_val_acc_{round(current_val_acc, 2)}_train_acc_{round(logs.get("accuracy"),2)}.h5')
+            self.model.save_weights(f'weights/{self.file_address}/{ctime_str()}_epoch_{min_epoch}_best_val_acc_{round(current_val_acc, 2)}_train_acc_{round(logs.get("accuracy"),2)}.h5')

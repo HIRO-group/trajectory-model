@@ -6,12 +6,12 @@ import tensorflow as tf
 import os
 import random
 
-# seed_value= 0
+seed_value= 0
 
-# np.random.seed(seed_value)
-# tf.random.set_seed(seed_value)
-# random.seed(seed_value)
-# os.environ['PYTHONHASHSEED']=str(seed_value)
+np.random.seed(seed_value)
+tf.random.set_seed(seed_value)
+random.seed(seed_value)
+os.environ['PYTHONHASHSEED']=str(seed_value)
 
 class PositionalEnconding(Layer):
     def __init__(self, max_traj_steps, embed_dim) -> None:
@@ -119,14 +119,26 @@ class OrientationSampler(Model):
         super(OrientationSampler, self).__init__(name=name, **kwargs)
         
         num_heads, ff_dim = 8, 8
-        tf_block_dropout = 0.1
-        dropout1 = 0.05
+        tf_dropout1 = 0.1
+        tf_dropout2 = 0.1
+        tf_dropout3 = 0.1
+        dropout1 = 0.1
         dropout2 = 0.05
         
         self.position_encoding = PositionalEnconding(max_num_waypoints, embed_X)
-        self.transformer_block = TransformerBlock(embed_X, num_heads=num_heads,
-                                                  ff_dim=ff_dim, dropout_rate=tf_block_dropout,
+
+        self.transformer_block1 = TransformerBlock(embed_X, num_heads=num_heads,
+                                                  ff_dim=ff_dim, dropout_rate=tf_dropout1,
+                                                  activation_func="tanh")
+
+        self.transformer_block2 = TransformerBlock(embed_X, num_heads=num_heads,
+                                                  ff_dim=ff_dim, dropout_rate=tf_dropout2,
                                                   activation_func="relu")
+
+        self.transformer_block3 = TransformerBlock(embed_X, num_heads=num_heads,
+                                                  ff_dim=ff_dim, dropout_rate=tf_dropout3,
+                                                  activation_func="relu")
+                                                  
         self.pooling = GlobalAveragePooling1D()
         self.dropout1 = Dropout(dropout1)
         self.dense1 = Dense(embed_Y, activation="tanh")
@@ -136,10 +148,16 @@ class OrientationSampler(Model):
 
     def call(self, inputs):
         x = self.position_encoding(inputs)
-        x = self.transformer_block(x)
+        
+        x = self.transformer_block1(x)
+        x = self.transformer_block2(x)
+        x = self.transformer_block3(x)
+
         x = self.pooling(x)
+        
         x = self.dropout1(x)
         x = self.dense1(x)
+
         x = self.dropout2(x)
         x = self.dense2(x)
         return x
