@@ -1,3 +1,3 @@
-from .predict import spilled
-from .predict import sample_point
+from .classifier_predict import spilled
+from .sampler_predict import sample_state
 from .helper import quat_to_euler

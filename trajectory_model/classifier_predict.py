@@ -1,16 +1,12 @@
 import numpy as np
-import time
-
 from trajectory_model.spill_free.model import TrajectoryClassifier
 from trajectory_model.spill_free.constants import EMBED_DIM, NUM_HEADS, FF_DIM, MAX_TRAJ_STEPS
-from trajectory_model.helper import quat_to_euler, euler_to_quat
-
+from trajectory_model.helper import quat_to_euler, euler_to_quat, ctime_str
 
 model = TrajectoryClassifier(max_traj_steps=MAX_TRAJ_STEPS, embed_dim=EMBED_DIM, num_heads=NUM_HEADS, ff_dim=FF_DIM)
 model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
 model.build((None, MAX_TRAJ_STEPS, EMBED_DIM))
-# model.load_weights("/home/ava/npm/trajectory-model/weights/acc_0.9_loss_0.32_data_num_186_epochs_80.h5")
-
+model.load_weights("/home/ava/projects/trajectory-model/weights/spill_classifier/acc_0.9_loss_0.32_data_num_186_epochs_80.h5")
 
 def convert_to_model_input(trajectory):
     step_size = int(len(trajectory) / MAX_TRAJ_STEPS)
@@ -34,7 +30,7 @@ def rotate(trajectory):
     phi_theta_psi = phi_theta_psi - phi_theta_psi[0] + np.array(([-0.4661262, 2.1714807, -4.0390808])) # shape: (T, 3)
     abcw = euler_to_quat(phi_theta_psi) # shape: (T, 4)
     trajectory[0, :, 3:7] = abcw
-    return trajectory    
+    return trajectory
 
 
 def transform_trajectory(trajectory):
@@ -44,8 +40,8 @@ def transform_trajectory(trajectory):
 
 
 def save_trajectory(trajectory, prediction):
-    name = f'data_{round(prediction, 2)}_{time.time()}'
-    path = f'/home/ava/npm/trajectory-model/data/panda_ompl/{name}'
+    name = f'data_{round(prediction, 2)}_{ctime_str()}'
+    path = f'/home/ava/projects/trajectory-model/data/panda_ompl/{name}'
     trajectory = trajectory.reshape(MAX_TRAJ_STEPS, EMBED_DIM)
     np.savetxt(path, trajectory, delimiter=',')
     print(f'successfully saved to file: {name}')
@@ -55,12 +51,7 @@ def spilled(trajectory):
     trajectory = convert_to_model_input(trajectory)
     trajectory = transform_trajectory(trajectory)
     prediction = model.predict(trajectory)[0][0]   
-    print("Prediction in python function:", prediction)
+    # print("Prediction in python function:", prediction)
     # save_trajectory(trajectory, prediction)
     return prediction
  
-
-def sample_point(points_so_far):
-    print("points so far:", points_so_far)
-    # sample in cartesian space
-    return [0.5295887589454651,-0.16105137765407562,0.296753466129303,0.004732200410217047,-0.018793363124132156,0.03531074523925781,-0.9991884827613831]
