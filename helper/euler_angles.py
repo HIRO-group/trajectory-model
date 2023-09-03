@@ -1,28 +1,12 @@
 from scipy.spatial.transform import Rotation as R
-import numpy as np
-import struct
-
 import matplotlib.pyplot as plt
 
-
-def read_vectors(filename):
-    vectors = []
-    
-    with open(filename, 'rb') as f:
-        # Read the number of vectors
-        num_vectors = struct.unpack('Q', f.read(8))[0]
-        
-        # Read each vector
-        for _ in range(num_vectors):
-            vector = [struct.unpack('d', f.read(8))[0] for _ in range(7)] 
-            vectors.append(vector)
-            
-    return vectors
-
+from read import read_vectors
 
 # file_name = '01-09-2023 13-42-14'
 # file_name = '01-09-2023 13-58-43'
 file_name = "01-09-2023 14-09-56"
+
 file_path = '/home/ava/projects/assets/cartesian/'+file_name+'/cartesian_positions.bin'
 vectors = read_vectors(file_path)
 rolls, pitches, yaws = [], [], []
@@ -36,7 +20,6 @@ for pos in vectors:
     rolls.append(roll)
     pitches.append(pitch)
     yaws.append(yaw)
-
 
 
 plt.subplot(3, 1, 1)
@@ -55,5 +38,5 @@ plt.xlabel('Sample')
 plt.tight_layout()
 
 
-plt.savefig('plots/angles/{file_name}.png'.format(file_name=file_name), dpi=300)
+# plt.savefig('plots/angles/{file_name}.png'.format(file_name=file_name), dpi=300)
 plt.show()

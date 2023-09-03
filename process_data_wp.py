@@ -45,8 +45,6 @@ def select_waypoints(X):
             continue
         last_non_zero_index = all_zero_indices[0][0] - 1
         X_new[e_id, last_non_zero_index + 1:, :] = X_new[e_id, last_non_zero_index, :]
-
-    
     return X_new
 
 
