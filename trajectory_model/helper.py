@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.spatial.transform import Rotation as R
 import tensorflow as tf
+from mpl_toolkits.mplot3d import Axes3D
 
 
 def rotate_vector(vector, rotation_matrix):
@@ -26,6 +27,7 @@ def calculate_endpoint(start, a, b, c, d):
     rotation_matrix = R.from_quat([a, b, c, d]).as_matrix()
     unit_vector = np.array([0, 0, 1])
     endpoint = rotate_vector(unit_vector, rotation_matrix)
+    # print("endpoint in here: ", endpoint)
     return start + endpoint
 
 
