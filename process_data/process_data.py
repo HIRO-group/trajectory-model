@@ -136,4 +136,5 @@ if __name__ == "__main__":
     X, Y = process_data()
     # print(X[0, 0, :])
     # print(X[1, 0, :])
-    plot_X(X, 8, 0.01)
+    plot_X(X, 0, 1)
+    print("here: ", X[0, 0, :])

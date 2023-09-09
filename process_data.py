@@ -2,15 +2,22 @@ import os
 import csv
 import numpy as np
 from trajectory_model.spill_free.constants import MAX_TRAJ_STEPS, EMBED_DIM, DT
+from trajectory_model.helper import plot_X
+
 
 DIR_PREFIX = '/home/ava/projects/trajectory-model/data/mocap_new/'
 
 # nospill, spill, radius, height, fill_level
+
+BIG_RADIUS = 3
+BIG_HEIGHT = 4
+SMALL_RADIUS = 1.8
+SMALL_HEIGHT = 5
 FILE_NAMES_NOSPILL_SPILL = \
-    [("big/full/spill-free/", "big/full/spilled/", 3, 4, 0.8),
-        ("big/half-full/spill-free/", "big/half-full/spilled/", 3, 4, 0.3),
-        ("small/full/spill-free/", "small/full/spilled/", 1.8, 5, 0.8),
-        ("small/half-full/spill-free/", "small/half-full/spilled/", 1.8, 5, 0.5)]
+    [("big/full/spill-free/", "big/full/spilled/", BIG_RADIUS, BIG_HEIGHT, 0.8),
+        ("big/half-full/spill-free/", "big/half-full/spilled/", BIG_RADIUS, BIG_HEIGHT, 0.3),
+        ("small/full/spill-free/", "small/full/spilled/", SMALL_RADIUS, SMALL_HEIGHT, 0.8),
+        ("small/half-full/spill-free/", "small/half-full/spilled/", SMALL_RADIUS, SMALL_HEIGHT, 0.5)]
 
 
 def read_a_file(file_path, radius, height, fill_level):
@@ -24,20 +31,30 @@ def read_a_file(file_path, radius, height, fill_level):
             a, b, c, d = np.float64(keys[4]), np.float64(keys[5]), np.float64(keys[6]), np.float64(keys[7])
             embedding = np.array([[x, y, z, a, b, c, d, radius, height, fill_level]])
             X[0, trajectory_index, :] = embedding
+            # print("embedding: ", embedding)
             trajectory_index += 1
-
-    X = X[0, 0:10000:DT, :]
-    X = X[0, 0:MAX_TRAJ_STEPS, :]
+    # print("1) X here: ", X[0:3, :, :])
+    # input()
+    X = X[:, 0:10000:DT, :]
+    # print("2)X here: ", X[0:3, :, :])
+    # input()
+    X = X[:, 0:MAX_TRAJ_STEPS, :]
+    # print("3)X here: ", X[0:3, :, :])
+    # input()
     return X
 
 
 def read_a_directory(directory_path, radius, height, fill_level):
-    X = np.zeros((1, MAX_TRAJ_STEPS, EMBED_DIM), dtype=np.float64)
+    X = np.zeros((0, MAX_TRAJ_STEPS, EMBED_DIM), dtype=np.float64)
     files = os.listdir(directory_path)
     for file in files:
         file_path = directory_path + file
         X_new = read_a_file(file_path, radius, height, fill_level) # single traj
+        # print("X-new: ",  X_new[0:3, :, :])
+        # input()
         X = np.concatenate((X, X_new), axis=0)
+        # print(" X is: ", X[0:3, :, :])
+        # input()
     return X
 
 
@@ -56,8 +73,8 @@ def handle_spill(spill_file, radius, height, fill_level):
 
 
 def read_from_files():
-    X = np.zeros((1, MAX_TRAJ_STEPS, EMBED_DIM), dtype=np.float64)
-    Y = np.zeros((1, 1))
+    X = np.zeros((0, MAX_TRAJ_STEPS, EMBED_DIM), dtype=np.float64)
+    Y = np.zeros((0, 1))
 
     for row in FILE_NAMES_NOSPILL_SPILL:
         nospill_file, spill_file = row[0], row[1]
@@ -138,12 +155,22 @@ def add_reverse_X(X, Y):
     X_new = np.zeros((2 * X.shape[0], MAX_TRAJ_STEPS, EMBED_DIM), dtype=np.float64)
     Y_new = np.zeros((2 * X.shape[0], 1), dtype=np.float64)
     for e_id in range(X.shape[0]):
-        for i in range(1, X.shape[1]):
-            X_new[2 * e_id, i, 0:3] = X[e_id, i, 0:3]
-            X_new[2 * e_id + 1, i, 0:3] = - X[e_id, i, 0:3]
-            
-            Y_new[2 * e_id] = Y[e_id]
-            Y_new[2 * e_id + 1] = Y[e_id]
+        X_new[2 * e_id, :, :] = X[e_id, :, :]
+        Y_new[2 * e_id] = Y[e_id]
+
+        X_new[2 * e_id + 1, :, 0:3] = - X[e_id, :, 0:3]
+        X_new[2 * e_id + 1, :, 3:] = X[e_id, :, 3:]
+        
+        Y_new[2 * e_id + 1] = Y[e_id]
+    return X_new, Y_new
+
+
+def round_down_orientation_and_pos(X):
+    for e_id in range(X.shape[0]):
+        for i in range(X.shape[1]):
+            X[e_id, i, 0:3] = np.round(X[e_id, i, 0:3], 2)
+            X[e_id, i, 3:7] = np.round(X[e_id, i, 3:7], 2)
+    return X
 
 
 def process_data():
@@ -151,10 +178,27 @@ def process_data():
     X = copy_last_non_zero_value(X)
     X = transform_trajectory(X)
     X, Y = add_equivalent_quaternions(X, Y)
-    X, Y = add_partial_trajectory(X, Y)
-    X = add_delta_X(X)
+    X = round_down_orientation_and_pos(X)
+    # X, Y = add_partial_trajectory(X, Y)
+    # # X = add_delta_X(X)
     X, Y = add_reverse_X(X, Y)
+    return X, Y
 
 
 if __name__ == "__main__":
     X, Y = process_data()
+#     print("X.shape:", X.shape)
+#     print("Y.shape:", Y.shape)
+#     print("here: ", X[0, :, :])
+
+#     plot_X(X, 0, 0.1)
+
+#     # w/o reverse:  [[ 0.    0.    0.   ...  3.    4.    0.8 ]
+# #  [-0.   -0.    0.   ...  3.    4.    0.8 ]
+# #  [-0.   -0.    0.   ...  3.    4.    0.8 ]
+# #  ...
+# #  [-0.69  0.05 -0.15 ...  3.    4.    0.8 ]
+# #  [-0.69  0.05 -0.15 ...  3.    4.    0.8 ]
+# #  [-0.69  0.05 -0.15 ...  3.    4.    0.8 ]]
+    
+

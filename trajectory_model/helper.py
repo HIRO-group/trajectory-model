@@ -2,7 +2,6 @@ from datetime import datetime
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.spatial.transform import Rotation as R
-import tensorflow as tf
 from mpl_toolkits.mplot3d import Axes3D
 
 
@@ -10,14 +9,14 @@ def rotate_vector(vector, rotation_matrix):
     return np.dot(rotation_matrix, vector)
 
 
-def quat_to_euler(quaternions):
+def quat_to_euler(quaternions, degrees=True):
     rot = R.from_quat(quaternions)
-    rot_euler = rot.as_euler('xyz', degrees=True)
+    rot_euler = rot.as_euler('xyz', degrees=degrees)
     return rot_euler
 
 
-def euler_to_quat(euler_angles):
-    rot = R.from_euler('xyz', euler_angles, degrees=True)
+def euler_to_quat(euler_angles, degrees=True):
+    rot = R.from_euler('xyz', euler_angles, degrees=degrees)
     rot_quat = rot.as_quat()
     return rot_quat
 
@@ -208,21 +207,22 @@ def ctime_str():
     return now
 
 
-class SaveBestAccuracy(tf.keras.callbacks.Callback):
-    def __init__(self, file_address="best"):
-        super().__init__()
-        self.file_address = file_address
+# import tensorflow as tf
+# class SaveBestAccuracy(tf.keras.callbacks.Callback):
+#     def __init__(self, file_address="best"):
+#         super().__init__()
+#         self.file_address = file_address
 
-    def on_train_begin(self, logs=None):
-        self.val_acc = []
+#     def on_train_begin(self, logs=None):
+#         self.val_acc = []
 
-    def on_epoch_end(self, epoch, logs=None):
-        min_epoch = 0
-        current_train_acc = logs.get("accuracy")
-        current_val_acc = logs.get("val_accuracy")
-        self.val_acc.append(logs.get("val_accuracy"))
-        if current_val_acc >= max(self.val_acc) and current_val_acc >= 0.87 and current_train_acc >= 0.87:
-            min_epoch = epoch
-            print(f'Found best accuracy. Saving entire model. Epoch: {min_epoch}')
-            print('Val accuracy: ', current_val_acc, ', Train accuracy: ', current_train_acc)
-            self.model.save_weights(f'weights/{self.file_address}/{ctime_str()}_epoch_{min_epoch}_best_val_acc_{round(current_val_acc, 2)}_train_acc_{round(current_train_acc, 2)}.h5')
+#     def on_epoch_end(self, epoch, logs=None):
+#         min_epoch = 0
+#         current_train_acc = logs.get("accuracy")
+#         current_val_acc = logs.get("val_accuracy")
+#         self.val_acc.append(logs.get("val_accuracy"))
+#         if current_val_acc >= max(self.val_acc) and current_val_acc >= 0.87 and current_train_acc >= 0.87:
+#             min_epoch = epoch
+#             print(f'Found best accuracy. Saving entire model. Epoch: {min_epoch}')
+#             print('Val accuracy: ', current_val_acc, ', Train accuracy: ', current_train_acc)
+#             self.model.save_weights(f'weights/{self.file_address}/{ctime_str()}_epoch_{min_epoch}_best_val_acc_{round(current_val_acc, 2)}_train_acc_{round(current_train_acc, 2)}.h5')
