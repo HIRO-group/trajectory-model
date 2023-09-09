@@ -23,11 +23,9 @@ def euler_to_quat(euler_angles):
 
 
 def calculate_endpoint(start, a, b, c, d):
-    # print("a, b, c, d: ", a, b, c, d)
     rotation_matrix = R.from_quat([a, b, c, d]).as_matrix()
     unit_vector = np.array([0, 0, 1])
     endpoint = rotate_vector(unit_vector, rotation_matrix)
-    # print("endpoint in here: ", endpoint)
     return start + endpoint
 
 

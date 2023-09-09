@@ -10,24 +10,38 @@ LICENSE file.
 """
 
 from __future__ import print_function
-
 import argparse
 import time
-
+from datetime import datetime
 import attr
 import natnet
 import csv
 import atexit
-import numpy as np
 
-from constants import EXPERIMENTS_DATA_DIR, EXPERIMENTS_E_ID, TRAJECTORY_DURATION
+DIR_PREFIX = '/home/ava/projects/trajectory-model/data/mocap_new/'
+# file_name = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+file_name = "tilt_towards_from_ava"
 
-csvfile = open(EXPERIMENTS_DATA_DIR, '+a', newline='\n')
-writer = csv.writer(csvfile)
+
+## small/big  full/half-full  spill-free/spilled
+
+# DIR_PATH = DIR_PREFIX + 'small/full/spilled/'
+
+DIR_PATH = DIR_PREFIX
+
+file_path = DIR_PATH + file_name + '.csv'
+collected_data = []
 
 def exit_handler():
-    print('Closing file...')
-    csvfile.close()
+    inp = int(input("save file? 1 or 0\n"))
+    if inp == 1:
+        with open(file_path, 'w', newline='') as csv_file:
+            csv_writer = csv.writer(csv_file)
+            for row in collected_data:
+                csv_writer.writerow(row)
+        print("File saved to ", file_path)
+    else:
+        print("File not saved")
 
 atexit.register(exit_handler)
 
@@ -51,21 +65,19 @@ class ClientApp(object):
         self._client.spin()
 
     def callback(self, rigid_bodies, skeletons, markers, timing):
-        experiment_id = EXPERIMENTS_E_ID
-        if time.time() - self.start_time > TRAJECTORY_DURATION:
-            print(f"Time has passed more than {TRAJECTORY_DURATION} seconds")
-        elif rigid_bodies:
+        if rigid_bodies:
             for r in rigid_bodies:
                 x, y, z = r.position
                 a, b, c, d = r.orientation
-                timestamp = timing.timestamp        
-                print("Recieved: ", experiment_id, timestamp, x, y, z, a, b, c, d)
-                writer.writerow([experiment_id, timestamp, x, y, z, a, b, c, d])
+                timestamp = timing.timestamp
+                print("recieving data (x, y, z, a, b, c, d): ", x, y, z, a, b, c, d)
+                collected_data.append([timestamp, x, y, z, a, b, c, d])
+
 
 def main():
     try:
-        time.sleep(3)
-        print("starting now ...")
+        # time.sleep(1)
+        print("Starting now ...")
         app = ClientApp.connect()
         app.run()
     
