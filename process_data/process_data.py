@@ -128,13 +128,13 @@ def process_data():
     # X, Y = read_from_ompl_file(X, Y)
     X = transform_trajectory(X)
     X, Y = add_equivalent_quaternions(X, Y)
-    X, Y = add_partial_trajectory(X, Y)
+    # X, Y = add_partial_trajectory(X, Y)
     return X, Y
 
 
-if __name__ == "__main__":
-    X, Y = process_data()
-    # print(X[0, 0, :])
-    # print(X[1, 0, :])
-    plot_X(X, 0, 1)
-    print("here: ", X[0, 0, :])
+# if __name__ == "__main__":
+X, Y = process_data()
+# print(X[0, 0, :])
+# print(X[1, 0, :])
+plot_X(X, 0, 1)
+print("here: ", X[0, 0, :])

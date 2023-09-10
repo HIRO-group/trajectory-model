@@ -202,27 +202,27 @@ def plot_xyz(X_xyz, Y_xyz, e_id):
 
 
 def ctime_str():
-    dt = datetime.now()
-    now = dt.strftime("%H:%M:%S")
-    return now
+    # dt = datetime.now()
+    # now = dt.strftime("%H:%M:%S")
+    return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
 
-# import tensorflow as tf
-# class SaveBestAccuracy(tf.keras.callbacks.Callback):
-#     def __init__(self, file_address="best"):
-#         super().__init__()
-#         self.file_address = file_address
+import tensorflow as tf
+class SaveBestAccuracy(tf.keras.callbacks.Callback):
+    def __init__(self, file_address="best"):
+        super().__init__()
+        self.file_address = file_address
 
-#     def on_train_begin(self, logs=None):
-#         self.val_acc = []
+    def on_train_begin(self, logs=None):
+        self.val_acc = []
 
-#     def on_epoch_end(self, epoch, logs=None):
-#         min_epoch = 0
-#         current_train_acc = logs.get("accuracy")
-#         current_val_acc = logs.get("val_accuracy")
-#         self.val_acc.append(logs.get("val_accuracy"))
-#         if current_val_acc >= max(self.val_acc) and current_val_acc >= 0.87 and current_train_acc >= 0.87:
-#             min_epoch = epoch
-#             print(f'Found best accuracy. Saving entire model. Epoch: {min_epoch}')
-#             print('Val accuracy: ', current_val_acc, ', Train accuracy: ', current_train_acc)
-#             self.model.save_weights(f'weights/{self.file_address}/{ctime_str()}_epoch_{min_epoch}_best_val_acc_{round(current_val_acc, 2)}_train_acc_{round(current_train_acc, 2)}.h5')
+    def on_epoch_end(self, epoch, logs=None):
+        min_epoch = 0
+        current_train_acc = logs.get("accuracy")
+        current_val_acc = logs.get("val_accuracy")
+        self.val_acc.append(logs.get("val_accuracy"))
+        if current_val_acc >= max(self.val_acc) and current_val_acc >= 0.87 and current_train_acc >= 0.87:
+            min_epoch = epoch
+            print(f'Found best accuracy. Saving entire model. Epoch: {min_epoch}')
+            print('Val accuracy: ', current_val_acc, ', Train accuracy: ', current_train_acc)
+            self.model.save_weights(f'weights/{self.file_address}/best/{ctime_str()}_epoch_{min_epoch}_best_val_acc_{round(current_val_acc, 2)}_train_acc_{round(current_train_acc, 2)}.h5')

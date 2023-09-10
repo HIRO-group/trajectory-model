@@ -1,8 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from process_data import process_data
-from process_data_wp import process_data as process_data_wp
+from trajectory_model.process_data import process_data
+# from process_data_wp import process_data as process_data_wp
 
 
 def get_manual_train_and_val_index():
@@ -87,7 +87,32 @@ def get_orientation_wp_data(manual=False):
     return X_train, Y_train, X_val, Y_val, X, Y
 
 
+def normalize_data(X, Y):
+    mean_X = np.mean(X, axis=(0, 1), keepdims=True)
+    std_X = np.std(X, axis=(0, 1), keepdims=True)
+    mean_Y = np.mean(Y, axis=0, keepdims=True)
+    std_Y = np.std(Y, axis=0, keepdims=True)
+
+    X = (X - mean_X) / std_X
+    Y = (Y - mean_Y) / std_Y
+
+    print("mean_X: ", mean_X)
+    print("std_X: ", std_X)
+    print("mean_Y: ", mean_Y)
+    print("std_Y: ", std_Y)
+
+#     mean_X:  [[[-1.32117807e-17  3.80431987e-18 -2.07520454e-18 -9.18323003e-18
+#     2.67658802e-16 -5.69337829e-18 -1.41335447e-17  2.29643836e+00
+#     4.58630137e+00  6.00273973e-01]]]
+# std_X:  [[[0.48387692 0.08604237 0.18141209 0.12780175 0.39179178 0.18965058
+#    0.89127229 0.59099491 0.49249576 0.20547288]]]
+# mean_Y:  [[0.48219178]]
+# std_Y:  [[0.49968277]]
+
+    return X, Y
+
 def get_data():
     X, Y = process_data()
+    # X, Y = normalize_data(X, Y)
     X_train, Y_train, X_val, Y_val = get_train_and_val_set(X, Y)
     return X_train, Y_train, X_val, Y_val, X, Y

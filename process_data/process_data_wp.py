@@ -6,8 +6,8 @@ from trajectory_model.helper import find_significant_curvature_changes, \
 
 from trajectory_model.spill_free.constants import MAX_TRAJ_STEPS, EMBED_DIM
 from trajectory_model.informed_sampler.constants import MAX_NUM_WAYPOINTS
-from process_data import read_from_mocap_file, transform_trajectory, add_equivalent_quaternions, read_from_ompl_file
-from process_data import process_data as process_data_spill
+from trajectory_model.process_data import read_from_mocap_file, transform_trajectory, add_equivalent_quaternions, read_from_ompl_file
+from trajectory_model.process_data import process_data as process_data_spill
 from trajectory_model.helper import plot_X, plot_multiple_e_ids, plot_multiple_X
 
 
@@ -43,8 +43,9 @@ def select_waypoints(X):
         all_zero_indices = np.where(np.all(X_new[e_id, :, 3:7] == 0, axis=1))
         if len(all_zero_indices[0]) == 0:
             continue
-        last_non_zero_index = all_zero_indices[0][0] - 1
-        X_new[e_id, last_non_zero_index + 1:, :] = X_new[e_id, last_non_zero_index, :]
+        else:
+            last_non_zero_index = all_zero_indices[0][0] - 1
+            X_new[e_id, last_non_zero_index + 1:, :] = X_new[e_id, last_non_zero_index, :]
     return X_new
 
 
@@ -63,7 +64,6 @@ def prepare_model_input(X):
             if x_index > X.shape[1] - 1:
                 x_index = X.shape[1] - 1
             Y_new[e_id * data_per_experiment + i, :] = X[e_id, x_index, 0:EMBED_DIM-1]
-    
     return X_new, Y_new
 
 

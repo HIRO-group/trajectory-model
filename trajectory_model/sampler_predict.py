@@ -1,130 +1,69 @@
 import numpy as np
-# from trac_ik_python.trac_ik import IK
+from trajectory_model.process_data import read_from_files, copy_last_non_zero_value, \
+    transform_trajectory, add_equivalent_quaternions, round_down_orientation_and_pos
+from trajectory_model.spill_free.constants import EMBED_DIM
+from trajectory_model.helper import plot_X, plot_multiple_e_ids, plot_multiple_X
+
+MAX_NUM_WAYPOINTS = 10
+
+def keep_spill_free(X, Y):
+    X_new, Y_new = [], []
+    for e_id in range(X.shape[0]):
+        if Y[e_id] == 0:
+            X_new.append(X[e_id])
+            Y_new.append(Y[e_id])
+    X_new = np.array(X_new)
+    Y_new = np.array(Y_new)
+    return X_new, Y_new
+
+def select_waypoints(X):
+    X_new = np.zeros((X.shape[0], MAX_NUM_WAYPOINTS, EMBED_DIM), dtype=np.float64)
+    for e_id in range(X.shape[0]):
+        embedding = X[e_id, :, 0:7]
+        all_zero_indices = np.where(np.all(embedding == 0, axis=1))
+
+        if  len(all_zero_indices[0]) != 0  and all_zero_indices[0][0] == 0:
+            X_new[e_id] = X_new[e_id - 1]
+            continue
+
+        if len(all_zero_indices[0]) == 0:
+            max_index = X.shape[1] - 1
+        else:
+            max_index = all_zero_indices[0][0] - 1 # The last non zero index
+
+        step_size = int(max_index / MAX_NUM_WAYPOINTS)
+        remainder = max_index % MAX_NUM_WAYPOINTS
+        X_new[e_id] = np.array([np.array(X[e_id, i, :]) for i in range(0, max_index - remainder, step_size)])
+
+        all_zero_indices = np.where(np.all(X_new[e_id, :, 3:7] == 0, axis=1))
+        if len(all_zero_indices[0]) == 0:
+            continue
+        else:
+            last_non_zero_index = all_zero_indices[0][0] - 1
+            X_new[e_id, last_non_zero_index + 1:, :] = X_new[e_id, last_non_zero_index, :]
+    return X_new
+    
+
+def transform_for_IK(X):
+    pass
 
 
-from trajectory_model.informed_sampler.model import PositionSampler, OrientationSampler
-from trajectory_model.informed_sampler.constants import EMBED_DIM_ORIENTATION_X, \
-    EMBED_DIM_ORIENTATION_Y, MAX_NUM_WAYPOINTS, \
-    EMBED_DIM_POS_X, EMBED_DIM_POS_Y, MAX_NUM_WAYPOINTS
-
-
-position_model = PositionSampler(max_num_waypoints=MAX_NUM_WAYPOINTS,
-                                 embed_X=EMBED_DIM_POS_X,
-                                 embed_Y=EMBED_DIM_POS_Y)
-position_model.compile(
-    optimizer='adam', loss='mean_squared_error', metrics=['accuracy'])
-position_model.build((None, MAX_NUM_WAYPOINTS, EMBED_DIM_POS_X))
-position_model.load_weights(
-    "/home/ava/projects/trajectory-model/weights/position_sampler/val_0.89_train_0.92.h5")
-
-
-orientation_model = OrientationSampler(max_num_waypoints=MAX_NUM_WAYPOINTS,
-                                       embed_X=EMBED_DIM_ORIENTATION_X,
-                                       embed_Y=EMBED_DIM_ORIENTATION_Y)
-orientation_model.compile(
-    optimizer='adam', loss='mean_squared_error', metrics=['accuracy'])
-orientation_model.build((None, MAX_NUM_WAYPOINTS, EMBED_DIM_ORIENTATION_X))
-orientation_model.load_weights(
-    "/home/ava/projects/trajectory-model/weights/orientation_sampler/09:18:26_epoch_596_best_val_acc_0.89_train_acc_0.79.h5")
-
-
-def get_position_data(trajectory):
-    trajectory_pos = []
-    for traj in trajectory:
-        trajectory_pos.append(traj[0:3])
-    return trajectory_pos
-
-
-def translate(trajectory):
-    xyz = trajectory[0, :, 0:3]  # shape: (T, 3)
-    xyz = xyz - trajectory[0, 0, 0:3]  # shape: (T, 3)
-    trajectory[0, :, 0:3] = xyz
-    return trajectory
-
-
-def convert_to_position_model_input(trajectory):
-    step_size = int(len(trajectory) / MAX_NUM_WAYPOINTS)
-    if step_size == 0:
-        step_size = 1
-
-    remainder = len(trajectory) % MAX_NUM_WAYPOINTS
-
-    if len(trajectory) < MAX_NUM_WAYPOINTS:
-        remainder = 0
-    trajectory = np.array([np.array(trajectory[i])
-                          for i in range(0, len(trajectory) - remainder, step_size)])
-
-    if len(trajectory) < MAX_NUM_WAYPOINTS:
-        trajectory = np.append(trajectory, np.zeros(
-            (MAX_NUM_WAYPOINTS - len(trajectory), 3)), axis=0)
-
-    trajectory = np.append(trajectory, np.ones(
-        (trajectory.shape[0], 1)), axis=1)
-    trajectory = trajectory.reshape(1, MAX_NUM_WAYPOINTS, EMBED_DIM_POS_X)
-    return trajectory
-
-
-def convert_to_orientation_model_input(trajectory, position_prediction):
-    step_size = int(len(trajectory) / MAX_NUM_WAYPOINTS)
-    if step_size == 0:
-        step_size = 1
-
-    remainder = len(trajectory) % MAX_NUM_WAYPOINTS
-
-    if len(trajectory) < MAX_NUM_WAYPOINTS:
-        remainder = 0
-    trajectory = np.array([np.array(trajectory[i])
-                          for i in range(0, len(trajectory) - remainder, step_size)])
-    trajectory = np.vstack((trajectory, np.array(
-        [position_prediction[0], position_prediction[1], position_prediction[2], 0, 0, 0, 0])))
-
-    if len(trajectory) < MAX_NUM_WAYPOINTS:
-        trajectory = np.append(trajectory, np.zeros(
-            (MAX_NUM_WAYPOINTS - len(trajectory), 7)), axis=0)
-
-    trajectory = np.append(trajectory, np.ones(
-        (trajectory.shape[0], 1)), axis=1)
-    trajectory = trajectory.reshape(
-        1, MAX_NUM_WAYPOINTS, EMBED_DIM_ORIENTATION_X)
-    return trajectory
+X, Y = read_from_files()
+X, Y = keep_spill_free(X, Y)
+X = copy_last_non_zero_value(X)
+X = transform_trajectory(X)
+X = transform_for_IK(X)
+X, Y = add_equivalent_quaternions(X, Y)
+X = round_down_orientation_and_pos(X)
+X = select_waypoints(X)
 
 
 def sample_state(trajectory):
-    trajectory_pos = get_position_data(trajectory)
-    trajectory_pos = convert_to_position_model_input(trajectory_pos)
-    trajectory_pos = translate(trajectory_pos)
-    position_prediction = position_model.predict(trajectory_pos)[0]
+    # Should sample from the specific cup properties
+    random_e_id = np.random.randint(0, X.shape[0])
+    random_traj_step = np.random.randint(0, X.shape[1])
+    return X[random_e_id, random_traj_step, 0:7]
 
-    trajectory = convert_to_orientation_model_input(
-        trajectory, position_prediction)
-    trajectory = translate(trajectory)
-    orientation_prediction = orientation_model.predict(trajectory)[0]
 
-    state = [position_prediction[0], position_prediction[1], position_prediction[2], orientation_prediction[0],
-             orientation_prediction[1], orientation_prediction[2], orientation_prediction[3]]
-    # print("state cartesian: ", state)
-
-    # print("before ik solver")
-
-    # # try: 
-    # ik_solver = IK("panda_link0", "panda_link8")
-    # # except Exception as e:
-    # #     print("Exception in ik_solver: ", e)
-
-    # print("after ik solver")
-    # lower_bound, upper_bound = ik_solver.get_joint_limits()
-    # print("lower_bound: ", lower_bound)
-    # print("upper_bound: ", upper_bound)
-    # print("ik_solver number of joints: ", ik_solver.number_of_joints)
-
-    # seed_state = [0.0] * ik_solver.number_of_joints
-    # joint_angles = ik_solver.get_ik(seed_state,
-    #                                 position_prediction[0], position_prediction[1],
-    #                                 position_prediction[3], orientation_prediction[0],
-    #                                 orientation_prediction[1], orientation_prediction[2],
-    #                                 orientation_prediction[3])
-
-    # print("joint_angles: ", joint_angles)
-    
-    # return [0.5295887589454651, -0.16105137765407562, 0.296753466129303, 0.004732200410217047, -0.018793363124132156, 0.03531074523925781, -0.9991884827613831]
-    return state
+xyzabcd = sample_state(0)
+print("xyzabcd: ", xyzabcd)
