@@ -77,11 +77,11 @@ def handle_spill(spill_file, radius, height, fill_level):
     return X, Y
 
 
-def read_from_files():
+def read_from_files(file_list = FILE_NAMES_NOSPILL_SPILL):
     X = np.zeros((0, MAX_TRAJ_STEPS, EMBED_DIM), dtype=np.float64)
     Y = np.zeros((0, 1))
 
-    for row in FILE_NAMES_NOSPILL_SPILL:
+    for row in file_list:
         nospill_file, spill_file = row[0], row[1]
         radius, height, fill_level = row[2], row[3], row[4]
 
@@ -157,19 +157,9 @@ def add_delta_X(X):
     return X_new
 
 
-def add_reverse_X(X, Y):
-    X_new = np.zeros(
-        (2 * X.shape[0], MAX_TRAJ_STEPS, EMBED_DIM), dtype=np.float64)
-    Y_new = np.zeros((2 * X.shape[0], 1), dtype=np.float64)
-    for e_id in range(X.shape[0]):
-        X_new[2 * e_id, :, :] = X[e_id, :, :]
-        Y_new[2 * e_id] = Y[e_id]
-
-        X_new[2 * e_id + 1, :, 0:3] = - X[e_id, :, 0:3]
-        X_new[2 * e_id + 1, :, 3:] = X[e_id, :, 3:]
-
-        Y_new[2 * e_id + 1] = Y[e_id]
-    return X_new, Y_new
+def add_reverse_X(X):
+    X[:, :, 1] = -X[:, :, 1]
+    return X
 
 
 def round_down_orientation_and_pos(X):
@@ -186,24 +176,16 @@ def process_data():
     X = transform_trajectory(X)
     X, Y = add_equivalent_quaternions(X, Y)
     X = round_down_orientation_and_pos(X)
-    # X, Y = add_partial_trajectory(X, Y)
-    # # X = add_delta_X(X)
-    X, Y = add_reverse_X(X, Y)
+    X, Y = add_partial_trajectory(X, Y)
+    # X = add_reverse_X(X) # Changed it in classifier predict
     return X, Y
 
 
 if __name__ == "__main__":
     X, Y = process_data()
-        # print("X.shape:", X.shape)
-        # print("Y.shape:", Y.shape)
-        # print("here: ", X[0, :, :])
+    # print("X.shape:", X.shape)
+    # print("Y.shape:", Y.shape)
+    # print("here: ", X[0, :, :])
 
-    plot_X(X, 3, 0.01)
+    plot_X(X, 3, 0.1)
 
-#     # w/o reverse:  [[ 0.    0.    0.   ...  3.    4.    0.8 ]
-# #  [-0.   -0.    0.   ...  3.    4.    0.8 ]
-# #  [-0.   -0.    0.   ...  3.    4.    0.8 ]
-# #  ...
-# #  [-0.69  0.05 -0.15 ...  3.    4.    0.8 ]
-# #  [-0.69  0.05 -0.15 ...  3.    4.    0.8 ]
-# #  [-0.69  0.05 -0.15 ...  3.    4.    0.8 ]]

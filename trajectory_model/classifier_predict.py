@@ -14,8 +14,8 @@ model.load_weights("/home/ava/projects/trajectory-model/weights/spill_classifier
 
 
 def convert_to_model_input(trajectory):
-    trajectory = np.array([np.array(trajectory[i]) for i in range(0, len(trajectory, DT))])
-    trajectory = trajectory[:, 0:MAX_TRAJ_STEPS, :]
+    trajectory = np.array([np.array(trajectory[i]) for i in range(0, len(trajectory), DT)])
+    trajectory = trajectory[0:MAX_TRAJ_STEPS, :]
     
     # radius, height, fill_level
     properties = np.array([BIG_RADIUS, BIG_HEIGHT, BIG_FILL_HALF])
@@ -30,6 +30,7 @@ def translate(trajectory):
     xyz = trajectory[0, :, 0:3] # shape: (T, 3)
     xyz = xyz - trajectory[0, 0, 0:3] # shape: (T, 3)
     trajectory[0, :, 0:3] = xyz
+    trajectory[0, :, 1] = -trajectory[0, :, 1] # because that's how the data was trained unfortunately
     return trajectory
 
 
@@ -68,6 +69,6 @@ def transform_trajectory(trajectory):
 def spilled(trajectory):
     trajectory = convert_to_model_input(trajectory)
     trajectory = transform_trajectory(trajectory)
-    prediction = model.predict(trajectory)[0][0]   
+    prediction = model.predict(trajectory)[0][0]
     return prediction
  
