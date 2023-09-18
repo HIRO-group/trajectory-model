@@ -5,13 +5,10 @@ from trajectory_model.spill_free.constants import MAX_TRAJ_STEPS, EMBED_DIM, DT,
     BIG_RADIUS, BIG_HEIGHT, SMALL_RADIUS, SMALL_HEIGHT, \
     BIG_FILL_FULL, BIG_FILL_HALF, SMALL_FILL_FULL, SMALL_FILL_HALF
 
-from trajectory_model.helper import plot_X
-
-
 DIR_PREFIX = '/home/ava/projects/trajectory-model/data/mocap_new/'
 
-# nospill, spill, radius, height, fill_level
 
+# nospill, spill, radius, height, fill_level
 FILE_NAMES_NOSPILL_SPILL = \
     [("big/full/spill-free/", "big/full/spilled/", BIG_RADIUS, BIG_HEIGHT, BIG_FILL_FULL),
         ("big/half-full/spill-free/", "big/half-full/spilled/", BIG_RADIUS, BIG_HEIGHT, BIG_FILL_HALF),
@@ -33,16 +30,9 @@ def read_a_file(file_path, radius, height, fill_level):
             embedding = np.array(
                 [[x, y, z, a, b, c, d, radius, height, fill_level]])
             X[0, trajectory_index, :] = embedding
-            # print("embedding: ", embedding)
             trajectory_index += 1
-    # print("1) X here: ", X[0:3, :, :])
-    # input()
     X = X[:, 0:10000:DT, :]
-    # print("2)X here: ", X[0:3, :, :])
-    # input()
     X = X[:, 0:MAX_TRAJ_STEPS, :]
-    # print("3)X here: ", X[0:3, :, :])
-    # input()
     return X
 
 
@@ -53,26 +43,20 @@ def read_a_directory(directory_path, radius, height, fill_level):
         file_path = directory_path + file
         X_new = read_a_file(file_path, radius, height,
                             fill_level)  # single traj
-        # print("X-new: ",  X_new[0:3, :, :])
-        # input()
         X = np.concatenate((X, X_new), axis=0)
-        # print(" X is: ", X[0:3, :, :])
-        # input()
     return X
 
 
 def handle_nospill(nospill_file, radius, height, fill_level):
     file_path_no_spill = DIR_PREFIX + nospill_file
-    X = read_a_directory(file_path_no_spill, radius,
-                         height, fill_level)  # multiple trajs
+    X = read_a_directory(file_path_no_spill, radius, height, fill_level)  # multiple trajs
     Y = np.zeros((X.shape[0], 1))
     return X, Y
 
 
 def handle_spill(spill_file, radius, height, fill_level):
     file_path_spill = DIR_PREFIX + spill_file
-    X = read_a_directory(file_path_spill, radius, height,
-                         fill_level)  # multiple trajs
+    X = read_a_directory(file_path_spill, radius, height, fill_level)  # multiple trajs
     Y = np.ones((X.shape[0], 1))
     return X, Y
 
@@ -96,6 +80,7 @@ def read_from_files(file_list = FILE_NAMES_NOSPILL_SPILL):
 
 
 def copy_last_non_zero_value(X):
+    print(X.shape)
     for e_id in range(X.shape[0]):
         embedding = X[e_id, :, 0:7]
         all_zero_indices = np.where(np.all(embedding == 0, axis=1))
@@ -143,6 +128,7 @@ def add_partial_trajectory(X, Y):
             Y_new[e_id * data_per_experiment + i, :] = Y[e_id]
             X_new[e_id * data_per_experiment + i, 0: int(
                 (i+1) * X.shape[1]/data_per_experiment), :] = X[e_id, 0: int((i+1) * X.shape[1]/data_per_experiment), :]
+            
             # fill the rest with the last value
             X_new[e_id * data_per_experiment + i, int((i+1) * X.shape[1]/data_per_experiment):, :] = X[e_id, int(
                 (i+1) * X.shape[1]/data_per_experiment)-1, :]
@@ -170,22 +156,21 @@ def round_down_orientation_and_pos(X):
     return X
 
 
-def process_data():
+def process_data_SFC():
     X, Y = read_from_files()
     X = copy_last_non_zero_value(X)
     X = transform_trajectory(X)
     X, Y = add_equivalent_quaternions(X, Y)
     X = round_down_orientation_and_pos(X)
     X, Y = add_partial_trajectory(X, Y)
-    # X = add_reverse_X(X) # Changed it in classifier predict
+    X = add_reverse_X(X)
     return X, Y
 
 
 if __name__ == "__main__":
-    X, Y = process_data()
+    X, Y = process_data_SFC()
     # print("X.shape:", X.shape)
     # print("Y.shape:", Y.shape)
     # print("here: ", X[0, :, :])
-
-    plot_X(X, 3, 0.1)
+    # plot_X(X, 3, 0.1)
 

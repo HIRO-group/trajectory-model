@@ -4,7 +4,7 @@ import numpy as np
 from scipy.spatial.transform import Rotation
 import time
 
-from trajectory_model.helper import plot_X
+from trajectory_model.helper.helper import plot_X
 from trajectory_model.spill_free.model import TrajectoryClassifier
 from trajectory_model.spill_free.constants import EMBED_DIM, NUM_HEADS, FF_DIM, MAX_TRAJ_STEPS
 

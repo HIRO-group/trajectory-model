@@ -1,10 +1,10 @@
 # process data for spill free model
 import csv
 import numpy as np
-from trajectory_model.spill_free.constants import MAX_TRAJ_STEPS, EMBED_DIM, FINAL_MOCAP_RAW_DATA_DIR, FINAL_OMPL_RAW_DATA_DIR
-from trajectory_model.helper import plot_X
+from trajectory_model.spill_free.constants import MAX_TRAJ_STEPS, EMBED_DIM
+from trajectory_model.helper.helper import plot_X
 
-def read_from_ompl_file(X, Y, data_dir=FINAL_OMPL_RAW_DATA_DIR):
+def read_from_ompl_file(X, Y, data_dir=''):
     unsafe_indexes = [1, 2, 3, 4, 5, 6, 7, 8]
     for id in unsafe_indexes:
         path = f'{data_dir}/{id}_spill'
@@ -15,7 +15,7 @@ def read_from_ompl_file(X, Y, data_dir=FINAL_OMPL_RAW_DATA_DIR):
     return X, Y
     
 
-def read_from_mocap_file(data_dir=FINAL_MOCAP_RAW_DATA_DIR):
+def read_from_mocap_file(data_dir="/home/ava/projects/trajectory-model/data/raw/data_may_30_final.csv"):
     exclude_indexes_list = [4, 6, 11, 12, 13, 14, 15, 16, 22, 23, 25, 31]
     safe_data_index_range = (1, 21)
     unsafe_data_index_range = (21, 35)

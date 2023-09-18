@@ -3,7 +3,7 @@ import numpy as np
 from trajectory_model.data import get_position_wp_data
 from trajectory_model.informed_sampler.model import PositionSampler
 from trajectory_model.informed_sampler.constants import EMBED_DIM_POS_X, EMBED_DIM_POS_Y, MAX_NUM_WAYPOINTS
-from trajectory_model.helper import SaveBestAccuracy, plot_loss_function, plot_prediction_vs_real, plot_xyz, ctime_str
+from trajectory_model.helper.helper import SaveBestAccuracy, plot_loss_function, plot_prediction_vs_real, plot_xyz, ctime_str
 
 
 if __name__ == "__main__":

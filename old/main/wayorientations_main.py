@@ -2,11 +2,12 @@ import numpy as np
 from trajectory_model.data import get_orientation_wp_data
 from trajectory_model.informed_sampler.model import OrientationSampler
 from trajectory_model.informed_sampler.constants import EMBED_DIM_ORIENTATION_X, EMBED_DIM_ORIENTATION_Y, MAX_NUM_WAYPOINTS
-from trajectory_model.helper import SaveBestAccuracy, plot_loss_function, plot_prediction_vs_real, plot_xyz, ctime_str
+from trajectory_model.helper.helper import SaveBestAccuracy, plot_loss_function, plot_prediction_vs_real, plot_xyz, ctime_str
+import tensorflow as tf
 
 
 if __name__ == "__main__":
-    fit_model = True
+    fit_model = False
     x_train, y_train, x_val, y_val, X, Y = get_orientation_wp_data(manual=True)
     # Should visualize the data here
 
@@ -14,7 +15,7 @@ if __name__ == "__main__":
                                embed_X=EMBED_DIM_ORIENTATION_X,
                                embed_Y=EMBED_DIM_ORIENTATION_Y)
 
-    model.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy'])
+    model.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy', tf.keras.metrics.Precision(), tf.keras.metrics.Recall()])
 
     if fit_model:
         epochs = 5000
@@ -49,16 +50,23 @@ if __name__ == "__main__":
 
     else:
         model.build((None, MAX_NUM_WAYPOINTS, EMBED_DIM_ORIENTATION_X))
-        model.load_weights("weights/orientation_sampler/best_val_acc_0.9090909361839294_train_acc_0.8848484754562378.h5")
+        model.load_weights("/home/ava/projects/trajectory-model/weights_old/orientation_sampler/09:18:26_epoch_596_best_val_acc_0.89_train_acc_0.79.h5")
         
         eval = model.evaluate(x_val, y_val, verbose=2)
-        accuracy, loss = eval[1], eval[0]
-        eval_tr = model.evaluate(x_train, y_train, verbose=2)
-        accuracy_tr, loss_tr = eval_tr[1], eval_tr[0]
+
+        loss, accuracy, precision, recall = eval[0], eval[1], eval[2], eval[3]
+        print("loss is: ", loss)
+        print("accuracy is: ", accuracy)
+        print("precision is: ", precision)
+        print("recall is: ", recall)
+
+        # accuracy, loss = eval[1], eval[0]
+        # eval_tr = model.evaluate(x_train, y_train, verbose=2)
+        # accuracy_tr, loss_tr = eval_tr[1], eval_tr[0]
         
-        print("Loaded model from disk.")
-        print(f'Validation accuracy: {round(accuracy, 2)}, loss: {round(loss, 2)}.')
-        print(f'Training: accuracy: {round(accuracy_tr, 2)}, loss: {round(loss_tr, 2)}')
+        # print("Loaded model from disk.")
+        # print(f'Validation accuracy: {round(accuracy, 2)}, loss: {round(loss, 2)}.')
+        # print(f'Training: accuracy: {round(accuracy_tr, 2)}, loss: {round(loss_tr, 2)}')
 
         # test_index = 1
         # x_test, y_test = x_val[test_index], y_val[test_index]

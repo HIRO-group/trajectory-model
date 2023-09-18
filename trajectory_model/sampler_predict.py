@@ -1,11 +1,11 @@
 import numpy as np
-from trajectory_model.process_data import read_from_files, copy_last_non_zero_value, \
+from process_data.process_data_SFC import read_from_files, copy_last_non_zero_value, \
     transform_trajectory, add_equivalent_quaternions, round_down_orientation_and_pos, \
     add_reverse_X
 from trajectory_model.spill_free.constants import EMBED_DIM, BIG_RADIUS, BIG_HEIGHT, SMALL_RADIUS, \
     SMALL_HEIGHT, BIG_FILL_FULL, BIG_FILL_HALF, SMALL_FILL_FULL, SMALL_FILL_HALF
-from trajectory_model.helper import plot_X, plot_multiple_e_ids, plot_multiple_X
-from trajectory_model.rotate_quaternion import quaternion_to_angle_axis, rotate_quaternion
+from trajectory_model.helper.helper import plot_X, plot_multiple_e_ids, plot_multiple_X
+from trajectory_model.helper.rotate_quaternion import quaternion_to_angle_axis, rotate_quaternion
 
 
 MAX_NUM_WAYPOINTS = 10
@@ -59,15 +59,35 @@ def translate_for_IK(X):
     return X
 
 
-def rotate_for_IK(X):
-    q_start = (-0.0045020487159490585, -0.001336313085630536, -0.21967099606990814, -0.9755628108978271)
-    q = (0.7258497516707821, -0.6872946206328441, -0.027717186881415688, -0.6877996017242218)
-    angle, axis = quaternion_to_angle_axis(q, q_start)
+import struct
+def read_vectors(filename):
+    vectors = []
+    with open(filename, 'rb') as f:
+        num_vectors = struct.unpack('Q', f.read(8))[0]
+        for _ in range(num_vectors):
+            vector = [struct.unpack('d', f.read(8))[0] for _ in range(7)] 
+            vectors.append(vector)
+    return vectors
 
-    for e_id in range(X.shape[0]):
-        a, b, c, d = X[e_id, :, 3], X[e_id, :, 4], X[e_id, :, 5], X[e_id, :, 6]
-        x_rot, y_rot, z_rot, w_rot = rotate_quaternion((a, b, c, d), angle, axis)
-        X[e_id, :, 3], X[e_id, :, 4], X[e_id, :, 5], X[e_id, :, 6] = x_rot, y_rot, z_rot, w_rot
+
+# file_name = '01-09-2023 13-42-14'
+file_name = '01-09-2023 13-58-43'
+# file_name = "01-09-2023 14-09-56"
+
+file_path = '/home/ava/projects/assets/cartesian/'+file_name+'/cartesian_positions.bin'
+vectors = read_vectors(file_path)
+vectors = vectors[0:len(vectors):100]
+
+
+def rotate_for_IK(X):
+    # q_start = (-0.0045020487159490585, -0.001336313085630536, -0.21967099606990814, -0.9755628108978271)
+    # q = (0.7258497516707821, -0.6872946206328441, -0.027717186881415688, -0.6877996017242218)
+    # angle, axis = quaternion_to_angle_axis(q, q_start)
+
+    # for e_id in range(X.shape[0]):
+    #     a, b, c, d = X[e_id, :, 3], X[e_id, :, 4], X[e_id, :, 5], X[e_id, :, 6]
+    #     x_rot, y_rot, z_rot, w_rot = rotate_quaternion((a, b, c, d), angle, axis)
+    #     X[e_id, :, 3], X[e_id, :, 4], X[e_id, :, 5], X[e_id, :, 6] = x_rot, y_rot, z_rot, w_rot
     return X
 
 
@@ -95,9 +115,32 @@ X = round_down_orientation_and_pos(X)
 X = select_waypoints(X)
 
 
+from trajectory_model.spill_free.model import TrajectoryClassifier
+from trajectory_model.spill_free.constants import DT, EMBED_DIM, NUM_HEADS, FF_DIM,\
+      MAX_TRAJ_STEPS, BIG_RADIUS, BIG_HEIGHT, SMALL_RADIUS, \
+      SMALL_HEIGHT, BIG_FILL_FULL, BIG_FILL_HALF, \
+      SMALL_FILL_FULL, SMALL_FILL_HALF
+from trajectory_model.helper.helper import quat_to_euler, euler_to_quat, ctime_str
+from trajectory_model.helper.rotate_quaternion import quaternion_to_angle_axis, rotate_quaternion
+
+model = TrajectoryClassifier(max_traj_steps=MAX_TRAJ_STEPS, embed_dim=EMBED_DIM, num_heads=NUM_HEADS, ff_dim=FF_DIM)
+model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+model.build((None, MAX_TRAJ_STEPS, EMBED_DIM))
+model.load_weights("/home/ava/projects/trajectory-model/weights/spill_classifier/best/2023-09-09 14:42:38_epoch_191_best_val_acc_0.93_train_acc_0.92.h5")
+
+
 def sample_state(trajectory):
     random_e_id = np.random.randint(0, X.shape[0])
     random_traj_step = np.random.randint(0, X.shape[1])
+    model.predict()
     return X[random_e_id, random_traj_step, 0:7]
+
+    # vectors = vectors[0:len(vectors):100]
+    random_vector_indx = np.random.randint(0, len(vectors))
+    output =  np.array(vectors[random_vector_indx])
+    # print("Output for state sample ", output)
+    return output
+
+
 
 # plot_X(X, 0, 0.1)

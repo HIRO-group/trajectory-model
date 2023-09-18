@@ -56,16 +56,65 @@ def plot_multiple_e_ids(X, e_ids, arrows_lenght, verbose=False):
     colors = ['r', 'g', 'b', 'b']
     color_id = 0
 
-    for e_id in e_ids:
+    for idx, e_id in enumerate(e_ids):
         start_points, end_points = get_start_and_end_points(X, e_id)
-        ax.quiver(start_points[:, 0], start_points[:, 1], start_points[:, 2],
+        if idx == len(e_ids) - 1:
+            ax.quiver(start_points[:, 0], start_points[:, 1], start_points[:, 2],
+                  end_points[:, 0], end_points[:, 1], end_points[:, 2],
+                  length=arrows_lenght, normalize=True, color=colors[color_id], label='SFS')
+        else:
+            ax.quiver(start_points[:, 0], start_points[:, 1], start_points[:, 2],
                   end_points[:, 0], end_points[:, 1], end_points[:, 2],
                   length=arrows_lenght, normalize=True, color=colors[color_id])
-        color_id += 1
+
+        color_id += 0
+
+    # num_arrows = 100
+    # directions = np.random.uniform(0, 2*np.pi, (num_arrows, 2))
+    # phi = directions[:, 0]
+    # theta = directions[:, 1]
+    # lengths = np.random.uniform(0.01, 0.05, num_arrows)
+    # x = lengths * np.sin(theta) * np.cos(phi)
+    # y = lengths * np.sin(theta) * np.sin(phi)
+    # z = lengths * np.cos(theta)
+
+    x_min = -0.03
+    y_min = -0.4
+    z_min = -0.09
+    x_max = 0.54
+    y_max = 0.84
+    z_max = 0.64
+
+    num_arrows = 80
+
+    # Generate random uniform points within the specified boundary
+    x = np.random.uniform(x_min, x_max, num_arrows)
+    y = np.random.uniform(y_min, y_max, num_arrows)
+    z = np.random.uniform(z_min, z_max, num_arrows)
+
+    directions = np.random.uniform(0, 2 * np.pi, num_arrows)
+    inclinations = np.random.uniform(0, np.pi, num_arrows)  # Adjust for non-zero z-components
+
+    # Calculate arrow components (x, y, z) based on directions
+    arrow_length = 0.05 # Adjust the arrow length as needed
+    u = arrow_length * np.sin(directions) * np.sin(inclinations)
+    v = arrow_length * np.cos(directions) * np.sin(inclinations)
+    w = arrow_length * np.cos(inclinations)
+
+    ax.quiver(x, y, z, u, v, w, length=arrow_length, normalize=True, color='b', label='Uniform')
+
+
+    # ax.set_xlim([x_min, x_max])
+    # ax.set_ylim([y_min, y_max])
+    # ax.set_zlim([z_min, z_max])
 
     ax.set_xlabel('x')
     ax.set_ylabel('y')
     ax.set_zlabel('z')
+    ax.legend()
+
+
+    plt.savefig(f'plots/trajectory_comparison.png', dpi=300)
     plt.show()
 
 def plot_multiple_X(Xs, e_ids, arrows_lenght, verbose=False):
@@ -205,24 +254,3 @@ def ctime_str():
     # dt = datetime.now()
     # now = dt.strftime("%H:%M:%S")
     return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
-
-import tensorflow as tf
-class SaveBestAccuracy(tf.keras.callbacks.Callback):
-    def __init__(self, file_address="best"):
-        super().__init__()
-        self.file_address = file_address
-
-    def on_train_begin(self, logs=None):
-        self.val_acc = []
-
-    def on_epoch_end(self, epoch, logs=None):
-        min_epoch = 0
-        current_train_acc = logs.get("accuracy")
-        current_val_acc = logs.get("val_accuracy")
-        self.val_acc.append(logs.get("val_accuracy"))
-        if current_val_acc >= max(self.val_acc) and current_val_acc >= 0.87 and current_train_acc >= 0.87:
-            min_epoch = epoch
-            print(f'Found best accuracy. Saving entire model. Epoch: {min_epoch}')
-            print('Val accuracy: ', current_val_acc, ', Train accuracy: ', current_train_acc)
-            self.model.save_weights(f'weights/{self.file_address}/best/{ctime_str()}_epoch_{min_epoch}_best_val_acc_{round(current_val_acc, 2)}_train_acc_{round(current_train_acc, 2)}.h5')

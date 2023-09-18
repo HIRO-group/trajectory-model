@@ -4,22 +4,22 @@ from trajectory_model.spill_free.constants import DT, EMBED_DIM, NUM_HEADS, FF_D
       MAX_TRAJ_STEPS, BIG_RADIUS, BIG_HEIGHT, SMALL_RADIUS, \
       SMALL_HEIGHT, BIG_FILL_FULL, BIG_FILL_HALF, \
       SMALL_FILL_FULL, SMALL_FILL_HALF
-from trajectory_model.helper import quat_to_euler, euler_to_quat, ctime_str
-from trajectory_model.rotate_quaternion import quaternion_to_angle_axis, rotate_quaternion
+from trajectory_model.helper.helper import quat_to_euler, euler_to_quat, ctime_str
+from trajectory_model.helper.rotate_quaternion import quaternion_to_angle_axis, rotate_quaternion
 
 model = TrajectoryClassifier(max_traj_steps=MAX_TRAJ_STEPS, embed_dim=EMBED_DIM, num_heads=NUM_HEADS, ff_dim=FF_DIM)
 model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
 model.build((None, MAX_TRAJ_STEPS, EMBED_DIM))
 model.load_weights("/home/ava/projects/trajectory-model/weights/spill_classifier/best/2023-09-09 14:42:38_epoch_191_best_val_acc_0.93_train_acc_0.92.h5")
 
+# radius, height, fill_level
+
 
 def convert_to_model_input(trajectory):
     trajectory = np.array([np.array(trajectory[i]) for i in range(0, len(trajectory), DT)])
     trajectory = trajectory[0:MAX_TRAJ_STEPS, :]
+    properties = np.array([SMALL_FILL_FULL, SMALL_HEIGHT, SMALL_FILL_FULL])
     
-    # radius, height, fill_level
-    properties = np.array([BIG_RADIUS, BIG_HEIGHT, BIG_FILL_HALF])
-
     properties = properties[None,:].repeat(trajectory.shape[0],axis=0)
     trajectory = np.concatenate((trajectory, properties), axis=1)
     trajectory = trajectory.reshape(1, MAX_TRAJ_STEPS, EMBED_DIM)
@@ -70,5 +70,6 @@ def spilled(trajectory):
     trajectory = convert_to_model_input(trajectory)
     trajectory = transform_trajectory(trajectory)
     prediction = model.predict(trajectory)[0][0]
-    return prediction
+    print("prediction in spill-free: ", prediction, "spilled: ", prediction >= 0.5)
+    return prediction >= 0.5
  

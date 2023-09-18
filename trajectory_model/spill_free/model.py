@@ -64,7 +64,7 @@ class TrajectoryClassifier(Model):
         self.dense1 = Dense(20, activation="relu")
         self.dropout2 = Dropout(dropout_rate)
         self.dense2 = Dense(1, activation='sigmoid')
-    
+
     def call(self, inputs):
         x = self.position_encoding(inputs)
         x = self.transformer_block(x)

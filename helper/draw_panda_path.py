@@ -5,7 +5,7 @@ from mpl_toolkits.mplot3d import Axes3D
 from scipy.spatial.transform import Rotation as R
 
 from helper.rotate_quaternion import quaternion_to_angle_axis, rotate_quaternion
-from trajectory_model.helper import quat_to_euler, euler_to_quat, ctime_str
+from trajectory_model.helper.helper import quat_to_euler, euler_to_quat, ctime_str
 
 # file_name = '01-09-2023 13-42-14'
 # file_name = '01-09-2023 13-58-43'

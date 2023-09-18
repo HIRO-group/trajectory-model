@@ -1,14 +1,14 @@
 import numpy as np
 
-from trajectory_model.helper import find_significant_curvature_changes, \
+from trajectory_model.helper.helper import find_significant_curvature_changes, \
     find_significant_orientation_changes, \
     find_significant_position_changes
 
 from trajectory_model.spill_free.constants import MAX_TRAJ_STEPS, EMBED_DIM
 from trajectory_model.informed_sampler.constants import MAX_NUM_WAYPOINTS
-from trajectory_model.process_data import read_from_mocap_file, transform_trajectory, add_equivalent_quaternions, read_from_ompl_file
-from trajectory_model.process_data import process_data as process_data_spill
-from trajectory_model.helper import plot_X, plot_multiple_e_ids, plot_multiple_X
+from process_data.process_data_SFC import read_from_mocap_file, transform_trajectory, add_equivalent_quaternions, read_from_ompl_file
+from process_data.process_data_SFC import process_data as process_data_spill
+from trajectory_model.helper.helper import plot_X, plot_multiple_e_ids, plot_multiple_X
 
 
 def change_trajectory_length(X):
