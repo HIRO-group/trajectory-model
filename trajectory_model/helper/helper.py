@@ -40,6 +40,9 @@ def get_start_and_end_points(X, e_id):
         if all_zeros:
             print("All zeros! at step: ", step)
             break
+        
+        if x > 100:
+            continue
 
         start_point = np.array([[x, y, z]])
         end_point = calculate_endpoint(start_point, a, b, c, d)

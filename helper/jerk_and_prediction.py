@@ -17,7 +17,7 @@ model.load_weights("/home/ava/projects/trajectory-model/weights/spill_classifier
 import numpy as np
 from process_data.process_data_SFC import read_from_files, copy_last_non_zero_value, \
     transform_trajectory, add_equivalent_quaternions, round_down_orientation_and_pos, \
-    add_reverse_X
+    reverse_y_axis
 from trajectory_model.spill_free.constants import EMBED_DIM, BIG_RADIUS, BIG_HEIGHT, SMALL_RADIUS, \
     SMALL_HEIGHT, BIG_FILL_FULL, BIG_FILL_HALF, SMALL_FILL_FULL, SMALL_FILL_HALF
 from trajectory_model.helper.helper import plot_X, plot_multiple_e_ids, plot_multiple_X

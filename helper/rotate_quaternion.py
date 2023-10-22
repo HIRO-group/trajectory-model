@@ -51,3 +51,5 @@ def rotate_quaternion_list(quaternions, q):
         rotated.append((x_rot, y_rot, z_rot, w_rot))
         
     return rotated
+
+

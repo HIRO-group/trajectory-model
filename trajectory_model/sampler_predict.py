@@ -1,7 +1,7 @@
 import numpy as np
 from process_data.process_data_SFC import read_from_files, copy_last_non_zero_value, \
     transform_trajectory, add_equivalent_quaternions, round_down_orientation_and_pos, \
-    add_reverse_X
+    reverse_y_axis
 from trajectory_model.spill_free.constants import EMBED_DIM, BIG_RADIUS, BIG_HEIGHT, SMALL_RADIUS, \
     SMALL_HEIGHT, BIG_FILL_FULL, BIG_FILL_HALF, SMALL_FILL_FULL, SMALL_FILL_HALF
 from trajectory_model.helper.helper import plot_X, plot_multiple_e_ids, plot_multiple_X
@@ -108,7 +108,7 @@ X, Y = read_from_files(file_list)
 X, Y = keep_spill_free(X, Y)
 X = copy_last_non_zero_value(X)
 X = transform_trajectory(X)
-X = add_reverse_X(X)
+X = reverse_y_axis(X)
 X = transform_for_IK(X)
 X, Y = add_equivalent_quaternions(X, Y)
 X = round_down_orientation_and_pos(X)

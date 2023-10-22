@@ -5,7 +5,7 @@ from trajectory_model.spill_free.constants import MAX_TRAJ_STEPS, EMBED_DIM, DT,
 
 from process_data.process_data_SFC import read_from_files, copy_last_non_zero_value, \
     transform_trajectory, add_equivalent_quaternions, round_down_orientation_and_pos, \
-    add_reverse_X
+    reverse_y_axis
 
 from trajectory_model.helper.helper import plot_multiple_e_ids
 
@@ -29,7 +29,7 @@ X = copy_last_non_zero_value(X)
 X = transform_trajectory(X)
 # X, Y = add_equivalent_quaternions(X, Y)
 X = round_down_orientation_and_pos(X)
-X = add_reverse_X(X)
+X = reverse_y_axis(X)
 
 X = X[:, 40:X.shape[1]-70:20, :]
 

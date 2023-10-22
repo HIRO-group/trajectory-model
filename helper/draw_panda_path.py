@@ -4,17 +4,17 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from scipy.spatial.transform import Rotation as R
 
-from helper.rotate_quaternion import quaternion_to_angle_axis, rotate_quaternion
+from trajectory_model.helper.rotate_quaternion import quaternion_to_angle_axis, rotate_quaternion
 from trajectory_model.helper.helper import quat_to_euler, euler_to_quat, ctime_str
 
-# file_name = '01-09-2023 13-42-14'
+file_name = '01-09-2023 13-42-14'
 # file_name = '01-09-2023 13-58-43'
-file_name = "01-09-2023 14-09-56"
+# file_name = "01-09-2023 14-09-56"
 
 file_path = '/home/ava/projects/assets/cartesian/'+file_name+'/cartesian_positions.bin'
 vectors = read_vectors(file_path)
 
-print("vectors[0]", vectors[0])
+
 def rotate_vector(vector, rotation_matrix):
     return np.dot(rotation_matrix, vector)
 
@@ -28,15 +28,25 @@ def get_start_end_points():
     start_points = np.empty((0, 3), np.float64)
     end_points = np.empty((0, 3), np.float64)
 
-    q_start = (vectors[0][3], vectors[0][4], vectors[0][5], vectors[0][6])
-    q = (-0.0045020487159490585, -0.001336313085630536, -0.21967099606990814, -0.9755628108978271)
-    angle, axis = quaternion_to_angle_axis(q, q_start)
+    # q_start = (vectors[0][3], vectors[0][4], vectors[0][5], vectors[0][6])
+    # q = (-0.0045020487159490585, -0.001336313085630536, -0.21967099606990814, -0.9755628108978271)
+    # angle, axis = quaternion_to_angle_axis(q, q_start)
+
+    
+    # 0.306891
+    # -2.36797e-16
+    # 0.590282
+    # 0.707107
+    # -0.707107
+    # -6.12323e-17
+    # -0.707107
+
 
     for row in vectors:
         x, y, z = row[0], row[1], row[2]
         a, b, c, d = row[3], row[4], row[5], row[6]
 
-        x_rot, y_rot, z_rot, w_rot = rotate_quaternion((a, b, c, d), angle, axis)
+        # x_rot, y_rot, z_rot, w_rot = rotate_quaternion((a, b, c, d), angle, axis)
         # a, b, c, d = x_rot, y_rot, z_rot, w_rot
 
         start_point = np.array([[x, y, z]])

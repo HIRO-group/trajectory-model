@@ -5,6 +5,9 @@ from trajectory_model.spill_free.constants import MAX_TRAJ_STEPS, EMBED_DIM, DT,
     BIG_RADIUS, BIG_HEIGHT, SMALL_RADIUS, SMALL_HEIGHT, \
     BIG_FILL_FULL, BIG_FILL_HALF, SMALL_FILL_FULL, SMALL_FILL_HALF
 
+from trajectory_model.helper.helper import plot_X, plot_multiple_e_ids, plot_multiple_X
+
+
 DIR_PREFIX = '/home/ava/projects/trajectory-model/data/mocap_new/'
 
 
@@ -41,8 +44,7 @@ def read_a_directory(directory_path, radius, height, fill_level):
     files = os.listdir(directory_path)
     for file in files:
         file_path = directory_path + file
-        X_new = read_a_file(file_path, radius, height,
-                            fill_level)  # single traj
+        X_new = read_a_file(file_path, radius, height, fill_level)  # single traj
         X = np.concatenate((X, X_new), axis=0)
     return X
 
@@ -80,7 +82,7 @@ def read_from_files(file_list = FILE_NAMES_NOSPILL_SPILL):
 
 
 def copy_last_non_zero_value(X):
-    print(X.shape)
+    # print(X.shape)
     for e_id in range(X.shape[0]):
         embedding = X[e_id, :, 0:7]
         all_zero_indices = np.where(np.all(embedding == 0, axis=1))
@@ -92,7 +94,7 @@ def copy_last_non_zero_value(X):
             X[e_id, :, :] = X[e_id-1, :, :]
         else:
             last_non_zero_index = first_zero_index - 1
-            X[e_id, first_zero_index:, :] = X[e_id, last_non_zero_index, :]
+            X[e_id, first_zero_index:, :] = [1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]
     return X
 
 
@@ -143,7 +145,7 @@ def add_delta_X(X):
     return X_new
 
 
-def add_reverse_X(X):
+def reverse_y_axis(X):
     X[:, :, 1] = -X[:, :, 1]
     return X
 
@@ -162,8 +164,8 @@ def process_data_SFC():
     X = transform_trajectory(X)
     X, Y = add_equivalent_quaternions(X, Y)
     X = round_down_orientation_and_pos(X)
-    X, Y = add_partial_trajectory(X, Y)
-    X = add_reverse_X(X)
+    # X, Y = add_partial_trajectory(X, Y)
+    X = reverse_y_axis(X)
     return X, Y
 
 
@@ -172,5 +174,5 @@ if __name__ == "__main__":
     # print("X.shape:", X.shape)
     # print("Y.shape:", Y.shape)
     # print("here: ", X[0, :, :])
-    # plot_X(X, 3, 0.1)
+    plot_X(X, 3, 0.05)
 
