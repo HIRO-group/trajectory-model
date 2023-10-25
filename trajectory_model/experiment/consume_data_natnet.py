@@ -8,7 +8,6 @@ No part of python_natnet, including this file, may be copied, modified,
 propagated, or distributed except according to the terms contained in the
 LICENSE file.
 """
-
 from __future__ import print_function
 import argparse
 import time
@@ -18,16 +17,17 @@ import natnet
 import csv
 import atexit
 
-DIR_PREFIX = '/home/ava/projects/trajectory-model/data/mocap_new/'
-# file_name = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-file_name = "tilt_towards_from_ava"
 
+DIR_PREFIX = '/home/ava/projects/trajectory-model/data/mocap_new_cups/'
+file_name = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-## small/big  full/half-full  spill-free/spilled
+# tumbler/30  talltumbler/70
+# talltumbler/50  talltumbler/80
+# shorttumble/30  shorttumble/70
+# wineglass/30 wineglass/70
+# spilled spill-free
 
-# DIR_PATH = DIR_PREFIX + 'small/full/spilled/'
-
-DIR_PATH = DIR_PREFIX
+DIR_PATH = DIR_PREFIX + 'tumbler/30/spill-free/'
 
 file_path = DIR_PATH + file_name + '.csv'
 collected_data = []
@@ -70,6 +70,7 @@ class ClientApp(object):
                 x, y, z = r.position
                 a, b, c, d = r.orientation
                 timestamp = timing.timestamp
+                print("r: ", r)
                 print("recieving data (x, y, z, a, b, c, d): ", x, y, z, a, b, c, d)
                 collected_data.append([timestamp, x, y, z, a, b, c, d])
 
