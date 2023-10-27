@@ -56,21 +56,21 @@ def get_start_and_end_points(X, e_id):
 def plot_multiple_e_ids(X, e_ids, arrows_lenght, verbose=False):
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
-    colors = ['r', 'g', 'b', 'b']
+    colors = ['r', 'g', 'b', 'y', 'b']
     color_id = 0
 
     for idx, e_id in enumerate(e_ids):
         start_points, end_points = get_start_and_end_points(X, e_id)
-        if idx == len(e_ids) - 1:
-            ax.quiver(start_points[:, 0], start_points[:, 1], start_points[:, 2],
-                  end_points[:, 0], end_points[:, 1], end_points[:, 2],
-                  length=arrows_lenght, normalize=True, color=colors[color_id], label='SFS')
-        else:
-            ax.quiver(start_points[:, 0], start_points[:, 1], start_points[:, 2],
+        # if idx == len(e_ids) - 1:
+        #     ax.quiver(start_points[:, 0], start_points[:, 1], start_points[:, 2],
+        #           end_points[:, 0], end_points[:, 1], end_points[:, 2],
+        #           length=arrows_lenght, normalize=True, color=colors[color_id], label='SFS')
+        # else:
+        ax.quiver(start_points[:, 0], start_points[:, 1], start_points[:, 2],
                   end_points[:, 0], end_points[:, 1], end_points[:, 2],
                   length=arrows_lenght, normalize=True, color=colors[color_id])
 
-        color_id += 0
+        color_id += 1
 
     # num_arrows = 100
     # directions = np.random.uniform(0, 2*np.pi, (num_arrows, 2))
@@ -81,30 +81,30 @@ def plot_multiple_e_ids(X, e_ids, arrows_lenght, verbose=False):
     # y = lengths * np.sin(theta) * np.sin(phi)
     # z = lengths * np.cos(theta)
 
-    x_min = -0.03
-    y_min = -0.4
-    z_min = -0.09
-    x_max = 0.54
-    y_max = 0.84
-    z_max = 0.64
+    # x_min = -0.03
+    # y_min = -0.4
+    # z_min = -0.09
+    # x_max = 0.54
+    # y_max = 0.84
+    # z_max = 0.64
 
-    num_arrows = 80
+    # num_arrows = 80
 
-    # Generate random uniform points within the specified boundary
-    x = np.random.uniform(x_min, x_max, num_arrows)
-    y = np.random.uniform(y_min, y_max, num_arrows)
-    z = np.random.uniform(z_min, z_max, num_arrows)
+    # # Generate random uniform points within the specified boundary
+    # x = np.random.uniform(x_min, x_max, num_arrows)
+    # y = np.random.uniform(y_min, y_max, num_arrows)
+    # z = np.random.uniform(z_min, z_max, num_arrows)
 
-    directions = np.random.uniform(0, 2 * np.pi, num_arrows)
-    inclinations = np.random.uniform(0, np.pi, num_arrows)  # Adjust for non-zero z-components
+    # directions = np.random.uniform(0, 2 * np.pi, num_arrows)
+    # inclinations = np.random.uniform(0, np.pi, num_arrows)  # Adjust for non-zero z-components
 
-    # Calculate arrow components (x, y, z) based on directions
-    arrow_length = 0.05 # Adjust the arrow length as needed
-    u = arrow_length * np.sin(directions) * np.sin(inclinations)
-    v = arrow_length * np.cos(directions) * np.sin(inclinations)
-    w = arrow_length * np.cos(inclinations)
+    # # Calculate arrow components (x, y, z) based on directions
+    # arrow_length = 0.05 # Adjust the arrow length as needed
+    # u = arrow_length * np.sin(directions) * np.sin(inclinations)
+    # v = arrow_length * np.cos(directions) * np.sin(inclinations)
+    # w = arrow_length * np.cos(inclinations)
 
-    ax.quiver(x, y, z, u, v, w, length=arrow_length, normalize=True, color='b', label='Uniform')
+    # ax.quiver(x, y, z, u, v, w, length=arrow_length, normalize=True, color='b', label='Uniform')
 
 
     # ax.set_xlim([x_min, x_max])
@@ -116,9 +116,10 @@ def plot_multiple_e_ids(X, e_ids, arrows_lenght, verbose=False):
     ax.set_zlabel('z')
     ax.legend()
 
-
-    plt.savefig(f'plots/trajectory_comparison.png', dpi=300)
+    # plt.savefig(f'plots/trajectory_comparison.png', dpi=300)
     plt.show()
+
+
 
 def plot_multiple_X(Xs, e_ids, arrows_lenght, verbose=False):
     fig = plt.figure()

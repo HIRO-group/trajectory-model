@@ -1,9 +1,9 @@
 import os
 import csv
 import numpy as np
-from trajectory_model.spill_free.constants import MAX_TRAJ_STEPS, EMBED_DIM, DT, \
+from trajectory_model.spill_free.constants import MAX_TRAJ_STEPS, EMBED_DIM, MOCAP_DT, \
     BIG_RADIUS, BIG_HEIGHT, SMALL_RADIUS, SMALL_HEIGHT, \
-    BIG_FILL_FULL, BIG_FILL_HALF, SMALL_FILL_FULL, SMALL_FILL_HALF
+    BIG_FILL_FULL, BIG_FILL_HALF, SMALL_FILL_FULL, SMALL_FILL_HALF, BLANK_VAL
 
 from trajectory_model.helper.helper import plot_X, plot_multiple_e_ids, plot_multiple_X
 
@@ -19,23 +19,72 @@ FILE_NAMES_NOSPILL_SPILL = \
         ("small/half-full/spill-free/", "small/half-full/spilled/", SMALL_RADIUS, SMALL_HEIGHT, SMALL_FILL_HALF)]
 
 
+def trim_noise(X):
+    diffs_pos = []
+    diffs_ori = []
+
+    for step in range(1, X.shape[1]):
+        prev_pos = X[0, step-1, 0:3]
+        curr_pos = X[0, step, 0:3]
+
+        prev_ori = X[0, step-1, 3:7]
+        curr_ori = X[0, step, 3:7]
+        
+        diff_pos = np.linalg.norm(curr_pos - prev_pos)
+        diff_ori = np.linalg.norm(curr_ori - prev_ori)
+
+        diffs_ori.append(diff_ori)
+        diffs_pos.append(diff_pos)
+
+    # find the first non_zero diff
+    first_non_zero_index = 0
+    for i in range(len(diffs_pos)):
+        if diffs_pos[i] > 0:
+            first_non_zero_index = i
+            break
+    for i in range(len(diffs_ori)):
+        if diffs_ori[i] > 0:
+            first_non_zero_index = min(first_non_zero_index, i)
+            break
+
+    # find the last non_zero diff
+    last_non_zero_index = 0
+    for i in range(len(diffs_pos)-1, -1, -1):
+        if diffs_pos[i] > 0:
+            last_non_zero_index = i
+            break
+    for i in range(len(diffs_ori)-1, -1, -1):
+        if diffs_ori[i] > 0:
+            last_non_zero_index = max(last_non_zero_index, i)
+            break
+
+    X = X[:, first_non_zero_index:last_non_zero_index, :]
+    return X
+
+
 def read_a_file(file_path, radius, height, fill_level):
-    X = np.zeros((1, 10000, EMBED_DIM), dtype=np.float64)
+    X = np.zeros((1, 2000, EMBED_DIM), dtype=np.float64)
     trajectory_index = 0
+
     with open(file_path, mode='r') as file:
         reader = csv.DictReader(file)
         for row in reader:
             keys = list(row.values())
-            y, x, z = np.float64(keys[1]), np.float64(
-                keys[2]), np.float64(keys[3])
-            a, b, c, d = np.float64(keys[4]), np.float64(
-                keys[5]), np.float64(keys[6]), np.float64(keys[7])
-            embedding = np.array(
-                [[x, y, z, a, b, c, d, radius, height, fill_level]])
+            y, x, z = np.float64(keys[1]), np.float64(keys[2]), np.float64(keys[3])
+            a, b, c, d = np.float64(keys[4]), np.float64(keys[5]), np.float64(keys[6]), np.float64(keys[7])
+            embedding = np.array([[x, y, z, a, b, c, d, radius, height, fill_level]])
             X[0, trajectory_index, :] = embedding
             trajectory_index += 1
-    X = X[:, 0:10000:DT, :]
+    
+    X = trim_noise(X)
+
+    X = X[:, 0:2000:MOCAP_DT, :]
     X = X[:, 0:MAX_TRAJ_STEPS, :]
+
+    if X.shape[1] < MAX_TRAJ_STEPS:
+        blank_vals = BLANK_VAL * np.ones((1, MAX_TRAJ_STEPS - X.shape[1], EMBED_DIM), dtype=np.float64) 
+        X = np.concatenate((X, blank_vals), axis=1)
+
     return X
 
 
@@ -78,6 +127,7 @@ def read_from_files(file_list = FILE_NAMES_NOSPILL_SPILL):
         X_s, Y_s = handle_spill(spill_file, radius, height, fill_level)
         X = np.concatenate((X, X_s), axis=0)
         Y = np.concatenate((Y, Y_s), axis=0)
+
     return X, Y
 
 
@@ -93,8 +143,10 @@ def copy_last_non_zero_value(X):
         if first_zero_index == 0:
             X[e_id, :, :] = X[e_id-1, :, :]
         else:
-            last_non_zero_index = first_zero_index - 1
-            X[e_id, first_zero_index:, :] = [1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]
+            # last_non_zero_index = first_zero_index - 1
+            X[e_id, first_zero_index:, :] = [BLANK_VAL, BLANK_VAL, BLANK_VAL,
+                                              BLANK_VAL, BLANK_VAL, BLANK_VAL, 
+                                              BLANK_VAL, BLANK_VAL, BLANK_VAL, BLANK_VAL]
     return X
 
 
@@ -171,8 +223,4 @@ def process_data_SFC():
 
 if __name__ == "__main__":
     X, Y = process_data_SFC()
-    # print("X.shape:", X.shape)
-    # print("Y.shape:", Y.shape)
-    # print("here: ", X[0, :, :])
-    plot_X(X, 3, 0.05)
-
+    plot_multiple_e_ids(X, [0, 10, 20, 30, 40], 0.05)

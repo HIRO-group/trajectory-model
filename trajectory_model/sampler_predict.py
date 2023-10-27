@@ -116,7 +116,7 @@ X = select_waypoints(X)
 
 
 from trajectory_model.spill_free.model import TrajectoryClassifier
-from trajectory_model.spill_free.constants import DT, EMBED_DIM, NUM_HEADS, FF_DIM,\
+from trajectory_model.spill_free.constants import MOCAP_DT, EMBED_DIM, NUM_HEADS, FF_DIM,\
       MAX_TRAJ_STEPS, BIG_RADIUS, BIG_HEIGHT, SMALL_RADIUS, \
       SMALL_HEIGHT, BIG_FILL_FULL, BIG_FILL_HALF, \
       SMALL_FILL_FULL, SMALL_FILL_HALF

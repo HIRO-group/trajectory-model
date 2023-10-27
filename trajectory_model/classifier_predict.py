@@ -1,9 +1,9 @@
 import numpy as np
 from trajectory_model.spill_free.model import TrajectoryClassifier
-from trajectory_model.spill_free.constants import DT, EMBED_DIM, NUM_HEADS, FF_DIM,\
+from trajectory_model.spill_free.constants import EMBED_DIM, NUM_HEADS, FF_DIM,\
       MAX_TRAJ_STEPS, BIG_RADIUS, BIG_HEIGHT, SMALL_RADIUS, \
       SMALL_HEIGHT, BIG_FILL_FULL, BIG_FILL_HALF, \
-      SMALL_FILL_FULL, SMALL_FILL_HALF
+      SMALL_FILL_FULL, SMALL_FILL_HALF, ROBOT_DT
 from trajectory_model.helper.helper import quat_to_euler, euler_to_quat, ctime_str
 from trajectory_model.helper.rotate_quaternion import quaternion_to_angle_axis, rotate_quaternion
 
@@ -16,7 +16,7 @@ model.load_weights("/home/ava/projects/trajectory-model/weights/spill_classifier
 
 
 def convert_to_model_input(trajectory):
-    trajectory = np.array([np.array(trajectory[i]) for i in range(0, len(trajectory), DT)])
+    trajectory = np.array([np.array(trajectory[i]) for i in range(0, len(trajectory), ROBOT_DT)])
     trajectory = trajectory[0:MAX_TRAJ_STEPS, :]
     properties = np.array([SMALL_FILL_FULL, SMALL_HEIGHT, SMALL_FILL_FULL])
     

@@ -14,6 +14,8 @@ file_name = '01-09-2023 13-42-14'
 file_path = '/home/ava/projects/assets/cartesian/'+file_name+'/cartesian_positions.bin'
 vectors = read_vectors(file_path)
 
+print("len(vectors)", len(vectors))
+
 
 def rotate_vector(vector, rotation_matrix):
     return np.dot(rotation_matrix, vector)

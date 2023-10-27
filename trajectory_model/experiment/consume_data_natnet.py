@@ -12,11 +12,16 @@ from __future__ import print_function
 import argparse
 import time
 from datetime import datetime
-import attr
-import natnet
+# import attr
+# import natnet
 import csv
 import atexit
 
+import sys  
+sys.path.append('/home/ava/miniconda3/lib/python3.11/site-packages')
+
+import attr
+import natnet
 
 DIR_PREFIX = '/home/ava/projects/trajectory-model/data/mocap_new_cups/'
 file_name = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -65,6 +70,7 @@ class ClientApp(object):
         self._client.spin()
 
     def callback(self, rigid_bodies, skeletons, markers, timing):
+        print("Called back")
         if rigid_bodies:
             for r in rigid_bodies:
                 x, y, z = r.position

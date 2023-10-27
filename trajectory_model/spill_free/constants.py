@@ -6,9 +6,22 @@ o=(a, b, c, w)
 
 NUM_HEADS = 8
 FF_DIM = 32
-DT = 5
 MAX_TRAJ_STEPS = 150
 EMBED_DIM = 10
+
+MOCAP_DT = 6
+ROBOT_DT = 50
+
+''' 
+mocap freq is 120HZ, robot is 1000HZ
+we want them to have the same frequency
+MOCAP_DT = 6 and ROBOT_DT = 50 because:
+120/6 = 20 and 1000/50 = 20
+'''
+
+
+BLANK_VAL = 1000
+
 
 BIG_RADIUS = 3
 BIG_HEIGHT = 4
