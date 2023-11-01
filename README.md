@@ -2,7 +2,8 @@
 ```python main_SFC.py```
 
 ## Predict from SFC
- call func spilled(trajectory) from ```trajectory_model/classifier_predict.py```
+ call func spilled(trajectory) from ```trajectory_model/classifier_predict.py``` OR
+ ```python helper/predict_spillage.py```
 
 ## Process data collected for SFC
 ```python process_data/process_data_SFC.py```

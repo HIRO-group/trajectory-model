@@ -8,7 +8,7 @@ from trajectory_model.helper.helper import ctime_str
 
 
 if __name__ == '__main__':
-    fit_model = True
+    fit_model = False
     X_train, Y_train, X_val, Y_val, X, Y = get_data(model_name='SFC', manual=False)
 
     X_train_traj = X_train[:, :, :7]
@@ -57,12 +57,20 @@ if __name__ == '__main__':
         print(f'Number of training data: {training_data_num}, epochs: {epochs}')
         print(f'Saved model to disk.')
     else:
-        pass
         # model.build((None, MAX_TRAJ_STEPS, EMBED_DIM))
-        # # model.load_weights("/home/ava/projects/trajectory-model/weights/spill_classifier/best/2023-09-09 14:42:38_epoch_191_best_val_acc_0.93_train_acc_0.92.h5")
-        # eval = model.evaluate(X_val, Y_val, verbose=2)
-        # loss, accuracy, precision, recall = eval[0], eval[1], eval[2], eval[3]
-        # print("Loss is: ", loss)
-        # print("Accuracy is: ", accuracy)
-        # print("Precision is: ", precision)
-        # print("Recall is: ", recall)
+
+        model.load_weights("/home/ava/projects/trajectory-model/weights/spill_classifier_func_api/best/2023-10-31 20:11:14_epoch_169_train_acc_0.91.h5")
+        eval = model.evaluate({"trajectory": X_val_traj, 
+                                "properties": X_val_prop,},
+                                {"prediction": Y_val}, verbose=2)
+        loss, accuracy, precision, recall = eval[0], eval[1], eval[2], eval[3]
+        print("Loss is: ", loss)
+        print("Accuracy is: ", accuracy)
+        print("Precision is: ", precision)
+        print("Recall is: ", recall)
+
+        prediction = model.predict({"trajectory": X[0, :, :7][None, :, :],
+                                    "properties": X[0, 0, 7:][None, :],
+                                    })[0][0]
+        actual_value = Y[0]
+        print("prediction: ", prediction, "actual value: ", actual_value)

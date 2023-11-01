@@ -22,8 +22,6 @@ def convert_to_model_input(trajectory):
     properties = np.array([SMALL_RADIUS, SMALL_HEIGHT, SMALL_FILL_FULL])
     properties = properties[None,:].repeat(trajectory.shape[0],axis=0)
     trajectory = np.concatenate((trajectory, properties), axis=1)
-
-
     trajectory = trajectory.reshape(1, MAX_TRAJ_STEPS, EMBED_DIM)
     return trajectory
 

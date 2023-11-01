@@ -16,7 +16,6 @@ def calculate_endpoint(start, a, b, c, w):
 panda_default_cartesian = np.array([0.306891, -2.36797e-16, 0.590282, 0.707107, -0.707107, -6.12323e-17, -0.707107])
 cup_default_cartesian = np.array([-0.007746216841042042,0.04685171693563461,0.16710145771503448,-0.0044183372519910336,-0.0012599572073668242,-0.21964260935783386,-0.9755696058273315])
 
-x, y, z = 0, 0, 0
 panda_a, panda_b, panda_c, panda_w = panda_default_cartesian[3], panda_default_cartesian[4], panda_default_cartesian[5], panda_default_cartesian[6]
 cup_a, cup_b, cup_c, cup_w = cup_default_cartesian[3], cup_default_cartesian[4], cup_default_cartesian[5], cup_default_cartesian[6]
 
@@ -27,6 +26,8 @@ cup_q  = R.from_quat([cup_a, cup_b, cup_c, cup_w]).as_matrix()
 panda_q_inv = R.from_quat([-panda_a, -panda_b, -panda_c, panda_w]).as_matrix()
 diff = np.dot(cup_q, panda_q_inv)
 
+
+x, y, z = 0, 0, 0
 
 # panda = q1
 # cup = q2
