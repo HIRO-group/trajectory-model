@@ -60,33 +60,7 @@ class TransformerBlock(Layer):
         return self.layernorm2(out1 + ffn_output)
 
 
-class TrajectoryClassifierNew(Model):
-    def __init__(self, max_traj_steps, embed_dim, num_heads, ff_dim, dropout_rate=0.1, name="trajectory_classifier", **kwargs) -> None:
-        super(TrajectoryClassifierNew, self).__init__(name=name, **kwargs)
-        self.position_encoding = PositionalEnconding(max_traj_steps, embed_dim)
-        self.transformer_block = TransformerBlock(embed_dim, num_heads, ff_dim, dropout_rate)
-        self.pooling = GlobalAveragePooling1D()
-        self.dropout1 = Dropout(dropout_rate)
-        self.dense1 = Dense(20, activation="relu")
-        self.dropout2 = Dropout(dropout_rate)
-        self.dense2 = Dense(1, activation='sigmoid')
-
-    def call(self, x):
-        x = self.position_encoding(x)
-        x = self.transformer_block(x)
-        x = self.pooling(x)
-        x = self.dropout1(x)
-        x = self.dense1(x)
-        x = self.dropout2(x)
-        x = self.dense2(x)
-        return x
-    
-
-# inputs = keras.Input(shape=(784,))
-# max_trajectory_steps = 150
-# embed_dim = 7 
-
-def get_model():
+def get_SFC_model():
     trajectory_input = keras.Input(shape=(MAX_TRAJ_STEPS, EMBED_LOC), name="trajectory")
     properties_input = keras.Input(shape=(EMBED_PROP,), name="properties")
     # properties_features = layers.Embedding(10, 5)(properties_input) # 10 is the vocab size, 5 is the embedding dimension
