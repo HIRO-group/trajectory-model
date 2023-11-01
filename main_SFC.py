@@ -6,7 +6,7 @@ from trajectory_model.helper.model_helper import SaveBestAccuracy
 from trajectory_model.helper.helper import ctime_str
 
 if __name__ == '__main__':
-    fit_model = True
+    fit_model = False
     X_train, Y_train, X_val, Y_val, X, Y = get_data(model_name='SFC', manual=False)
     model = TrajectoryClassifier(max_traj_steps=MAX_TRAJ_STEPS, embed_dim=EMBED_DIM, num_heads=NUM_HEADS, ff_dim=FF_DIM)
     model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy', tf.keras.metrics.Precision(), tf.keras.metrics.Recall()])

@@ -18,10 +18,12 @@ model.load_weights("/home/ava/projects/trajectory-model/weights/spill_classifier
 def convert_to_model_input(trajectory):
     trajectory = np.array([np.array(trajectory[i]) for i in range(0, len(trajectory), ROBOT_DT)])
     trajectory = trajectory[0:MAX_TRAJ_STEPS, :]
-    properties = np.array([SMALL_FILL_FULL, SMALL_HEIGHT, SMALL_FILL_FULL])
-    
+
+    properties = np.array([SMALL_RADIUS, SMALL_HEIGHT, SMALL_FILL_FULL])
     properties = properties[None,:].repeat(trajectory.shape[0],axis=0)
     trajectory = np.concatenate((trajectory, properties), axis=1)
+
+
     trajectory = trajectory.reshape(1, MAX_TRAJ_STEPS, EMBED_DIM)
     return trajectory
 

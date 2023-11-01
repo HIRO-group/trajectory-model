@@ -14,6 +14,7 @@ def get_train_and_val_set(X, Y, manual=False):
     else:
         train_index = np.random.choice(X.shape[0], train_id, replace=False) 
         val_index = np.setdiff1d(np.arange(X.shape[0]), train_index)
+    
     X_train, Y_train = X[train_index], Y[train_index]
     X_val, Y_val = X[val_index], Y[val_index]
     return X_train, Y_train, X_val, Y_val

@@ -9,6 +9,9 @@ FF_DIM = 32
 MAX_TRAJ_STEPS = 150
 EMBED_DIM = 10
 
+EMBED_LOC = 7 # x, y, z, a, b, c, w
+EMBED_PROP = 3 # radius, height, fill_level
+
 MOCAP_DT = 6
 ROBOT_DT = 50
 
