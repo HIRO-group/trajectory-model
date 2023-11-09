@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+from process_data.process_data_SFC import keep_spill_free
 from trajectory_model.data import get_data
 from trajectory_model.spill_free.constants import MAX_TRAJ_STEPS, EMBED_DIM, MOCAP_DT, \
     BIG_RADIUS, BIG_HEIGHT, SMALL_RADIUS, SMALL_HEIGHT, \
@@ -8,17 +9,6 @@ from trajectory_model.spill_free.constants import MAX_TRAJ_STEPS, EMBED_DIM, MOC
 
 X_train, Y_train, X_val, Y_val, X, Y = get_data(model_name='SFC', manual=False)
 
-
-
-def keep_spill_free(X, Y):
-    X_new, Y_new = [], []
-    for e_id in range(X.shape[0]):
-        if Y[e_id] == 0:
-            X_new.append(X[e_id])
-            Y_new.append(Y[e_id])
-    X_new = np.array(X_new)
-    Y_new = np.array(Y_new)
-    return X_new, Y_new
 
 def keep_selected_prop(X, Y):
     X_new, Y_new = [], []

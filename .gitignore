@@ -244,3 +244,4 @@ pyrightconfig.json
 test.py
 data/
 panda_data/
+weights/

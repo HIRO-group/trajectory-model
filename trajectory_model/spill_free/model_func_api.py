@@ -73,8 +73,12 @@ def get_SFC_model():
 
     x = layers.concatenate([traj_features, properties_input])
 
-    x = Dense(20, activation="relu")(x)
+    x = Dense(20, activation="sigmoid")(x)
     x = Dropout(0.1)(x)
+
+    x = Dense(5, activation="relu")(x)
+    x = Dropout(0.1)(x)
+
     prediction = Dense(1, activation='sigmoid', name="prediction")(x)
 
     model = keras.Model(

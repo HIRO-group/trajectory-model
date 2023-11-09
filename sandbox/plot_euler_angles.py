@@ -1,11 +1,11 @@
 from scipy.spatial.transform import Rotation as R
 import matplotlib.pyplot as plt
 
-from read import read_vectors
+from trajectory_model.helper.read import read_panda_vectors
 
 def get_roll_pitch_yaw(file_name):
     file_path = '/home/ava/projects/assets/cartesian/'+file_name+'/cartesian_positions.bin'
-    vectors = read_vectors(file_path)
+    vectors = read_panda_vectors(file_path)
     rolls, pitches, yaws = [], [], []
     for pos in vectors:
         a, b, c, d = pos[3], pos[4], pos[5], pos[6]

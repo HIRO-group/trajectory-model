@@ -4,9 +4,9 @@ import numpy as np
 from trajectory_model.spill_free.constants import MAX_TRAJ_STEPS, EMBED_DIM, MOCAP_DT, \
     BIG_RADIUS, BIG_HEIGHT, SMALL_RADIUS, SMALL_HEIGHT, \
     BIG_FILL_FULL, BIG_FILL_HALF, SMALL_FILL_FULL, SMALL_FILL_HALF, BLANK_VAL
-
 from trajectory_model.helper.helper import plot_X, plot_multiple_e_ids, plot_multiple_X
-
+from trajectory_model.helper.read import read_panda_vectors
+from trajectory_model.classifier_predict_func_api import process_panda_to_model_input
 
 DIR_PREFIX = '/home/ava/projects/trajectory-model/data/mocap_new/'
 
@@ -131,7 +131,7 @@ def read_from_files(file_list = FILE_NAMES_NOSPILL_SPILL):
     return X, Y
 
 
-def copy_last_non_zero_value(X):
+def fill_with_blanks(X):
     # print(X.shape)
     for e_id in range(X.shape[0]):
         embedding = X[e_id, :, 0:7]
@@ -210,14 +210,64 @@ def round_down_orientation_and_pos(X):
     return X
 
 
+def keep_spill_free(X, Y):
+    X_new, Y_new = [], []
+    for e_id in range(X.shape[0]):
+        if Y[e_id] == 0:
+            X_new.append(X[e_id])
+            Y_new.append(Y[e_id])
+    X_new = np.array(X_new)
+    Y_new = np.array(Y_new)
+    return X_new, Y_new
+
+
+def compute_delta_X(X):
+    # compute delta x
+    # delta_X = np.zeros((X.shape[0], MAX_TRAJ_STEPS, X.shape[2]), dtype=np.float64)
+    delta_X = np.copy(X)
+    for e_id in range(X.shape[0]):
+        for i in range(1, X.shape[1]):
+            delta_X[e_id, i, 0:3] = X[e_id, i, 0:3] - X[e_id, i-1, 0:3]
+            # delta_X[e_id, i, 3:]  = X[e_id, i, 3:]
+    return delta_X
+
+def add_panda_trajectories(X, Y):
+    filenames_props_no_spill = [
+        (['01-09-2023 13-42-14', '01-09-2023 13-58-43', '01-09-2023 14-09-56'], 
+                            np.array([[BIG_RADIUS, BIG_HEIGHT, BIG_FILL_HALF]])),
+        (['10-09-2023 10-03-18', '10-09-2023 10-06-37', '10-09-2023 13-10-26', '10-09-2023 13-14-07'],
+                            np.array([[SMALL_RADIUS, SMALL_HEIGHT, SMALL_FILL_FULL]])),
+        (['10-09-2023 13-30-09', '10-09-2023 13-32-29', '10-09-2023 13-39-37'], 
+                            np.array([[SMALL_RADIUS, SMALL_HEIGHT, SMALL_FILL_HALF]]))
+    ]
+    for fps in filenames_props_no_spill:
+        filenames = fps[0]
+        properties = fps[1]
+        properties = np.repeat(properties, X.shape[1], axis=0)
+        for fn in filenames:
+            panda_file_path =  '/home/ava/projects/assets/cartesian/'+fn+'/cartesian_positions.bin'
+            vectors = read_panda_vectors(panda_file_path)
+
+            panda_traj = process_panda_to_model_input(vectors)
+            panda_traj = np.concatenate((panda_traj, properties), axis=1)
+            panda_traj = panda_traj[np.newaxis, :, :]
+            
+            X = np.concatenate((X, panda_traj), axis=0)
+            Y = np.concatenate((Y, np.zeros((1, 1))), axis=0)
+
+    return X, Y
+
+
 def process_data_SFC():
     X, Y = read_from_files()
-    X = copy_last_non_zero_value(X)
+    X = fill_with_blanks(X)
     X = transform_trajectory(X)
     X, Y = add_equivalent_quaternions(X, Y)
     X = round_down_orientation_and_pos(X)
     # X, Y = add_partial_trajectory(X, Y)
     X = reverse_y_axis(X)
+    X = compute_delta_X(X)
+    X, Y = add_panda_trajectories(X, Y)
     return X, Y
 
 

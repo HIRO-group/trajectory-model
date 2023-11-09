@@ -132,7 +132,6 @@ def plot_multiple_X(Xs, e_ids, arrows_lenght, verbose=False):
             e_id = e_ids[0]
         else:
             e_id = e_ids[1]
-            arrows_lenght += 1
         start_points, end_points = get_start_and_end_points(X, e_id)
         ax.quiver(start_points[:, 0], start_points[:, 1], start_points[:, 2],
                 end_points[:, 0], end_points[:, 1], end_points[:, 2],
@@ -143,6 +142,7 @@ def plot_multiple_X(Xs, e_ids, arrows_lenght, verbose=False):
     ax.set_ylabel('y')
     ax.set_zlabel('z')
     plt.show()
+
 
 
 def plot_X(X, e_id, arrows_lenght, verbose=False):
@@ -208,10 +208,10 @@ def plot_loss_function(history):
     now = dt.strftime("%H:%M:%S")
 
     train_loss = history.history['loss']
-    val_loss = history.history['val_loss']
+    # val_loss = history.history['val_loss']
     epochs = range(1, len(train_loss) + 1)
     plt.plot(epochs, train_loss, 'b', label='Training Loss')
-    plt.plot(epochs, val_loss, 'r', label='Validation Loss')
+    # plt.plot(epochs, val_loss, 'r', label='Validation Loss')
     plt.title('Training and Validation Loss')
     plt.xlabel('Epochs')
     plt.ylabel('Loss')

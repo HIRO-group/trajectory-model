@@ -2,15 +2,15 @@ from scipy.spatial.transform import Rotation as R
 import matplotlib.pyplot as plt
 import numpy as np
 
-from read import read_vectors
-from jacobian import get_jacobian
+from trajectory_model.helper.read import read_panda_vectors
+from trajectory_model.helper.jacobian import get_jacobian
 
 
 def get_ee_vel(file_name):
     file_path_v = '/home/ava/projects/assets/'+file_name+'/joint_velocities.bin'
     file_path_p = '/home/ava/projects/assets/'+file_name+'/joint_waypoints.bin'
-    joint_velocities = read_vectors(file_path_v)
-    joint_poisitions = read_vectors(file_path_p)
+    joint_velocities = read_panda_vectors(file_path_v)
+    joint_poisitions = read_panda_vectors(file_path_p)
 
     ee_velocities = []
     for idx, vel in enumerate(joint_velocities):

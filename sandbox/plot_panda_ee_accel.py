@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-from ee_vel import get_ee_vel
+from sandbox.plot_panda_ee_vel import get_ee_vel
 
 # file_name = '01-09-2023 13-42-14'
 # file_name = '01-09-2023 13-58-43'

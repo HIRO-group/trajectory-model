@@ -1,5 +1,5 @@
 import numpy as np
-from process_data.process_data_SFC import read_from_files, copy_last_non_zero_value, \
+from process_data.process_data_SFC import read_from_files, fill_with_blanks, \
     transform_trajectory, add_equivalent_quaternions, round_down_orientation_and_pos, \
     reverse_y_axis
 from trajectory_model.spill_free.constants import EMBED_DIM, BIG_RADIUS, BIG_HEIGHT, SMALL_RADIUS, \
@@ -106,7 +106,7 @@ file_list = [("big/full/spill-free/", "big/full/spilled/", BIG_RADIUS, BIG_HEIGH
 
 X, Y = read_from_files(file_list)
 X, Y = keep_spill_free(X, Y)
-X = copy_last_non_zero_value(X)
+X = fill_with_blanks(X)
 X = transform_trajectory(X)
 X = reverse_y_axis(X)
 X = transform_for_IK(X)
