@@ -8,7 +8,12 @@ from trajectory_model.helper.rotate_quaternion import rotate_panda_to_match_orie
 
 model = get_SFC_model()
 # address = "/home/ava/projects/trajectory-model/weights/spill_classifier_func_api/best/2023-11-08 15:34:11_epoch_254_train_acc_0.88.h5"
-address = "/home/ava/projects/trajectory-model/weights/spill_classifier_func_api/best/2023-11-08 18:02:34_epoch_292_train_acc_0.89.h5"
+# address = "/home/ava/projects/trajectory-model/weights/spill_classifier_func_api/best/2023-11-08 18:02:34_epoch_292_train_acc_0.89.h5"
+# address = "/home/ava/projects/trajectory-model/weights/spill_classifier_func_api/best/2023-11-13 13:45:23_epoch_262_train_acc_0.91.h5"
+# address = "/home/ava/projects/trajectory-model/weights/spill_classifier_func_api/best/2023-11-13 16:39:00_epoch_297_train_acc_0.9.h5"
+# address = "/home/ava/projects/trajectory-model/weights/spill_classifier_func_api/best/2023-11-13 16:56:43_epoch_288_train_acc_0.89.h5"
+# address = '/home/ava/projects/trajectory-model/weights/spill_classifier_func_api/best/2023-11-13 17:17:50_epoch_298_train_acc_0.91.h5'
+address = '/home/ava/projects/trajectory-model/weights/spill_classifier_func_api/best/2023-11-13 17:39:44_epoch_298_train_acc_0.89.h5'
 model.load_weights(address)
 
 
@@ -51,6 +56,7 @@ def process_panda_to_model_input(trajectory):
 
 
 def spilled(trajectory, properties=None):
+    print("callling spilled...")
     trajectory = process_panda_to_model_input(trajectory)
     if properties is None:
         properties = np.array([BIG_RADIUS, BIG_HEIGHT, BIG_FILL_HALF])

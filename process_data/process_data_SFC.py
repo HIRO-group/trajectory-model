@@ -231,29 +231,53 @@ def compute_delta_X(X):
             # delta_X[e_id, i, 3:]  = X[e_id, i, 3:]
     return delta_X
 
-def add_panda_trajectories(X, Y):
-    filenames_props_no_spill = [
-        (['01-09-2023 13-42-14', '01-09-2023 13-58-43', '01-09-2023 14-09-56'], 
-                            np.array([[BIG_RADIUS, BIG_HEIGHT, BIG_FILL_HALF]])),
-        (['10-09-2023 10-03-18', '10-09-2023 10-06-37', '10-09-2023 13-10-26', '10-09-2023 13-14-07'],
-                            np.array([[SMALL_RADIUS, SMALL_HEIGHT, SMALL_FILL_FULL]])),
-        (['10-09-2023 13-30-09', '10-09-2023 13-32-29', '10-09-2023 13-39-37'], 
-                            np.array([[SMALL_RADIUS, SMALL_HEIGHT, SMALL_FILL_HALF]]))
-    ]
-    for fps in filenames_props_no_spill:
+def process_panda_file(X, Y, filenames, spill_free):
+    for fps in filenames:
         filenames = fps[0]
         properties = fps[1]
         properties = np.repeat(properties, X.shape[1], axis=0)
         for fn in filenames:
             panda_file_path =  '/home/ava/projects/assets/cartesian/'+fn+'/cartesian_positions.bin'
             vectors = read_panda_vectors(panda_file_path)
-
             panda_traj = process_panda_to_model_input(vectors)
             panda_traj = np.concatenate((panda_traj, properties), axis=1)
             panda_traj = panda_traj[np.newaxis, :, :]
-            
             X = np.concatenate((X, panda_traj), axis=0)
-            Y = np.concatenate((Y, np.zeros((1, 1))), axis=0)
+            if spill_free:
+                Y = np.concatenate((Y, np.zeros((1, 1))), axis=0)
+            else:
+                Y = np.concatenate((Y, np.ones((1, 1))), axis=0)
+    return X, Y
+
+
+def add_panda_trajectories(X, Y):
+    filenames_props_NOSPILL = [
+        (['01-09-2023 13-42-14', '01-09-2023 13-58-43', '01-09-2023 14-09-56'], 
+        np.array([[BIG_RADIUS, BIG_HEIGHT, BIG_FILL_HALF]])),
+        
+        (['10-09-2023 10-03-18', '10-09-2023 10-06-37', '10-09-2023 13-10-26',
+        '10-09-2023 13-14-07'],
+        np.array([[SMALL_RADIUS, SMALL_HEIGHT, SMALL_FILL_FULL]])),
+        
+        (['10-09-2023 13-30-09', '10-09-2023 13-32-29', '10-09-2023 13-39-37'], 
+        np.array([[SMALL_RADIUS, SMALL_HEIGHT, SMALL_FILL_HALF]]))
+    ]
+
+    file_names_props_SPILL = [
+        (['13-11-2023 13-17-10', '13-11-2023 13-19-03', '13-11-2023 13-22-02',
+          '13-11-2023 13-23-06', '13-11-2023 13-25-15', '13-11-2023 13-26-22',
+          '13-11-2023 15-52-06', '13-11-2023 16-02-34', '13-11-2023 16-33-28',
+          '13-11-2023 16-41-08', '13-11-2023 16-45-30', '13-11-2023 16-46-41',
+          '13-11-2023 16-47-52', '13-11-2023 16-49-54', '13-11-2023 17-00-38',
+          '13-11-2023 17-01-48', '13-11-2023 17-03-14', '13-11-2023 17-06-53',
+          '13-11-2023 17-08-32', '13-11-2023 17-09-56', '13-11-2023 17-11-11',
+          '13-11-2023 17-20-14', '13-11-2023 17-23-14', '13-11-2023 17-27-18',
+          '13-11-2023 17-30-59', '13-11-2023 17-32-32', '13-11-2023 17-33-44'], 
+          np.array([[BIG_RADIUS, BIG_HEIGHT, BIG_FILL_HALF]]))
+    ]
+
+    X, Y = process_panda_file(X, Y, filenames_props_NOSPILL, spill_free=True)
+    X, Y = process_panda_file(X, Y, file_names_props_SPILL, spill_free=False)
 
     return X, Y
 

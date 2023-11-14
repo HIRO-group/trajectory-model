@@ -126,7 +126,7 @@ from trajectory_model.helper.rotate_quaternion import quaternion_to_angle_axis, 
 model = TrajectoryClassifier(max_traj_steps=MAX_TRAJ_STEPS, embed_dim=EMBED_DIM, num_heads=NUM_HEADS, ff_dim=FF_DIM)
 model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
 model.build((None, MAX_TRAJ_STEPS, EMBED_DIM))
-model.load_weights("/home/ava/projects/trajectory-model/weights/spill_classifier/best/2023-09-09 14:42:38_epoch_191_best_val_acc_0.93_train_acc_0.92.h5")
+# model.load_weights("/home/ava/projects/trajectory-model/weights/spill_classifier/best/2023-09-09 14:42:38_epoch_191_best_val_acc_0.93_train_acc_0.92.h5")
 
 
 def sample_state(trajectory):

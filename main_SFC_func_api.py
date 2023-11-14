@@ -23,8 +23,8 @@ if __name__ == '__main__':
         epochs = 300
         batch_size = 32
         custom_cb = SaveBestAccuracy(file_address="spill_classifier_func_api", 
-                                        min_val_acc=0.87,
-                                        min_train_acc=0.87,
+                                        min_val_acc=0.89,
+                                        min_train_acc=0.89,
                                         model=model,
                                         X_train_traj=X_train_traj,
                                         X_train_prop=X_train_prop,
