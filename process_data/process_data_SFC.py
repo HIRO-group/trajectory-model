@@ -238,25 +238,6 @@ def add_equivalent_quaternions(X, Y):
         Y_new[2 * e_id + 1] = Y[e_id]
     return X_new, Y_new
 
-
-def add_partial_trajectory(X, Y):
-    data_per_experiment = 4
-    new_X_num_data = data_per_experiment * X.shape[0]
-    X_new = np.zeros((new_X_num_data, X.shape[1], EMBED_DIM), dtype=np.float64)
-    Y_new = np.zeros((new_X_num_data, 1), dtype=np.float64)
-
-    for e_id in range(X.shape[0]):
-        for i in range(data_per_experiment):
-            Y_new[e_id * data_per_experiment + i, :] = Y[e_id]
-            X_new[e_id * data_per_experiment + i, 0: int(
-                (i+1) * X.shape[1]/data_per_experiment), :] = X[e_id, 0: int((i+1) * X.shape[1]/data_per_experiment), :]
-            
-            # fill the rest with the last value
-            X_new[e_id * data_per_experiment + i, int((i+1) * X.shape[1]/data_per_experiment):, :] = X[e_id, int(
-                (i+1) * X.shape[1]/data_per_experiment)-1, :]
-    return X_new, Y_new
-
-
 def add_delta_X(X):
     X_new = np.zeros((X.shape[0], MAX_TRAJ_STEPS, EMBED_DIM), dtype=np.float64)
     for e_id in range(X.shape[0]):
@@ -354,7 +335,6 @@ def process_data_SFC():
     X = transform_trajectory(X)
     X, Y = add_equivalent_quaternions(X, Y)
     X = round_down_orientation_and_pos(X)
-    # X, Y = add_partial_trajectory(X, Y)
     X = reverse_y_axis(X)
     X = compute_delta_X(X)
     X, Y = add_panda_trajectories(X, Y)

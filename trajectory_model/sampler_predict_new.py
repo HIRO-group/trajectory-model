@@ -3,17 +3,25 @@ import matplotlib.pyplot as plt
 
 from process_data.process_data_SFC import keep_spill_free
 from trajectory_model.data import get_data
-from trajectory_model.spill_free.constants import MAX_TRAJ_STEPS, EMBED_DIM, MOCAP_DT, \
-    BIG_RADIUS, BIG_HEIGHT, SMALL_RADIUS, SMALL_HEIGHT, \
-    BIG_FILL_FULL, BIG_FILL_HALF, SMALL_FILL_FULL, SMALL_FILL_HALF, BLANK_VAL
+
+from trajectory_model.spill_free.constants import \
+    MAX_TRAJ_STEPS, EMBED_LOC, BLANK_VAL, ROBOT_DT, \
+    BIG_RADIUS_B, BIG_HEIGHT, BIG_RADIUS_U, BIG_FILL_80, BIG_FILL_30, \
+    SMALL_RADIUS_B, SMALL_HEIGHT, SMALL_RADIUS_U, SMALL_FILL_80, SMALL_FILL_50, \
+    SHORT_TUMBLER_RADIUS_B, SHORT_TUMBLER_HEIGHT, SHORT_TUMBLER_RADIUS_U, SHORT_TUMBLER_FILL_30, SHORT_TUMBLER_FILL_70, \
+    TALL_TUMBLER_RADIUS_B, TALL_TUMBLER_HEIGHT, TALL_TUMBLER_RADIUS_U, TALL_TUMBLER_FILL_50, TALL_TUMBLER_FILL_80, \
+    TUMBLER_RADIUS_B, TUMBLER_HEIGHT, TUMBLER_RADIUS_U, TUMBLER_FILL_30, TUMBLER_FILL_70, \
+    WINE_RADIUS_B, WINE_HEIGHT, WINE_RADIUS_U, WINE_FILL_30, WINE_FILL_70
+
 
 def keep_selected_prop(X, Y, properties):
     X_new, Y_new = [], []
     for e_id in range(X.shape[0]):
-        prop = X[e_id, 0, 7:10]
+        prop = X[e_id, 0, 7:]
         if prop[0] == properties[0] and \
               prop[1] == properties[1] and  \
-                prop[2] == properties[2]:
+                prop[2] == properties[2] and \
+                    prop[3] == properties[3]:
             X_new.append(X[e_id])
             Y_new.append(Y[e_id])
     X_new = np.array(X_new)
@@ -33,7 +41,7 @@ def get_probability_distribution_map(X):
     return np.array(probability_distribution_map)
 
 _, _, _, _, X, Y = get_data(model_name='SFC', manual=False)
-properties = [BIG_RADIUS, BIG_HEIGHT, BIG_FILL_HALF] # radius, height, fill-level
+properties = [BIG_RADIUS_B, BIG_HEIGHT, BIG_RADIUS_U, BIG_FILL_30]
 X, Y = keep_spill_free(X, Y)
 X, Y = keep_selected_prop(X, Y, properties)
 probability_distribution_map = get_probability_distribution_map(X)

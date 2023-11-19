@@ -20,7 +20,6 @@ def get_start_end_points(cup_frame=False):
         x, y, z = row[0], row[1], row[2]
         a, b, c, d = row[3], row[4], row[5], row[6]
         start_point = np.array([[x, y, z]])
-        # if cup_frame:
 
         end_point = calculate_endpoint(start_point, a, b, c, d)
         start_points = np.append(start_points, start_point, axis=0)

@@ -76,22 +76,3 @@ def rotate_panda_to_match_orientation(panda_trajectory):
         panda_a, panda_b, panda_c, panda_w = new_panda_quat[0], new_panda_quat[1], new_panda_quat[2], new_panda_quat[3]
         panda_trajectory[step][3], panda_trajectory[step][4], panda_trajectory[step][5], panda_trajectory[step][6] = panda_a, panda_b, panda_c, panda_w
     return panda_trajectory
-
-
-# def rotate_new_cup_to_match_orientation(new_cup_trajectory):
-#     ccup = np.array([-0.06894510984420776,0.19772540032863617,0.3412862718105316,-0.09424977749586105,-0.09316850453615189,-0.08828091621398926,-0.9872401356697083])
-#     new_cup_a, new_cup_b, new_cup_c, new_cup_w = ccup[3], ccup[4], ccup[5], ccup[6]
-#     # new_cup_q  = R.from_quat([new_cup_a, new_cup_b, new_cup_c, new_cup_w]).as_matrix()
-#     ccup_q_inv = R.from_quat([-new_cup_a, -new_cup_b, -new_cup_c, new_cup_w]).as_matrix()
-#     diff = np.dot(cup_q, ccup_q_inv)
-
-#     for step in range(new_cup_trajectory.shape[0]):
-#         new_cup_q = [new_cup_trajectory[step][3], new_cup_trajectory[step][4], new_cup_trajectory[step][5], new_cup_trajectory[step][6]]
-#         if new_cup_q == [0, 0, 0, 0]:
-#             continue
-#         new_cup_q = R.from_quat(new_cup_q).as_matrix()
-#         new_cup_mat = np.dot(diff, new_cup_q)
-#         new_cup_quat = R.from_matrix(new_cup_mat).as_quat()
-#         cup_a, cup_b, cup_c, cup_w = new_cup_quat[0], new_cup_quat[1], new_cup_quat[2], new_cup_quat[3]
-#         new_cup_trajectory[step][3], new_cup_trajectory[step][4], new_cup_trajectory[step][5], new_cup_trajectory[step][6] = cup_a, cup_b, cup_c, cup_w
-#     return new_cup_trajectory
