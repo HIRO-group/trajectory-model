@@ -1,20 +1,18 @@
 import numpy as np
 from trajectory_model.spill_free.model_func_api import get_SFC_model
 from trajectory_model.spill_free.constants import \
-      MAX_TRAJ_STEPS, BIG_RADIUS, BIG_HEIGHT, SMALL_RADIUS, \
-      SMALL_HEIGHT, BIG_FILL_FULL, BIG_FILL_HALF, \
-      SMALL_FILL_FULL, SMALL_FILL_HALF, ROBOT_DT, BLANK_VAL, EMBED_LOC
+    MAX_TRAJ_STEPS, EMBED_LOC, BLANK_VAL, ROBOT_DT, \
+    BIG_RADIUS_B, BIG_HEIGHT, BIG_RADIUS_U, BIG_FILL_80, BIG_FILL_30, \
+    SMALL_RADIUS_B, SMALL_HEIGHT, SMALL_RADIUS_U, SMALL_FILL_80, SMALL_FILL_50, \
+    SHORT_TUMBLER_RADIUS_B, SHORT_TUMBLER_HEIGHT, SHORT_TUMBLER_RADIUS_U, SHORT_TUMBLER_FILL_30, SHORT_TUMBLER_FILL_70, \
+    TALL_TUMBLER_RADIUS_B, TALL_TUMBLER_HEIGHT, TALL_TUMBLER_RADIUS_U, TALL_TUMBLER_FILL_50, TALL_TUMBLER_FILL_80, \
+    TUMBLER_RADIUS_B, TUMBLER_HEIGHT, TUMBLER_RADIUS_U, TUMBLER_FILL_30, TUMBLER_FILL_70, \
+    WINE_RADIUS_B, WINE_HEIGHT, WINE_RADIUS_U, WINE_FILL_30, WINE_FILL_70
 from trajectory_model.helper.rotate_quaternion import rotate_panda_to_match_orientation
 
 model = get_SFC_model()
-# address = "/home/ava/projects/trajectory-model/weights/spill_classifier_func_api/best/2023-11-08 15:34:11_epoch_254_train_acc_0.88.h5"
-# address = "/home/ava/projects/trajectory-model/weights/spill_classifier_func_api/best/2023-11-08 18:02:34_epoch_292_train_acc_0.89.h5"
-# address = "/home/ava/projects/trajectory-model/weights/spill_classifier_func_api/best/2023-11-13 13:45:23_epoch_262_train_acc_0.91.h5"
-# address = "/home/ava/projects/trajectory-model/weights/spill_classifier_func_api/best/2023-11-13 16:39:00_epoch_297_train_acc_0.9.h5"
-# address = "/home/ava/projects/trajectory-model/weights/spill_classifier_func_api/best/2023-11-13 16:56:43_epoch_288_train_acc_0.89.h5"
-# address = '/home/ava/projects/trajectory-model/weights/spill_classifier_func_api/best/2023-11-13 17:17:50_epoch_298_train_acc_0.91.h5'
-address = '/home/ava/projects/trajectory-model/weights/spill_classifier_func_api/best/2023-11-13 17:39:44_epoch_298_train_acc_0.89.h5'
-model.load_weights(address)
+# address = '/home/ava/projects/trajectory-model/weights/spill_classifier_func_api/best/2023-11-13 17:39:44_epoch_298_train_acc_0.89.h5'
+# model.load_weights(address)
 
 
 def translate(trajectory):
@@ -59,7 +57,8 @@ def spilled(trajectory, properties=None):
     print("callling spilled...")
     trajectory = process_panda_to_model_input(trajectory)
     if properties is None:
-        properties = np.array([BIG_RADIUS, BIG_HEIGHT, BIG_FILL_HALF])
+        # properties = np.array([BIG_RADIUS, BIG_HEIGHT, BIG_FILL_FULL])
+        properties = np.array([SMALL_RADIUS_B, SMALL_HEIGHT, SMALL_RADIUS_U, SMALL_FILL_80])
 
     prediction = model.predict({"trajectory": trajectory[None, :, :],
                                 "properties": properties[None, :],

@@ -36,12 +36,12 @@ def get_start_and_end_points(X, e_id):
         x, y, z = X[e_id, step, 0], X[e_id, step, 1], X[e_id, step, 2]
         a, b, c, d = X[e_id, step, 3], X[e_id, step,
                                          4], X[e_id, step, 5], X[e_id, step, 6]
-        all_zeros = not np.any(X[e_id, step, :])
+        all_zeros = not np.any(X[e_id, step, 3:7])
         if all_zeros:
             print("All zeros! at step: ", step)
             break
-        
-        if x > 100:
+
+        if x > 100 or x < -100:
             continue
 
         start_point = np.array([[x, y, z]])
@@ -124,7 +124,7 @@ def plot_multiple_e_ids(X, e_ids, arrows_lenght, verbose=False):
 def plot_multiple_X(Xs, e_ids, arrows_lenght, verbose=False):
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
-    colors = ['b', 'r', 'g']
+    colors = ['b', 'r', 'g', 'y', 'b', 'pink']
     color_id = 0
     
     for X in Xs:

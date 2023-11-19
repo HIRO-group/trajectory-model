@@ -2,8 +2,14 @@ import numpy as np
 from process_data.process_data_SFC import read_from_files, fill_with_blanks, \
     transform_trajectory, add_equivalent_quaternions, round_down_orientation_and_pos, \
     reverse_y_axis
-from trajectory_model.spill_free.constants import EMBED_DIM, BIG_RADIUS, BIG_HEIGHT, SMALL_RADIUS, \
-    SMALL_HEIGHT, BIG_FILL_FULL, BIG_FILL_HALF, SMALL_FILL_FULL, SMALL_FILL_HALF
+from trajectory_model.spill_free.constants import \
+    MAX_TRAJ_STEPS, EMBED_LOC, BLANK_VAL, ROBOT_DT, EMBED_DIM, \
+    BIG_RADIUS_B, BIG_HEIGHT, BIG_RADIUS_U, BIG_FILL_80, BIG_FILL_30, \
+    SMALL_RADIUS_B, SMALL_HEIGHT, SMALL_RADIUS_U, SMALL_FILL_80, SMALL_FILL_50, \
+    SHORT_TUMBLER_RADIUS_B, SHORT_TUMBLER_HEIGHT, SHORT_TUMBLER_RADIUS_U, SHORT_TUMBLER_FILL_30, SHORT_TUMBLER_FILL_70, \
+    TALL_TUMBLER_RADIUS_B, TALL_TUMBLER_HEIGHT, TALL_TUMBLER_RADIUS_U, TALL_TUMBLER_FILL_50, TALL_TUMBLER_FILL_80, \
+    TUMBLER_RADIUS_B, TUMBLER_HEIGHT, TUMBLER_RADIUS_U, TUMBLER_FILL_30, TUMBLER_FILL_70, \
+    WINE_RADIUS_B, WINE_HEIGHT, WINE_RADIUS_U, WINE_FILL_30, WINE_FILL_70
 from trajectory_model.helper.helper import plot_X, plot_multiple_e_ids, plot_multiple_X
 from trajectory_model.helper.rotate_quaternion import quaternion_to_angle_axis, rotate_quaternion
 
@@ -96,13 +102,8 @@ def transform_for_IK(X):
     X = rotate_for_IK(X)
     return X
 
-# FILE_NAMES_NOSPILL_SPILL = \
-#     [("big/full/spill-free/", "big/full/spilled/", BIG_RADIUS, BIG_HEIGHT, BIG_FILL_FULL),
-#         ("big/half-full/spill-free/", "big/half-full/spilled/", BIG_RADIUS, BIG_HEIGHT, BIG_FILL_HALF),
-#         ("small/full/spill-free/", "small/full/spilled/", SMALL_RADIUS, SMALL_HEIGHT, SMALL_FILL_FULL),
-#         ("small/half-full/spill-free/", "small/half-full/spilled/", SMALL_RADIUS, SMALL_HEIGHT, SMALL_FILL_HALF)]
 
-file_list = [("big/full/spill-free/", "big/full/spilled/", BIG_RADIUS, BIG_HEIGHT, BIG_FILL_HALF)]
+file_list = [("mocap_new/big/30/spill-free/", "mocap_new/big/30/spilled/", BIG_RADIUS_B, BIG_HEIGHT, BIG_RADIUS_U, BIG_FILL_30)]
 
 X, Y = read_from_files(file_list)
 X, Y = keep_spill_free(X, Y)
@@ -115,31 +116,26 @@ X = round_down_orientation_and_pos(X)
 X = select_waypoints(X)
 
 
-from trajectory_model.spill_free.model import TrajectoryClassifier
-from trajectory_model.spill_free.constants import MOCAP_DT, EMBED_DIM, NUM_HEADS, FF_DIM,\
-      MAX_TRAJ_STEPS, BIG_RADIUS, BIG_HEIGHT, SMALL_RADIUS, \
-      SMALL_HEIGHT, BIG_FILL_FULL, BIG_FILL_HALF, \
-      SMALL_FILL_FULL, SMALL_FILL_HALF
-from trajectory_model.helper.helper import quat_to_euler, euler_to_quat, ctime_str
-from trajectory_model.helper.rotate_quaternion import quaternion_to_angle_axis, rotate_quaternion
+# from trajectory_model.spill_free.model import TrajectoryClassifier
+# from trajectory_model.helper.helper import quat_to_euler, euler_to_quat, ctime_str
+# from trajectory_model.helper.rotate_quaternion import quaternion_to_angle_axis, rotate_quaternion
 
-model = TrajectoryClassifier(max_traj_steps=MAX_TRAJ_STEPS, embed_dim=EMBED_DIM, num_heads=NUM_HEADS, ff_dim=FF_DIM)
-model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
-model.build((None, MAX_TRAJ_STEPS, EMBED_DIM))
+# model = TrajectoryClassifier(max_traj_steps=MAX_TRAJ_STEPS, embed_dim=EMBED_DIM, num_heads=NUM_HEADS, ff_dim=FF_DIM)
+# model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+# model.build((None, MAX_TRAJ_STEPS, EMBED_DIM))
 # model.load_weights("/home/ava/projects/trajectory-model/weights/spill_classifier/best/2023-09-09 14:42:38_epoch_191_best_val_acc_0.93_train_acc_0.92.h5")
 
 
 def sample_state(trajectory):
     random_e_id = np.random.randint(0, X.shape[0])
     random_traj_step = np.random.randint(0, X.shape[1])
-    model.predict()
     return X[random_e_id, random_traj_step, 0:7]
 
-    # vectors = vectors[0:len(vectors):100]
-    random_vector_indx = np.random.randint(0, len(vectors))
-    output =  np.array(vectors[random_vector_indx])
-    # print("Output for state sample ", output)
-    return output
+    # # vectors = vectors[0:len(vectors):100]
+    # random_vector_indx = np.random.randint(0, len(vectors))
+    # output =  np.array(vectors[random_vector_indx])
+    # # print("Output for state sample ", output)
+    # return output
 
 
 

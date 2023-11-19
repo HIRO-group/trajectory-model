@@ -26,14 +26,14 @@ import natnet
 DIR_PREFIX = '/home/ava/projects/trajectory-model/data/mocap_new_cups/'
 file_name = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-# tumbler/30  talltumbler/70
+# tumbler/30  tumbler/70
 # talltumbler/50  talltumbler/80
-# shorttumble/30  shorttumble/70
+# shorttumbler/30  shorttumbler/70
 # wineglass/30 wineglass/70
+
 # spilled spill-free
 
-DIR_PATH = DIR_PREFIX + 'tumbler/30/spill-free/'
-
+DIR_PATH = DIR_PREFIX + 'shorttumbler/70/spill-free/'
 file_path = DIR_PATH + file_name + '.csv'
 collected_data = []
 
@@ -70,13 +70,11 @@ class ClientApp(object):
         self._client.spin()
 
     def callback(self, rigid_bodies, skeletons, markers, timing):
-        print("Called back")
         if rigid_bodies:
             for r in rigid_bodies:
                 x, y, z = r.position
                 a, b, c, d = r.orientation
                 timestamp = timing.timestamp
-                print("r: ", r)
                 print("recieving data (x, y, z, a, b, c, d): ", x, y, z, a, b, c, d)
                 collected_data.append([timestamp, x, y, z, a, b, c, d])
 
