@@ -1,5 +1,5 @@
 import numpy as np
-from process_data.process_data_SFC import process_data_SFC
+from process_data.process_data import process_data_SFC, process_data_PDM
 
 def get_manual_train_and_val_index(X):
     train_id = int(3*X.shape[0]/4)
@@ -26,18 +26,13 @@ def get_data_SFC(manual):
     return X_train, Y_train, X_val, Y_val, X, Y
 
 
-def get_data_SFS_P(manual):
-    pass
-
-
-def get_data_SFS_O(manual):
-    pass
+def get_data_PDM(manual):
+    X, Y = process_data_PDM()
+    return X, Y
 
 
 def get_data(model_name, manual=False):
     if model_name == "SFC":
         return get_data_SFC(manual=manual)
-    elif model_name == "SFS_P":
-        return get_data_SFS_P(manual=manual)
-    elif model_name == "SFS_O":
-        return get_data_SFS_O(manual=manual)
+    elif model_name == "PDM":
+        return get_data_PDM(manual=manual)

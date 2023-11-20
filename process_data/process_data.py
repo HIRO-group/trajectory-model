@@ -324,11 +324,10 @@ def add_panda_trajectories(X, Y):
 
     X, Y = process_panda_file(X, Y, filenames_props_NOSPILL, spill_free=True)
     X, Y = process_panda_file(X, Y, file_names_props_SPILL, spill_free=False)
-
     return X, Y
 
 
-def process_data_SFC():
+def process_data_SFC():  # Spill-Free Classifier
     X, Y = read_from_files()
     X, Y = augment_data(X, Y)
     X = fill_with_blanks(X)
@@ -338,6 +337,18 @@ def process_data_SFC():
     X = reverse_y_axis(X)
     X = compute_delta_X(X)
     X, Y = add_panda_trajectories(X, Y)
+    return X, Y
+
+
+def process_data_PDM():  # Probability Distribution Map
+    X, Y = read_from_files()
+    X = fill_with_blanks(X)
+    X = transform_trajectory(X)
+    X, Y = add_equivalent_quaternions(X, Y)
+    X = round_down_orientation_and_pos(X)
+    X = reverse_y_axis(X)
+    X, Y = add_panda_trajectories(X, Y)
+    X, Y = keep_spill_free(X, Y)
     return X, Y
 
 

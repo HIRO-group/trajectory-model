@@ -12,6 +12,7 @@ file_name = '01-09-2023 13-42-14'
 
 file_path = '/home/ava/projects/assets/cartesian/'+file_name+'/cartesian_positions.bin'
 vectors = read_panda_vectors(file_path)
+print(vectors[0])
 
 def get_start_end_points(cup_frame=False):
     start_points = np.empty((0, 3), np.float64)

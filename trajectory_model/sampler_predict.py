@@ -1,5 +1,5 @@
 import numpy as np
-from process_data.process_data_SFC import read_from_files, fill_with_blanks, \
+from process_data.process_data import read_from_files, fill_with_blanks, \
     transform_trajectory, add_equivalent_quaternions, round_down_orientation_and_pos, \
     reverse_y_axis
 from trajectory_model.spill_free.constants import \

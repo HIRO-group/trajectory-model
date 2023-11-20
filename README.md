@@ -26,5 +26,5 @@ or
 ## Visualize probability distribution map
 ``` python sandbox/draw_probability_distribution_map.py```
 
-## How to rotate panda ee frame to be in cup fram
+## How to rotate panda ee frame to be in cup frame
 The equations are in this file: ```trajectory_model/helper/rotate_quaternion.py```

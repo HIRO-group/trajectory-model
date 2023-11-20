@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from process_data.process_data_SFC import keep_spill_free
+from process_data.process_data import keep_spill_free
 from trajectory_model.data import get_data
 
 from trajectory_model.spill_free.constants import \
@@ -28,25 +28,34 @@ def keep_selected_prop(X, Y, properties):
     Y_new = np.array(Y_new)
     return X_new, Y_new
 
+
+def convert_to_joint_angles(trajectory): # This is the whole trajectory starting from 0
+    panda_start_joint_angles = [-0.412894, 0.841556, -1.21653, -1.45469, 0.766197, 1.79544, -0.893028]
+    pass
+    # joint_angles = []
+    # for i in range(trajectory.shape[0]):
+    #     loc = trajectory[i, 0:7]
+    #     joint_angles.append(EMBED_LOC[loc[0], loc[1], loc[2], loc[3], loc[4], loc[5], loc[6]])
+    # return np.array(joint_angles)
+
 def get_probability_distribution_map(X):
     probability_distribution_map = []
     for e_id in range(X.shape[0]):
         trajectory = X[e_id, :, 0:7]
-        for loc in trajectory:
-            xyz = loc[0:3]
-            if xyz[0] >= 10 or xyz[1] >= 10 or xyz[2] >= 10 or \
-                xyz[0] <= -10 or xyz[1] <= -10 or xyz[2] <= -10:
-                continue
-            probability_distribution_map.append(loc)
+        trajectory = convert_to_joint_angles(trajectory)
+        for joint_angles in trajectory:
+            # xyz = loc[0:3]
+            # if xyz[0] >= 10 or xyz[1] >= 10 or xyz[2] >= 10 or \
+            #     xyz[0] <= -10 or xyz[1] <= -10 or xyz[2] <= -10:
+            #     continue
+            probability_distribution_map.append(joint_angles)
     return np.array(probability_distribution_map)
 
-_, _, _, _, X, Y = get_data(model_name='SFC', manual=False)
+X, Y = get_data(model_name='PDM', manual=False)
 properties = [BIG_RADIUS_B, BIG_HEIGHT, BIG_RADIUS_U, BIG_FILL_30]
-X, Y = keep_spill_free(X, Y)
 X, Y = keep_selected_prop(X, Y, properties)
-probability_distribution_map = get_probability_distribution_map(X)
+# probability_distribution_map = get_probability_distribution_map(X)
 
-def sample_state():
-    index = np.random.randint(0, len(probability_distribution_map))
-    # convert to robot coordinate
-    return probability_distribution_map[index]
+# def sample_state():
+#     index = np.random.randint(0, len(probability_distribution_map))
+#     return probability_distribution_map[index]

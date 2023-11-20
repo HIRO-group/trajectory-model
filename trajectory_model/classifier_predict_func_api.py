@@ -57,7 +57,6 @@ def spilled(trajectory, properties=None):
     print("callling spilled...")
     trajectory = process_panda_to_model_input(trajectory)
     if properties is None:
-        # properties = np.array([BIG_RADIUS, BIG_HEIGHT, BIG_FILL_FULL])
         properties = np.array([SMALL_RADIUS_B, SMALL_HEIGHT, SMALL_RADIUS_U, SMALL_FILL_80])
 
     prediction = model.predict({"trajectory": trajectory[None, :, :],
