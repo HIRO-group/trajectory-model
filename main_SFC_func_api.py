@@ -20,7 +20,7 @@ if __name__ == '__main__':
     model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy', tf.keras.metrics.Precision(), tf.keras.metrics.Recall()])
     
     if fit_model:
-        epochs = 3
+        epochs = 400
         batch_size = 32
         custom_cb = SaveBestAccuracy(file_address="spill_classifier_func_api", 
                                         min_val_acc=0.89,

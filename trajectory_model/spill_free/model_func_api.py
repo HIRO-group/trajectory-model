@@ -63,8 +63,6 @@ class TransformerBlock(Layer):
 def get_SFC_model():
     trajectory_input = keras.Input(shape=(MAX_TRAJ_STEPS, EMBED_LOC), name="trajectory")
     properties_input = keras.Input(shape=(EMBED_PROP,), name="properties")
-    # properties_features = layers.Embedding(10, 5)(properties_input) # 10 is the vocab size, 5 is the embedding dimension
-
     traj_pos_enc = PositionalEnconding(MAX_TRAJ_STEPS, EMBED_LOC)(trajectory_input)
     traj_features = tf.keras.layers.Add()([trajectory_input, traj_pos_enc[: , :tf.shape(trajectory_input)[1], :] ])
     traj_features = TransformerBlock(EMBED_LOC, num_heads=8, ff_dim=32, dropout_rate=0.1)(traj_features)

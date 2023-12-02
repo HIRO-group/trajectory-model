@@ -4,12 +4,12 @@ from process_data.process_data import read_from_files, fill_with_blanks, \
     reverse_y_axis
 from trajectory_model.spill_free.constants import \
     MAX_TRAJ_STEPS, EMBED_LOC, BLANK_VAL, ROBOT_DT, EMBED_DIM, \
-    BIG_RADIUS_B, BIG_HEIGHT, BIG_RADIUS_U, BIG_FILL_80, BIG_FILL_30, \
-    SMALL_RADIUS_B, SMALL_HEIGHT, SMALL_RADIUS_U, SMALL_FILL_80, SMALL_FILL_50, \
-    SHORT_TUMBLER_RADIUS_B, SHORT_TUMBLER_HEIGHT, SHORT_TUMBLER_RADIUS_U, SHORT_TUMBLER_FILL_30, SHORT_TUMBLER_FILL_70, \
-    TALL_TUMBLER_RADIUS_B, TALL_TUMBLER_HEIGHT, TALL_TUMBLER_RADIUS_U, TALL_TUMBLER_FILL_50, TALL_TUMBLER_FILL_80, \
-    TUMBLER_RADIUS_B, TUMBLER_HEIGHT, TUMBLER_RADIUS_U, TUMBLER_FILL_30, TUMBLER_FILL_70, \
-    WINE_RADIUS_B, WINE_HEIGHT, WINE_RADIUS_U, WINE_FILL_30, WINE_FILL_70
+    BIG_DIAMETER_B, BIG_HEIGHT, BIG_DIAMETER_U, BIG_FILL_80, BIG_FILL_30, \
+    SMALL_DIAMETER_B, SMALL_HEIGHT, SMALL_DIAMETER_U, SMALL_FILL_80, SMALL_FILL_50, \
+    SHORT_TUMBLER_DIAMETER_B, SHORT_TUMBLER_HEIGHT, SHORT_TUMBLER_DIAMETER_U, SHORT_TUMBLER_FILL_30, SHORT_TUMBLER_FILL_70, \
+    TALL_TUMBLER_DIAMETER_B, TALL_TUMBLER_HEIGHT, TALL_TUMBLER_DIAMETER_U, TALL_TUMBLER_FILL_50, TALL_TUMBLER_FILL_80, \
+    TUMBLER_DIAMETER_B, TUMBLER_HEIGHT, TUMBLER_DIAMETER_U, TUMBLER_FILL_30, TUMBLER_FILL_70, \
+    WINE_DIAMETER_B, WINE_HEIGHT, WINE_DIAMETER_U, WINE_FILL_30, WINE_FILL_70
 from trajectory_model.helper.helper import plot_X, plot_multiple_e_ids, plot_multiple_X
 from trajectory_model.helper.rotate_quaternion import quaternion_to_angle_axis, rotate_quaternion
 
@@ -103,7 +103,7 @@ def transform_for_IK(X):
     return X
 
 
-file_list = [("mocap_new/big/30/spill-free/", "mocap_new/big/30/spilled/", BIG_RADIUS_B, BIG_HEIGHT, BIG_RADIUS_U, BIG_FILL_30)]
+file_list = [("mocap_new/big/30/spill-free/", "mocap_new/big/30/spilled/", BIG_DIAMETER_B, BIG_HEIGHT, BIG_DIAMETER_U, BIG_FILL_30)]
 
 X, Y = read_from_files(file_list)
 X, Y = keep_spill_free(X, Y)

@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from process_data.process_data import keep_spill_free
 from trajectory_model.data import get_data
 from trajectory_model.spill_free.constants import MAX_TRAJ_STEPS, EMBED_DIM, MOCAP_DT, \
-    BIG_RADIUS, BIG_HEIGHT, SMALL_RADIUS, SMALL_HEIGHT, \
+    BIG_DIAMETER, BIG_HEIGHT, SMALL_DIAMETER, SMALL_HEIGHT, \
     BIG_FILL_FULL, BIG_FILL_HALF, SMALL_FILL_FULL, SMALL_FILL_HALF, BLANK_VAL
 
 X_train, Y_train, X_val, Y_val, X, Y = get_data(model_name='SFC', manual=False)
@@ -14,7 +14,7 @@ def keep_selected_prop(X, Y):
     X_new, Y_new = [], []
     for e_id in range(X.shape[0]):
         prop = X[e_id, 0, 7:10]
-        if prop[0] == BIG_RADIUS and prop[1] == BIG_HEIGHT and prop[2] == BIG_FILL_FULL:
+        if prop[0] == BIG_DIAMETER and prop[1] == BIG_HEIGHT and prop[2] == BIG_FILL_FULL:
             X_new.append(X[e_id])
             Y_new.append(Y[e_id])
     X_new = np.array(X_new)

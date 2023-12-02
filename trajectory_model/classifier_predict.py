@@ -1,7 +1,7 @@
 import numpy as np
 from trajectory_model.spill_free.model import TrajectoryClassifier
 from trajectory_model.spill_free.constants import EMBED_DIM, NUM_HEADS, FF_DIM,\
-      MAX_TRAJ_STEPS, BIG_RADIUS, BIG_HEIGHT, SMALL_RADIUS, \
+      MAX_TRAJ_STEPS, BIG_DIAMETER, BIG_HEIGHT, SMALL_DIAMETER, \
       SMALL_HEIGHT, BIG_FILL_FULL, BIG_FILL_HALF, \
       SMALL_FILL_FULL, SMALL_FILL_HALF, ROBOT_DT
 from trajectory_model.helper.helper import quat_to_euler, euler_to_quat, ctime_str
@@ -19,7 +19,7 @@ def convert_to_model_input(trajectory):
     trajectory = np.array([np.array(trajectory[i]) for i in range(0, len(trajectory), ROBOT_DT)])
     trajectory = trajectory[0:MAX_TRAJ_STEPS, :]
 
-    properties = np.array([SMALL_RADIUS, SMALL_HEIGHT, SMALL_FILL_FULL])
+    properties = np.array([SMALL_DIAMETER, SMALL_HEIGHT, SMALL_FILL_FULL])
     properties = properties[None,:].repeat(trajectory.shape[0],axis=0)
     trajectory = np.concatenate((trajectory, properties), axis=1)
     trajectory = trajectory.reshape(1, MAX_TRAJ_STEPS, EMBED_DIM)
