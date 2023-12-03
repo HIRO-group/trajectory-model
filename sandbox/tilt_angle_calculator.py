@@ -17,13 +17,21 @@ def calc_max_tilt_angle(h_c, h_w, r_u, r_b):
     r_w_prime = (h_c*r_u*r_b - h_c*r_2*r_b + h_w*r_2*r_w + h_w*r_2*r_b)/(h_c*r_2 + h_c*r_b)
     h_1 = h_c * (r_u - r_w_prime) / r_2
 
-    theta_t = np.arctan(h_1/(r_u + r_w_prime))
-    return convert_to_degrees(theta_t)
 
+    if r_w_prime > r_b:
+        print("Case 1 occured.")
+        theta_t = np.arctan(h_1/(r_u + r_w_prime))
+        return convert_to_degrees(theta_t)
+    
+    elif r_w_prime <= r_b:
+        print("Case 2 occured.")
+        r_b_prime = 2 * h_w * (r_w + r_b) / h_c
+        theta_t = np.arctan(h_c/(r_2 + r_b_prime))
+        return convert_to_degrees(theta_t)
 
 if __name__ == "__main__":
     h_c = TUMBLER_HEIGHT
-    h_w = 0.7 * h_c
+    h_w = 0.1 * h_c
     r_u = TUMBLER_DIAMETER_U/2
     r_b = TUMBLER_DIAMETER_B/2
 
