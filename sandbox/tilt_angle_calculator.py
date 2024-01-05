@@ -31,7 +31,7 @@ def calc_max_tilt_angle(h_c, h_w, r_u, r_b):
 
 if __name__ == "__main__":
     h_c = TUMBLER_HEIGHT
-    h_w = 0.1 * h_c
+    h_w = TUMBLER_FILL_30
     r_u = TUMBLER_DIAMETER_U/2
     r_b = TUMBLER_DIAMETER_B/2
 

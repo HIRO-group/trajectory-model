@@ -4,6 +4,7 @@ import numpy as np
 
 from trajectory_model.helper.read import read_panda_vectors
 from trajectory_model.helper.jacobian import get_jacobian
+from sandbox.constants import Tasks
 
 
 def get_ee_vel(file_name):
@@ -24,82 +25,107 @@ def get_ee_vel(file_name):
         x_vels.append(vel[0])
         y_vels.append(vel[1])
         z_vels.append(vel[2])
-        # sum x_vel, y_vel, z_vel
         vels.append(np.linalg.norm(vel))
     
     return x_vels, y_vels, z_vels, vels
 
 
 if __name__ == "__main__":
-    # file_name = '01-09-2023 13-42-14'
-    # file_name = '01-09-2023 13-58-43'
-    # # file_name = "01-09-2023 14-09-56"
+    # vels_task_1, vels_task_2 = [], []
+    # vels_task_3, vels_task_4 = [], []
+    # vels_task_5, vels_task_6 = [], []
 
-    small_full_file_names = ["10-09-2023 13-14-07", "10-09-2023 13-10-26", "10-09-2023 10-03-18",
-                    "10-09-2023 13-12-16", "10-09-2023 12-36-43"]
-    small_half_file_names = ["10-09-2023 13-30-09", "10-09-2023 13-32-29", "10-09-2023 13-39-37"]
+    # for file_name in task_1:
+    #     _, _, _, vels = get_ee_vel(file_name)
+    #     max_mean_median = [np.max(vels), np.mean(vels), np.median(vels)]
+    #     vels_task_1.append(max_mean_median)
 
-    big_half_file_names = ["01-09-2023 13-42-14", "01-09-2023 13-58-43", "01-09-2023 14-09-56"]
+    # for file_name in task_2:
+    #     _, _, _, vels = get_ee_vel(file_name)
+    #     max_mean_median = [np.max(vels), np.mean(vels), np.median(vels)]
+    #     vels_task_2.append(max_mean_median)
 
-    big_full_file_names = ["10-09-2023 10-06-37", "10-09-2023 12-25-04", "10-09-2023 12-29-22"]
-
-
-    file_names = [small_full_file_names[0], small_half_file_names[0], 
-                big_full_file_names[0], big_half_file_names[0]]
-
-    experiment_names = ["Champagne 0.8", "Champagne 0.5", "Wine 0.8", "Wine 0.3"]
+    # for file_name in task_3:
+    #     _, _, _, vels = get_ee_vel(file_name)
+    #     max_mean_median = [np.max(vels), np.mean(vels), np.median(vels)]
+    #     vels_task_3.append(max_mean_median)
     
-    x_vels, y_vels, z_vels = [], [], []
-    vels = []
+    # for file_name in task_4:
+    #     _, _, _, vels = get_ee_vel(file_name)
+    #     max_mean_median = [np.max(vels), np.mean(vels), np.median(vels)]
+    #     vels_task_4.append(max_mean_median)
+    
+    # for file_name in task_5:
+    #     _, _, _, vels = get_ee_vel(file_name)
+    #     max_mean_median = [np.max(vels), np.mean(vels), np.median(vels)]
+    #     vels_task_5.append(max_mean_median)
 
-    for file_name in file_names:
-        rolls, pitches, yaws, vel = get_ee_vel(file_name)
-        x_vels.append(rolls)
-        y_vels.append(pitches)
-        z_vels.append(yaws)
-        vels.append(vel)
+    # for file_name in task_6:
+    #     _, _, _, vels = get_ee_vel(file_name)
+    #     max_mean_median = [np.max(vels), np.mean(vels), np.median(vels)]
+    #     vels_task_6.append(max_mean_median)
 
-    fig, axs = plt.subplots(3, 1, figsize=(10, 8), sharex=True)
 
-    # for i in range(4):
-    #     axs[0].plot(x_vels[i], label=experiment_names[i])
+    # task_1_max = np.max([sublist[0] for sublist in vels_task_1])
+    # task_1_mean = np.mean([sublist[1] for sublist in vels_task_1])
+    # task_2_max = np.max([sublist[0] for sublist in vels_task_2])
+    # task_2_mean = np.mean([sublist[1] for sublist in vels_task_2])
+    # task_3_max = np.max([sublist[0] for sublist in vels_task_3])
+    # task_3_mean = np.mean([sublist[1] for sublist in vels_task_3])
+    # task_4_max = np.max([sublist[0] for sublist in vels_task_4])
+    # task_4_mean = np.mean([sublist[1] for sublist in vels_task_4])
+    # task_5_max = np.max([sublist[0] for sublist in vels_task_5])
+    # task_5_mean = np.mean([sublist[1] for sublist in vels_task_5])
+    # task_6_max = np.max([sublist[0] for sublist in vels_task_6])
+    # task_6_mean = np.mean([sublist[1] for sublist in vels_task_6])
 
-    # # for i in range(4):
-    # #     axs[1].plot(y_vels[i], label=experiment_names[i])
+    # print("big 80 1 max: ", task_1_max)   
+    # print("big 30 1 max: ", task_2_max)
+    # print("small 80 1 max: ", task_3_max)
+    # print("small 50 1 max: ", task_4_max)
+    # print("tumbler 70 1 max: ", task_5_max)
+    # print("tumbler 30 1 max: ", task_6_max)
 
-    # # for i in range(4):
-    # #     axs[2].plot(z_vels[i], label=experiment_names[i])
+    # print("big 80 1 mean: ", task_1_mean)
+    # print("big 30 1 mean: ", task_2_mean)
+    # print("small 80 1 mean: ", task_3_mean)
+    # print("small 50 1 mean: ", task_4_mean)
+    # print("tumbler 70 1 mean: ", task_5_mean)
+    # print("tumbler 30 1 mean: ", task_6_mean)
 
-    for i in range(4):
-        axs[0].plot(vels[i], label=experiment_names[i])
+    task_1_mean = 0.33865465414511353
+    task_2_mean = 0.4857333738024513
+    task_3_mean = 0.5903238711670706
+    task_4_mean = 0.608259862076469
+    task_5_mean = 0.42316489634116633
+    task_6_mean = 0.5982179386889576
 
-    for ax in axs:
-        ax.legend()
 
-    axs[0].set_ylabel("X velocity")
-    # axs[1].set_ylabel("Y velocity")
-    # axs[2].set_ylabel("Z velocity")
-    axs[2].set_xlabel("Time")
+    data = {"task 1": task_1_mean, "task 2": task_2_mean, "task 3": task_3_mean,
+            "task 4": task_4_mean, "task 5": task_5_mean, "task 6": task_6_mean}
+    
+    fig = plt.figure()
+    bar_width = 0.4
+    br1 = np.arange(3)
+    br2 = [x + bar_width for x in br1]
 
-    plt.suptitle("ee velocities from 4 experiments")
-    plt.savefig(f'plots/velocities/{file_names}.png'.format(file_names=','.join(file_names)), dpi=300)
+    plt.bar(br1, [task_1_mean, task_3_mean, task_5_mean], color ='orange', width = bar_width, edgecolor ='orange')
+    plt.bar(br2, [task_2_mean, task_4_mean, task_6_mean], color ='pink', width = bar_width, edgecolor ='pink')
+    
+    
+    plt.text(br1[0], task_4_mean/4, "Fill-Level: 80%", ha='center', va='bottom')
+    plt.text(br1[1], task_4_mean/4, "Fill-Level: 80%", ha='center', va='bottom')
+    plt.text(br1[2], task_4_mean/4, "Fill-Level: 70%", ha='center', va='bottom')
+    plt.text(br2[0], task_4_mean/4, "Fill-Level: 30%", ha='center', va='bottom')
+    plt.text(br2[1], task_4_mean/4, "Fill-Level: 50%", ha='center', va='bottom')
+    plt.text(br2[2], task_4_mean/4, "Fill-Level: 30%", ha='center', va='bottom')
+
+    plt.xticks([0+bar_width/2, 1+bar_width/2, 2+bar_width/2], ['Container 1', 'Container 2', 'Container 3'])
+    
+    plt.xlabel("Containers")
+    plt.ylabel("Mean Velocity")
+    plt.legend()
+
     plt.show()
 
-    # x_vels, y_vels, z_vels = get_ee_vel(file_name)
 
-    # plt.subplot(3, 1, 1)
-    # plt.plot(x_vels)
-    # plt.ylabel('X')
-
-    # plt.subplot(3, 1, 2)
-    # plt.plot(y_vels)
-    # plt.ylabel('Y')
-
-    # plt.subplot(3, 1, 3)
-    # plt.plot(z_vels)
-    # plt.ylabel('Z')
-
-    # plt.xlabel('Sample')
-    # plt.tight_layout()
-    # # plt.savefig('/home/ava/projects/trajectory-model/plots/velocities/{file_name}.png'.format(file_name=file_name), dpi=300)
-    # plt.show()

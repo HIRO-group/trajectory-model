@@ -21,10 +21,13 @@ or
 ``` python sandbox/draw_panda_vs_cup.py```
 
 ## Visualize cup trajectory vs rotated panda trajectory
-``` python sandbox/draw_panda_vs_cup.py```
+``` python sandbox/draw_panda_traj_vs_cup_traj.py```
 
 ## Visualize probability distribution map
 ``` python sandbox/draw_probability_distribution_map.py```
+
+## Plot euler angels for rotated panda trajectory
+```python sandbox/plot_euler_angles_from_rot_panda.py```
 
 ## How to rotate panda ee frame to be in cup frame
 The equations are in this file: ```trajectory_model/helper/rotate_quaternion.py```
