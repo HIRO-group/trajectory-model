@@ -2,11 +2,17 @@
 ```python main_SFC_func_api.py```
 
 ## Predict from SFC
-call func spilled(trajectory) from ```trajectory_model/classifier_predict.py``` 
- 
-or
+call func spilled(trajectory) from ```trajectory_model/classifier_predict.py```
 
- ```python sandbox/predict_spillage.py```
+or
+ 
+ ### Using a Panda Trajectory
+
+ ```python sandbox/predict_spillage_panda.py```
+
+ ### Using a Mocap File
+ 
+ ```python sandbox/predict_spillage_mocap.py```
 
 ## Process data collected for SFC
 ```python process_data/process_data_SFC.py```

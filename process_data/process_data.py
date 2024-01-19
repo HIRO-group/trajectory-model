@@ -298,16 +298,24 @@ def process_panda_file(X, Y, filenames, spill_free):
 
 def add_panda_trajectories(X, Y):
     filenames_props_NOSPILL = [
-        (['01-09-2023 13-42-14', '01-09-2023 13-58-43', '01-09-2023 14-09-56'], 
+        (['01-09-2023 13-42-14', '01-09-2023 13-58-43', '01-09-2023 14-09-56',
+          '21-11-2023 14-05-35'], 
         np.array([[BIG_DIAMETER_B, BIG_HEIGHT, BIG_DIAMETER_U, BIG_FILL_30]])),
         
         (['10-09-2023 10-03-18', '10-09-2023 10-06-37', '10-09-2023 13-10-26',
-        '10-09-2023 13-14-07'],
+          '10-09-2023 13-14-07', '21-11-2023 15-13-41', '21-11-2023 15-15-56'],
         np.array([[SMALL_DIAMETER_B, SMALL_HEIGHT, SMALL_DIAMETER_U, SMALL_FILL_80]])),
         
-        (['10-09-2023 13-30-09', '10-09-2023 13-32-29', '10-09-2023 13-39-37'], 
-        np.array([[SMALL_DIAMETER_B, SMALL_HEIGHT, SMALL_DIAMETER_U, SMALL_FILL_50]]))
-    ]
+        (['10-09-2023 13-30-09', '10-09-2023 13-32-29', '10-09-2023 13-39-37',
+          '21-11-2023 15-44-04', '21-11-2023 15-49-51'], 
+        np.array([[SMALL_DIAMETER_B, SMALL_HEIGHT, SMALL_DIAMETER_U, SMALL_FILL_50]])),
+
+        (['21-11-2023 17-23-58'], 
+        np.array([[TUMBLER_DIAMETER_B, TUMBLER_HEIGHT, TUMBLER_DIAMETER_U, TUMBLER_FILL_70]])),
+
+        (['21-11-2023 18-00-59', '21-11-2023 18-07-52'],
+        np.array([[TUMBLER_DIAMETER_B, TUMBLER_HEIGHT, TUMBLER_DIAMETER_U, TUMBLER_FILL_30]]))
+    ] # 18 
 
     file_names_props_SPILL = [
         (['13-11-2023 13-17-10', '13-11-2023 13-19-03', '13-11-2023 13-22-02',
@@ -320,7 +328,9 @@ def add_panda_trajectories(X, Y):
           '13-11-2023 17-20-14', '13-11-2023 17-23-14', '13-11-2023 17-27-18',
           '13-11-2023 17-30-59', '13-11-2023 17-32-32', '13-11-2023 17-33-44'], 
           np.array([[BIG_DIAMETER_B, BIG_HEIGHT, BIG_DIAMETER_U, BIG_FILL_30]]))
-    ]
+    ] # 27
+
+    # 18 + 27 = 45 panda trajectories
 
     X, Y = process_panda_file(X, Y, filenames_props_NOSPILL, spill_free=True)
     X, Y = process_panda_file(X, Y, file_names_props_SPILL, spill_free=False)

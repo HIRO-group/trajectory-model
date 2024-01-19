@@ -8,7 +8,7 @@ from trajectory_model.helper.helper import ctime_str
 from trajectory_model.helper.helper import plot_loss_function
 
 if __name__ == '__main__':
-    fit_model = True
+    fit_model = False
     X_train, Y_train, X_val, Y_val, X, Y = get_data(model_name='SFC', manual=False)
 
     X_train_traj = X_train[:, :, :7]
@@ -19,6 +19,9 @@ if __name__ == '__main__':
     model = get_SFC_model()
     model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy', tf.keras.metrics.Precision(), tf.keras.metrics.Recall()])
     
+    # tf.keras.utils.plot_model(model, to_file='model.png', show_shapes=True)
+
+    # raise Exception
     if fit_model:
         epochs = 400
         batch_size = 32
@@ -62,7 +65,7 @@ if __name__ == '__main__':
         print(f'Number of training data: {training_data_num}, epochs: {epochs}')
         print(f'Saved model to disk.')
     else:
-        model.load_weights("/home/ava/projects/trajectory-model/weights/spill_classifier_func_api/best/2023-10-31 20:11:14_epoch_169_train_acc_0.91.h5")
+        model.load_weights('/home/ava/projects/trajectory-model/weights/spill_classifier_func_api/best/2024-01-16 15:41:25_epoch_396_train_acc_0.93.h5')
         eval = model.evaluate({"trajectory": X_val_traj, 
                                 "properties": X_val_prop,},
                                 {"prediction": Y_val}, verbose=2)

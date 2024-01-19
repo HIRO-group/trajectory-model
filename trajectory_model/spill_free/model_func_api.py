@@ -66,6 +66,7 @@ def get_SFC_model():
     traj_pos_enc = PositionalEnconding(MAX_TRAJ_STEPS, EMBED_LOC)(trajectory_input)
     traj_features = tf.keras.layers.Add()([trajectory_input, traj_pos_enc[: , :tf.shape(trajectory_input)[1], :] ])
     traj_features = TransformerBlock(EMBED_LOC, num_heads=8, ff_dim=32, dropout_rate=0.1)(traj_features)
+    
     traj_features = GlobalAveragePooling1D()(traj_features)
     traj_features = Dropout(0.1)(traj_features)
 

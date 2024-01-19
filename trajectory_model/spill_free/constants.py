@@ -63,3 +63,25 @@ WINE_HEIGHT = 3.8
 WINE_DIAMETER_U = 2.9
 WINE_FILL_30 = 0.3
 WINE_FILL_70 = 0.7
+
+
+class FLASK:
+    diameter_u = 1
+    diameter_b = 3
+    height = 5
+    fill_level_60 = 0.6
+    fill_level_90 = 0.9
+
+class BEAKER:
+    diameter_u = 2
+    diameter_b = 2
+    height = 3
+    fill_level_50 = 0.5
+    fill_level_90 = 0.9
+
+class CYLINDER:
+    diameter_u = 1
+    diameter_b = 1
+    height = 7
+    fill_level_20 = 0.2
+    fill_level_80 = 0.8

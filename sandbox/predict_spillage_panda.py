@@ -23,4 +23,3 @@ if __name__ == "__main__":
             trajectory = read_panda_vectors(panda_file_path)
             spillage_probability = spilled(trajectory, properties)
         print("------")
-

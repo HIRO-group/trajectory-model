@@ -23,17 +23,16 @@ sys.path.append('/home/ava/miniconda3/lib/python3.11/site-packages')
 import attr
 import natnet
 
-DIR_PREFIX = '/home/ava/projects/trajectory-model/data/mocap_new_cups/'
+DIR_PREFIX = '/home/ava/projects/trajectory-model/data/generalization/'
 file_name = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-# tumbler/30  tumbler/70
-# talltumbler/50  talltumbler/80
-# shorttumbler/30  shorttumbler/70
-# wineglass/30 wineglass/70
+# beaker/50 beaker/90
+# cylinder/20 cylinder/80
+# flask/60 flask/90
 
 # spilled spill-free
 
-DIR_PATH = DIR_PREFIX + 'shorttumbler/70/spill-free/'
+DIR_PATH = DIR_PREFIX + 'flask/90/spilled/' # 80 
 file_path = DIR_PATH + file_name + '.csv'
 collected_data = []
 

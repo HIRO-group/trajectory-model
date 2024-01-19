@@ -11,7 +11,8 @@ from trajectory_model.spill_free.constants import \
 from trajectory_model.helper.rotate_quaternion import rotate_panda_to_match_orientation
 
 model = get_SFC_model()
-address = '/home/ava/projects/trajectory-model/weights/spill_classifier_func_api/2023-11-20 11:21:27_acc_0.91_loss_0.24_data_num_1517_epochs_400.h5'
+# orig_experiment_address = '/home/ava/projects/trajectory-model/weights/spill_classifier_func_api/2023-11-20 11:21:27_acc_0.91_loss_0.24_data_num_1517_epochs_400.h5'
+address = '/home/ava/projects/trajectory-model/weights/spill_classifier_func_api/best/2024-01-16 15:41:25_epoch_396_train_acc_0.93.h5'
 model.load_weights(address)
 
 
