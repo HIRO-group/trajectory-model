@@ -6,13 +6,13 @@ from trajectory_model.helper.read import read_panda_vectors
 from trajectory_model.helper.helper import calculate_endpoint
 
 
-file_name = '01-09-2023 13-42-14'
+file_name = '21-11-2023 15-44-04'
 # file_name = '01-09-2023 13-58-43'
 # file_name = "01-09-2023 14-09-56"
 
 file_path = '/home/ava/projects/assets/cartesian/'+file_name+'/cartesian_positions.bin'
 vectors = read_panda_vectors(file_path)
-print(vectors[0])
+# print(vectors[0])
 
 def get_start_end_points(cup_frame=False):
     start_points = np.empty((0, 3), np.float64)

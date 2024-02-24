@@ -1,5 +1,6 @@
 import numpy as np
-from trajectory_model.classifier_predict_func_api import spilled, model
+from trajectory_model.classifier_predict_func_api import model as new_model
+from trajectory_model.classifier_predict import model as old_model
 from trajectory_model.helper.read import read_panda_vectors
 from trajectory_model.spill_free.constants import MAX_TRAJ_STEPS, EMBED_DIM, MOCAP_DT, \
     BIG_HEIGHT, SMALL_HEIGHT, BLANK_VAL, BEAKER, CYLINDER, FLASK
@@ -11,12 +12,12 @@ def read_chemistry_vessel_trajectories():
     Y = np.zeros((0, 1))
     dir_prefix = '/home/ava/projects/trajectory-model/data/generalization/'
     file_names = [
-        ('beaker/50', BEAKER, BEAKER.fill_level_50),
-        ('beaker/90', BEAKER, BEAKER.fill_level_90),
+        # ('beaker/50', BEAKER, BEAKER.fill_level_50),
+        # ('beaker/90', BEAKER, BEAKER.fill_level_90),
         # ('cylinder/20', CYLINDER, CYLINDER.fill_level_20),
         # ('cylinder/80', CYLINDER, CYLINDER.fill_level_80),
-        # ('flask/60', FLASK, FLASK.fill_level_60),
-        # ('flask/90', FLASK, FLASK.fill_level_90),
+        ('flask/60', FLASK, FLASK.fill_level_60),
+        ('flask/90', FLASK, FLASK.fill_level_90),
     ]
     for file in file_names:
         vessel = file[1]
@@ -40,9 +41,10 @@ def read_chemistry_vessel_trajectories():
 def predict_spillage(X, Y):
     correct, false = 0, 0
     for index in range(X.shape[0]):
-        prediction = model.predict({"trajectory": X[index, :, :7][None, :, :],
+        prediction = new_model.predict({"trajectory": X[index, :, :7][None, :, :],
                                     "properties": X[index, 0, 7:][None, :],
                                     })[0][0]
+        # prediction= old_model.predict(X[index][None, :, :])[0][0]
 
         actual_value = Y[index]
         prediction = 0 if prediction < 0.5 else 1

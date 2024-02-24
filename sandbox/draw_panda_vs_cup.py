@@ -3,7 +3,7 @@ from scipy.spatial.transform import Rotation as R
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
-from trajectory_model.helper.helper import rotate_vector, calculate_endpoint
+from trajectory_model.helper.helper import rotate_vector, calculate_endpoint, quat_to_euler
 
 panda_default_cartesian = np.array([0.306891, -2.36797e-16, 0.590282, 0.707107, -0.707107, -6.12323e-17, -0.707107])
 cup_default_cartesian = np.array([-0.007746216841042042,0.04685171693563461,0.16710145771503448,-0.0044183372519910336,-0.0012599572073668242,-0.21964260935783386,-0.9755696058273315])
