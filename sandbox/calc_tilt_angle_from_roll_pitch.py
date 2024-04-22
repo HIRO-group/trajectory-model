@@ -23,7 +23,7 @@ def calc_tilt_angle_v2(roll, pitch):
     print("Tilt angle v2: ", tilt_angle)
 
 if __name__ == "__main__":
-    roll = 38
-    pitch = 25
+    roll = 31
+    pitch = 22
     calc_tilt_angle(roll, pitch)
     calc_tilt_angle_v2(roll, pitch)

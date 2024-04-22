@@ -142,11 +142,11 @@ if __name__ == "__main__":
 
     plt.bar(br1, [task_1_mean, task_3_mean, task_5_mean], \
             yerr=[task_1_std, task_3_std, task_5_std], \
-            color='#7FBFFF', width = bar_width, edgecolor ='#7FBFFF')
+            color='lightcoral', width = bar_width, edgecolor ='lightcoral')
 
     plt.bar(br2, [task_2_mean, task_4_mean, task_6_mean], \
             yerr=[task_2_std, task_4_std, task_6_std], \
-            color='#4d79bc', width = bar_width, edgecolor ='#4d79bc')
+            color='cornflowerblue', width = bar_width, edgecolor ='cornflowerblue')
     
     
     # plt.text(br1[0], task_4_mean/4, f'std: {round(task_1_std, 2)}', ha='center', va='bottom', color='white')
@@ -155,7 +155,9 @@ if __name__ == "__main__":
     # plt.text(br2[0], task_4_mean/4, f'std: {round(task_2_std, 2)}', ha='center', va='bottom', color='white')
     # plt.text(br2[1], task_4_mean/4, f'std: {round(task_4_std, 2)}', ha='center', va='bottom', color='white')
     # plt.text(br2[2], task_4_mean/4, f'std: {round(task_6_std, 2)}', ha='center', va='bottom', color='white')
-
+    
+    # increase font size for the x label and y lable
+    
     plt.xticks([0+bar_width/2, 1+bar_width/2, 2+bar_width/2], ['Wine Glass', 'Flute Glass', 'Basic Glass'])
     
     # plt.xlabel("Containers")

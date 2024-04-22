@@ -19,10 +19,10 @@ def get_start_end_points(cup_frame=False):
     end_points = np.empty((0, 3), np.float64)
     for row in vectors:
         x, y, z = row[0], row[1], row[2]
-        a, b, c, d = row[3], row[4], row[5], row[6]
+        w, a, b, c = row[3], row[4], row[5], row[6]
         start_point = np.array([[x, y, z]])
 
-        end_point = calculate_endpoint(start_point, a, b, c, d)
+        end_point = calculate_endpoint(start_point, a, b, c, w)
         start_points = np.append(start_points, start_point, axis=0)
         end_points = np.append(end_points, end_point, axis=0)
     return start_points, end_points

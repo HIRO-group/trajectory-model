@@ -49,7 +49,7 @@ def process_panda_to_model_input(trajectory):
     trajectory = translate(trajectory)
     trajectory = fill_with_blank(trajectory)
     trajectory = rotate_panda_to_match_orientation(trajectory)
-    trajectory = round_down(trajectory)
+    # trajectory = round_down(trajectory)
     trajectory = delta_xyz(trajectory)
     return trajectory
 
@@ -58,7 +58,7 @@ def spilled(trajectory, properties=None):
     print("callling spilled...")
     trajectory = process_panda_to_model_input(trajectory)
     if properties is None:
-        properties = np.array([TUMBLER_DIAMETER_B, TUMBLER_HEIGHT, TUMBLER_DIAMETER_U, TUMBLER_FILL_30])
+        properties = np.array([BIG_DIAMETER_B, BIG_HEIGHT, BIG_DIAMETER_U, BIG_FILL_30])
 
     prediction = model.predict({"trajectory": trajectory[None, :, :],
                                 "properties": properties[None, :],

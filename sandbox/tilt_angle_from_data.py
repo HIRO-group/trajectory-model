@@ -17,6 +17,9 @@ def get_panda_traj(file_name):
 
 
 def transform_ee_to_cup_frame(panda_traj):
+
+    print("panda_traj[0, 0, 3:7]", panda_traj[0, 0, 3:7])
+
     R_be0 = R.from_quat(panda_traj[0, 0, 3:7])  
     t_be0 = panda_traj[0, 0, :3]
     T_be0 = np.eye(4)
@@ -27,6 +30,13 @@ def transform_ee_to_cup_frame(panda_traj):
     T_bc0[:3, 3] = panda_traj[0, 0, :3]
     T_ce = np.linalg.inv(T_bc0) @ T_be0
     T_ec = np.linalg.inv(T_ce)
+    # print("T_ec: ", T_ec)
+    # print quaternion for T_ec
+
+    R_ec = T_ec[:3, :3]
+    quat_ec = R.from_matrix(R_ec).as_quat()
+    print("quat_ec: ", quat_ec)
+
 
     tilt_angles = []
     euler_angles = []
@@ -66,7 +76,13 @@ def transform_ee_to_cup_frame(panda_traj):
 
 
 if __name__ == "__main__":
-    for task in Tasks.task_6:
+    for task in Tasks.task_4[:1]:
         file_name = task
+        # print("Task: ", file_name)
         panda_traj = get_panda_traj(file_name)
+        for step in range(panda_traj.shape[1]):
+            q = panda_traj[0, step, 3:7]
+            q = q / np.linalg.norm(q)
+            panda_traj[0, step, 3:7] = q
+
         transform_ee_to_cup_frame(panda_traj)

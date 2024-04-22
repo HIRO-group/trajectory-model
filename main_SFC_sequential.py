@@ -1,22 +1,23 @@
 import tensorflow as tf
 from trajectory_model.data import get_data
 from trajectory_model.spill_free.model import TrajectoryClassifier
-from trajectory_model.spill_free.constants import MAX_TRAJ_STEPS, EMBED_DIM, NUM_HEADS, FF_DIM
+from trajectory_model.spill_free.constants import MAX_TRAJ_STEPS, EMBED_DIM
 from trajectory_model.helper.model_helper import SaveBestAccuracy
 from trajectory_model.helper.helper import ctime_str
 
 if __name__ == '__main__':
-    fit_model = False
+    fit_model = True
     X_train, Y_train, X_val, Y_val, X, Y = get_data(model_name='SFC', manual=False)
-    model = TrajectoryClassifier(max_traj_steps=MAX_TRAJ_STEPS, embed_dim=EMBED_DIM, num_heads=NUM_HEADS, ff_dim=FF_DIM)
+    model = TrajectoryClassifier(max_traj_steps=MAX_TRAJ_STEPS, embed_dim=EMBED_DIM, num_heads=8, ff_dim=32)
     model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy', tf.keras.metrics.Precision(), tf.keras.metrics.Recall()])
 
     if fit_model:
-        epochs = 200
-        batch_size = 16
+        epochs = 400
+        batch_size = 32
         custom_cb = SaveBestAccuracy(file_address="spill_classifier", 
                                         min_val_acc=0.87,
-                                        min_train_acc=0.87)
+                                        min_train_acc=0.87,
+                                        model=model)
         history = model.fit(X_train, Y_train, 
                         batch_size=batch_size, epochs=epochs, 
                         validation_data=(X_val, Y_val),

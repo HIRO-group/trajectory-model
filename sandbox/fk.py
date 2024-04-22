@@ -6,8 +6,7 @@ from math import sin, cos, pi
 import roboticstoolbox as rtb
 
 import matplotlib.pyplot as plt
-
-from trajectory_model.helper.rotate_quaternion_new_fk import rotate_ee_matrix
+from trajectory_model.helper.rotate_ee_matrix import rotate_ee_matrix
 
 
 def get_panda_joint_angles(file_name):
@@ -64,7 +63,7 @@ if __name__ == "__main__":
     task_4 = "21-11-2023 15-51-43" # green
     task_5 = "21-11-2023 17-39-10" # blue 
     
-    task = Tasks.task_4[0]
+    task = task_5
 
 
     panda_traj_joint_angles = get_panda_joint_angles(task)

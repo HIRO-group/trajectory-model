@@ -29,7 +29,7 @@ def get_rot_panda_traj(file_name):
     trajectory = read_panda_vectors(panda_file_path)
 
     trajectory = np.array([np.array(trajectory[i]) for i in range(0, len(trajectory), 1)])
-    trajectory = rotate_panda_to_match_orientation(trajectory)
+    # trajectory = rotate_panda_to_match_orientation(trajectory)
 
     trajectory = trajectory[np.newaxis, :, :]
     return trajectory
@@ -168,7 +168,7 @@ def alex_method(panda_traj):
         T_be[:3, 3] = t_be
 
         T_bc = T_be @ T_ec
-        
+
         euler_bc = R.from_matrix(T_bc[:3, :3]).as_euler('xyz', degrees=True)
         euler_angles.append(euler_bc)
 
@@ -189,30 +189,18 @@ def alex_method(panda_traj):
     min_roll = np.min(euler_angles[:, 0])
     min_pitch = np.min(euler_angles[:, 1])
 
-    print("Roll (max, min): ", (max_roll, min_roll),)
-    print("Pitch (max, min): ", (max_pitch, min_pitch))
-    # print("Tilt angles (max, min): ", (max(tilt_angles), min(tilt_angles)))
+    # print("Roll (max, min): ", (max_roll, min_roll),)
+    # print("Pitch (max, min): ", (max_pitch, min_pitch))
+    # print("Tilt angles (max, min): ", (max(tilt_cleangles), min(tilt_angles)))
     print("--------")
 
 
 if __name__ == "__main__":
-    for task in Tasks.task_6:
+    for task in Tasks.task_3:
+        print("Task: ", task)
         file_name = task
         panda_traj = get_rot_panda_traj(file_name)
-        # print first step of the euler angles
-        # print(quat_to_euler(panda_traj[0, 0, 3:7]))
-
-        # get_tilt_angles(panda_traj)
-        # get_max_roll_pitch(panda_traj)
-
-        alex_method(panda_traj)
+        # alex_method(panda_traj)
+        get_tilt_angles(panda_traj)
         # rotation_matrixes(panda_traj)
         # transform_matrices(panda_traj)
-
-# tilt angles
-# task 1: 29, 20, 13, 18, 13 // allowed: 39
-# task 2: 14, 20, 41, 22, 40 // allowed: 65
-# task 3: 32, 22, 78, 80, 13 // allowed: 49
-# task 4: 90, 13, 13, 82, 33 // allowed: 72
-# task 5: 102, 15, 13, 29, 13 // allowed: 35
-# task 6: 24, 100, 24, 32, 86 // allowed: 62

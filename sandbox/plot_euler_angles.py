@@ -72,8 +72,8 @@ def plot_euler_angle_for_a_traj(euler_angles, axs, color, alpha, linewidth, star
 def plot_euler_angles_for_all_traj(all_euler_angles):
     fig, axs = plt.subplots(3)
     for euler_angles in all_euler_angles:
-        # if len(euler_angles) > 6600:
-        #     continue
+        if len(euler_angles) > 6100:
+            continue
         plot_euler_angle_for_a_traj(euler_angles, axs, 'black', 0.2, 0.3)
     
     task_2 = "21-11-2023 14-04-04" # pink
@@ -82,18 +82,18 @@ def plot_euler_angles_for_all_traj(all_euler_angles):
 
 
     euler_angle_2 = get_a_specific_euler_angle(task_2)
-    plot_euler_angle_for_a_traj(euler_angle_2, axs, 'lightcoral', alpha=0.5, linewidth=3, start=3651, end=5284)
-    plot_euler_angle_for_a_traj(euler_angle_2, axs, 'lightcoral', alpha=1, linewidth=0.5)
+    # plot_euler_angle_for_a_traj(euler_angle_2, axs, 'lightcoral', alpha=0.5, linewidth=3, start=3651, end=5284)
+    plot_euler_angle_for_a_traj(euler_angle_2, axs, 'lightcoral', alpha=1, linewidth=1)
 
     # euler_angle_4 = get_a_specific_euler_angle(task_4)
     # plot_euler_angle_for_a_traj(euler_angle_4, axs, 'limegreen', alpha=0.5, linewidth=2, start=2606, end=3652)
     # plot_euler_angle_for_a_traj(euler_angle_4, axs, 'limegreen', alpha=1, linewidth=0.5)
 
     euler_angle_5 = get_a_specific_euler_angle(task_5)
-    plot_euler_angle_for_a_traj(euler_angle_5, axs, 'steelblue', alpha=0.5, linewidth=3, start=0, end=2000)
-    plot_euler_angle_for_a_traj(euler_angle_5, axs, 'steelblue', alpha=1, linewidth=0.5)
+    # plot_euler_angle_for_a_traj(euler_angle_5, axs, 'steelblue', alpha=0.5, linewidth=3, start=0, end=2000)
+    plot_euler_angle_for_a_traj(euler_angle_5, axs, 'steelblue', alpha=1, linewidth=1)
 
-    plt.subplots_adjust(hspace=0.05) 
+    plt.subplots_adjust(hspace=0.005) 
     axs[0].set_ylabel('Roll (deg)')
     axs[0].xaxis.set_visible(False)
     axs[1].xaxis.set_visible(False)
@@ -114,6 +114,13 @@ def plot_euler_angles_for_all_traj(all_euler_angles):
     axs[2].set_yticks(
         range(int(round(min(axs[2].get_ylim()), 0)), int(round(max(axs[2].get_ylim()), 0)), 5)
     )
+
+    # draw two blue dashed lines at indexes 2606, end=3652 and red ones for 3651, end=5284
+    # axs[0].axvline(x=3.651, color='red', linestyle='--', linewidth=0.5)
+    # axs[0].axvline(x=5.284, color='red', linestyle='--', linewidth=0.5)
+    # axs[0].axvline(x=2.606, color='blue', linestyle='--', linewidth=0.5)
+    # axs[0].axvline(x=3.652, color='blue', linestyle='--', linewidth=0.5)
+
 
     # axs[0].set_yticks([
     #     0,
@@ -141,7 +148,7 @@ def plot_euler_angles_for_all_traj(all_euler_angles):
 
     for ax in axs:
         ax.set_ylim(min(ax.get_ylim())-5, max(ax.get_ylim())+5)
-        ax.set_xlim(-0.2, 8)
+        ax.set_xlim(-0.2, 6.2)
 
 
     plt.show()

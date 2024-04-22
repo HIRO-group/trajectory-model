@@ -1,16 +1,15 @@
 import numpy as np
 from trajectory_model.spill_free.model import TrajectoryClassifier
-from trajectory_model.spill_free.constants import EMBED_DIM, NUM_HEADS, FF_DIM,\
-      MAX_TRAJ_STEPS, BIG_DIAMETER, BIG_HEIGHT, SMALL_DIAMETER, \
-      SMALL_HEIGHT, BIG_FILL_FULL, BIG_FILL_HALF, \
-      SMALL_FILL_FULL, SMALL_FILL_HALF, ROBOT_DT
+from trajectory_model.spill_free.constants import EMBED_DIM,\
+      MAX_TRAJ_STEPS, BIG_HEIGHT, \
+      SMALL_HEIGHT, ROBOT_DT
 from trajectory_model.helper.helper import quat_to_euler, euler_to_quat, ctime_str
 from trajectory_model.helper.rotate_quaternion import quaternion_to_angle_axis, rotate_quaternion
 
-model = TrajectoryClassifier(max_traj_steps=MAX_TRAJ_STEPS, embed_dim=EMBED_DIM, num_heads=NUM_HEADS, ff_dim=FF_DIM)
-model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+model = TrajectoryClassifier(max_traj_steps=MAX_TRAJ_STEPS, embed_dim=EMBED_DIM, num_heads=8, ff_dim=32)
+# model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
 model.build((None, MAX_TRAJ_STEPS, EMBED_DIM))
-# model.load_weights("/home/ava/projects/trajectory-model/weights/spill_classifier/best/2023-09-09 14:42:38_epoch_191_best_val_acc_0.93_train_acc_0.92.h5")
+model.load_weights("/home/ava/projects/trajectory-model/weights/spill_classifier/best/2024-01-20 16:00:28_epoch_399_train_acc_0.88.h5")
 
 # radius, height, fill_level
 

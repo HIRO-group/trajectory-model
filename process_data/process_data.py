@@ -351,6 +351,7 @@ def process_data_PDM():  # Probability Distribution Map
 
 def process_data_SFC():  # Spill-Free Classifier
     X, Y = read_from_files()
+    print("X.shape: ", X.shape)
     X, Y = augment_data(X, Y)
     X = fill_with_blanks(X)
     X = transform_trajectory(X)

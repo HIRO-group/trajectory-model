@@ -23,6 +23,9 @@ or
 ## Visualize cartesian positions from panda 
 ``` python sandbox/draw_panda_path.py```
 
+## Visualize rotated cartesian positions from panda 
+``` python sandbox/draw_rot_panda_path.py```
+
 ## Visualize cup orientation and rotated panda ee orientaion
 ``` python sandbox/draw_panda_vs_cup.py```
 
