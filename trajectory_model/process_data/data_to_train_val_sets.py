@@ -1,5 +1,5 @@
 import numpy as np
-from process_data.process_data import process_data_SFC, process_data_PDM
+from trajectory_model.process_data.data_preprocessor import process_data
 
 def get_manual_train_and_val_index(X):
     train_id = int(3*X.shape[0]/4)
@@ -20,19 +20,19 @@ def get_train_and_val_set(X, Y, manual=False):
     return X_train, Y_train, X_val, Y_val
 
 
-def get_data_SFC(manual):
-    X, Y = process_data_SFC()
-    X_train, Y_train, X_val, Y_val = get_train_and_val_set(X, Y)
-    return X_train, Y_train, X_val, Y_val, X, Y
+def get_X_and_Y():
+    X, Y = process_data()
+    X_train, Y_train, X_val, Y_val = get_train_and_val_set(X, Y)    
+    X_train_traj = X_train[:, :, :7]
+    X_train_prop = X_train[:, 0, 7:]
+    X_val_traj = X_val[:, :, :7]
+    X_val_prop = X_val[:, 0, 7:]
+
+    return (X_train_traj, X_train_prop, X_val_traj, X_val_prop), (Y_train, Y_val)
 
 
-def get_data_PDM(manual):
-    X, Y = process_data_PDM()
-    return X, Y
-
-
-def get_data(model_name, manual=False):
-    if model_name == "SFC":
-        return get_data_SFC(manual=manual)
-    elif model_name == "PDM":
-        return get_data_PDM(manual=manual)
+def get_train_and_val_sets(X, Y):
+    X_train_traj, X_train_prop, X_val_traj, X_val_prop = X[0], X[1], X[2], X[3]
+    Y_train, Y_val = Y[0], Y[1]
+    return X_train_traj, X_train_prop, Y_train, X_val_traj, X_val_prop, Y_val
+    

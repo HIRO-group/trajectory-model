@@ -7,9 +7,8 @@ import tensorflow as tf
 from keras import layers
 from tensorflow import keras
 
-from trajectory_model.spill_free.constants import MAX_TRAJ_STEPS, EMBED_LOC, EMBED_PROP
+from trajectory_model.SFC.constants import MAX_TRAJ_STEPS, EMBED_LOC, EMBED_PROP
 
-# from trajectory_model.con
 
 class PositionalEnconding(Layer):
     def __init__(self, max_traj_steps, embed_dim) -> None:
@@ -82,7 +81,7 @@ def get_SFC_model():
 
     model = keras.Model(
         inputs=[trajectory_input, properties_input],
-        outputs=[prediction],
-    )
+        outputs=[prediction],)
 
+    model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy', tf.keras.metrics.Precision(), tf.keras.metrics.Recall()])
     return model

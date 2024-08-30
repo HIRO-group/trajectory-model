@@ -1,7 +1,7 @@
 import os
 import csv
 import numpy as np
-from trajectory_model.spill_free.constants import \
+from trajectory_model.SFC.constants import \
     MAX_TRAJ_STEPS, EMBED_DIM, EMBED_LOC, EMBED_PROP, MOCAP_DT, BLANK_VAL, \
     BIG_DIAMETER_B, BIG_HEIGHT, BIG_DIAMETER_U, BIG_FILL_80, BIG_FILL_30, \
     SMALL_DIAMETER_B, SMALL_HEIGHT, SMALL_DIAMETER_U, SMALL_FILL_80, SMALL_FILL_50, \
@@ -9,9 +9,14 @@ from trajectory_model.spill_free.constants import \
     TALL_TUMBLER_DIAMETER_B, TALL_TUMBLER_HEIGHT, TALL_TUMBLER_DIAMETER_U, TALL_TUMBLER_FILL_50, TALL_TUMBLER_FILL_80, \
     TUMBLER_DIAMETER_B, TUMBLER_HEIGHT, TUMBLER_DIAMETER_U, TUMBLER_FILL_30, TUMBLER_FILL_70, \
     WINE_DIAMETER_B, WINE_HEIGHT, WINE_DIAMETER_U, WINE_FILL_30, WINE_FILL_70
-from trajectory_model.helper.helper import plot_X, plot_multiple_e_ids, plot_multiple_X
-from trajectory_model.helper.read import read_panda_vectors
+
+from trajectory_model.common import get_arguments
+
+from trajectory_model.common.read import read_panda_vectors
+
 from trajectory_model.classifier_predict_func_api import process_panda_to_model_input
+
+
 
 DIR_PREFIX = '/home/ava/projects/trajectory-model/data/'
 
@@ -337,21 +342,8 @@ def add_panda_trajectories(X, Y):
     return X, Y
 
 
-def process_data_PDM():  # Probability Distribution Map
+def process_data():
     X, Y = read_from_files()
-    X = fill_with_blanks(X)
-    X = transform_trajectory(X)
-    X, Y = add_equivalent_quaternions(X, Y)
-    X = round_down_orientation_and_pos(X)
-    X = reverse_y_axis(X)
-    X, Y = add_panda_trajectories(X, Y)
-    X, Y = keep_spill_free(X, Y)
-    return X, Y
-
-
-def process_data_SFC():  # Spill-Free Classifier
-    X, Y = read_from_files()
-    print("X.shape: ", X.shape)
     X, Y = augment_data(X, Y)
     X = fill_with_blanks(X)
     X = transform_trajectory(X)
@@ -364,50 +356,4 @@ def process_data_SFC():  # Spill-Free Classifier
 
 
 if __name__ == "__main__":
-    X, Y = process_data_SFC()
-
-    unique_x = np.unique(X[:, :, 0])
-    unique_y = np.unique(X[:, :, 1])
-    unique_z = np.unique(X[:, :, 2])
-
-    # add for a, b, c, d    
-
-    unique_a = np.unique(X[:, :, 3])
-    unique_b = np.unique(X[:, :, 4])
-    unique_c = np.unique(X[:, :, 5])
-    unique_d = np.unique(X[:, :, 6])
-
-    print("Unique a: ", len(unique_a))
-    print("Unique b: ", len(unique_b))
-    print("Unique c: ", len(unique_c))
-    print("Unique d: ", len(unique_d))
-
-    # Print the number of unique values for each dimension
-    # print("Number of unique x values: ", len(unique_x))
-    # print("Number of unique y values: ", len(unique_y))
-    # print("Number of unique z values: ", len(unique_z))
-
-    # print()
-    # print max of each column
-
-    # x_max_indices = np.where(X[:, :, 0] < 100)
-    # print("Max x: ", np.max(X[x_max_indices][:, 0]))
-
-    # y_max_indices = np.where(X[:, :, 1] < 100)
-    # print("Max y: ", np.max(X[y_max_indices][:, 1]))
-
-    # z_max_indices = np.where(X[:, :, 2] < 100)
-    # print("Max z: ", np.max(X[z_max_indices][:, 2]))
-
-    # x_min_indices = np.where(X[:, :, 0] > -100)
-    # print("Min x: ", np.min(X[x_min_indices][:, 0]))
-
-    # y_min_indices = np.where(X[:, :, 1] > -100)
-    # print("Min y: ", np.min(X[y_min_indices][:, 1]))
-
-    # z_min_indices = np.where(X[:, :, 2] > -100)
-    # print("Min z: ", np.min(X[z_min_indices][:, 2]))
-
-
-    # print()
-    # plot_multiple_e_ids(X, [0], 0.01)
+    X, Y = process_data()

@@ -5,6 +5,12 @@ from scipy.spatial.transform import Rotation as R
 from mpl_toolkits.mplot3d import Axes3D
 
 
+def generate_address(args, acc, loss, epochs=None, prefix=None):
+    epochs = epochs or args.epochs
+    path_prefix = f"{args.save_addr_prefix}/{prefix}" if prefix else args.save_addr_prefix
+    name = f"{path_prefix}/{ctime_str()}_acc{round(acc, 2)}_loss{round(loss, 2)}_epoch{epochs}.h5"
+    return name
+
 def rotate_vector(vector, rotation_matrix):
     return np.dot(rotation_matrix, vector)
 

@@ -12,25 +12,22 @@ from __future__ import print_function
 import argparse
 import time
 from datetime import datetime
-# import attr
-# import natnet
 import csv
 import atexit
 
-import sys  
+import sys # I feel ashamed for this
 sys.path.append('/home/ava/miniconda3/lib/python3.11/site-packages')
 
 import attr
 import natnet
 
-DIR_PREFIX = '/home/ava/projects/trajectory-model/data/generalization/'
+
+from trajectory_model.common.arguments import get_arguments
+args = get_arguments()
+
+DIR_PREFIX = f'{args.mocap_data_dir}/generalization/'
+
 file_name = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
-# beaker/50 beaker/90
-# cylinder/20 cylinder/80
-# flask/60 flask/90
-
-# spilled spill-free
 
 DIR_PATH = DIR_PREFIX + 'flask/90/spilled/' # 80 
 file_path = DIR_PATH + file_name + '.csv'
@@ -80,14 +77,12 @@ class ClientApp(object):
 
 def main():
     try:
-        # time.sleep(1)
         print("Starting now ...")
         app = ClientApp.connect()
         app.run()
     
     except natnet.DiscoveryError as e:
         print('Error:', e)
-
 
 if __name__ == '__main__':
     main()
