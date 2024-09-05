@@ -1,5 +1,5 @@
 import numpy as np
-from trajectory_model.process_data.data_preprocessor import process_data
+from trajectory_model.process_data.data_processor import process_data
 
 def get_manual_train_and_val_index(X):
     train_id = int(3*X.shape[0]/4)

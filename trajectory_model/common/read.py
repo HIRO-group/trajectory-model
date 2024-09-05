@@ -1,7 +1,7 @@
 import numpy as np
 import csv
 import struct
-from trajectory_model.helper.helper import quat_to_euler
+# from trajectory_model.helper.helper import quat_to_euler
 # from trajectory_model.helper.rotate_quaternion import rotate_new_cup_to_match_orientation
 
 def read_panda_vectors(filename):

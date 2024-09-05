@@ -44,13 +44,12 @@ def load_model(args, model, X, Y):
     print("prediction: ", prediction, "actual value: ", actual_value)
 
 
-
 if __name__ == '__main__':
     args = get_arguments()
     X, Y = get_X_and_Y()
     model = get_SFC_model()
     
     if args.fit_model:
-        train_model(model, X, Y)
+        train_model(args, model, X, Y)
     else:
-        load_model(model, X, Y)
+        load_model(args, model, X, Y)

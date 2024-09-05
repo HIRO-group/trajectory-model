@@ -1,80 +1,53 @@
 import os
 import csv
 import numpy as np
-from trajectory_model.SFC.constants import \
-    MAX_TRAJ_STEPS, EMBED_DIM, EMBED_LOC, EMBED_PROP, MOCAP_DT, BLANK_VAL, \
-    BIG_DIAMETER_B, BIG_HEIGHT, BIG_DIAMETER_U, BIG_FILL_80, BIG_FILL_30, \
-    SMALL_DIAMETER_B, SMALL_HEIGHT, SMALL_DIAMETER_U, SMALL_FILL_80, SMALL_FILL_50, \
-    SHORT_TUMBLER_DIAMETER_B, SHORT_TUMBLER_HEIGHT, SHORT_TUMBLER_DIAMETER_U, SHORT_TUMBLER_FILL_30, SHORT_TUMBLER_FILL_70, \
-    TALL_TUMBLER_DIAMETER_B, TALL_TUMBLER_HEIGHT, TALL_TUMBLER_DIAMETER_U, TALL_TUMBLER_FILL_50, TALL_TUMBLER_FILL_80, \
-    TUMBLER_DIAMETER_B, TUMBLER_HEIGHT, TUMBLER_DIAMETER_U, TUMBLER_FILL_30, TUMBLER_FILL_70, \
-    WINE_DIAMETER_B, WINE_HEIGHT, WINE_DIAMETER_U, WINE_FILL_30, WINE_FILL_70
-
-from trajectory_model.common import get_arguments
+from trajectory_model.SFC.constants import MAX_TRAJ_STEPS, EMBED_DIM, EMBED_LOC, EMBED_PROP, MOCAP_DT, BLANK_VAL
+from trajectory_model.process_data.containers import WineGlass, FluteGlass, BasicGlass, RibbedCup, TallCup, CurvyWineGlass
 
 from trajectory_model.common.read import read_panda_vectors
+from trajectory_model.predict_api import process_panda_to_model_input
+from trajectory_model.common import get_arguments
 
-from trajectory_model.classifier_predict_func_api import process_panda_to_model_input
 
-
-
-DIR_PREFIX = '/home/ava/projects/trajectory-model/data/'
+DIR_PREFIX = 'data/'
 
 # nospill, spill, radius_buttom, height, radius_top, fill_level
 FILE_NAMES_NOSPILL_SPILL = \
-    [("mocap_new/big/80/spill-free/", "mocap_new/big/80/spilled/",
-    BIG_DIAMETER_B, BIG_HEIGHT, BIG_DIAMETER_U, BIG_FILL_80),
+    [("wine_glass/80/spill-free/", "wine_glass/80/spilled/", WineGlass(WineGlass.high_fill)),
+     ("wine_glass/30/spill-free/", "wine_glass/30/spilled/", WineGlass(WineGlass.low_fill)),
 
-     ("mocap_new/big/30/spill-free/", "mocap_new/big/30/spilled/",
-    BIG_DIAMETER_B, BIG_HEIGHT, BIG_DIAMETER_U, BIG_FILL_30),
+     ("flute_glass/80/spill-free/", "flute_glass/80/spilled/", FluteGlass(FluteGlass.high_fill)),
+     ("flute_glass/50/spill-free/", "flute_glass/50/spilled/", FluteGlass(FluteGlass.low_fill)),
 
-     ("mocap_new/small/80/spill-free/", "mocap_new/small/80/spilled/", 
-    SMALL_DIAMETER_B, SMALL_HEIGHT, SMALL_DIAMETER_U, SMALL_FILL_80),
-
-     ("mocap_new/small/50/spill-free/", "mocap_new/small/50/spilled/", 
-    SMALL_DIAMETER_B, SMALL_HEIGHT, SMALL_DIAMETER_U, SMALL_FILL_50),
-
-     ("mocap_new_cups/shorttumbler/30/spill-free/", "mocap_new_cups/shorttumbler/30/spilled/",
-    SHORT_TUMBLER_DIAMETER_B, SHORT_TUMBLER_HEIGHT, SHORT_TUMBLER_DIAMETER_U, SHORT_TUMBLER_FILL_30),
-       
-     ("mocap_new_cups/shorttumbler/70/spill-free/", "mocap_new_cups/shorttumbler/70/spilled/",
-    SHORT_TUMBLER_DIAMETER_B, SHORT_TUMBLER_HEIGHT, SHORT_TUMBLER_DIAMETER_U, SHORT_TUMBLER_FILL_70),
+     ("ribbed_cup/30/spill-free/", "ribbed_cup/30/spilled/", RibbedCup(RibbedCup.low_fill)),
+     ("ribbed_cup/70/spill-free/", "ribbed_cup/70/spilled/", RibbedCup(RibbedCup.high_fill)),
      
-     ("mocap_new_cups/talltumbler/50/spill-free/", "mocap_new_cups/talltumbler/50/spilled/",
-    TALL_TUMBLER_DIAMETER_B, TALL_TUMBLER_HEIGHT, TALL_TUMBLER_DIAMETER_U, TALL_TUMBLER_FILL_50),
-    
-     ("mocap_new_cups/talltumbler/80/spill-free/", "mocap_new_cups/talltumbler/80/spilled/",
-    TALL_TUMBLER_DIAMETER_B, TALL_TUMBLER_HEIGHT, TALL_TUMBLER_DIAMETER_U, TALL_TUMBLER_FILL_80),
+     ("tall_cup/50/spill-free/", "tall_cup/50/spilled/", TallCup(TallCup.low_fill)),
+     ("tall_cup/80/spill-free/", "tall_cup/80/spilled/", TallCup(TallCup.high_fill)),
      
-     ("mocap_new_cups/tumbler/30/spill-free/", "mocap_new_cups/tumbler/30/spilled/",
-    TUMBLER_DIAMETER_B, TUMBLER_HEIGHT, TUMBLER_DIAMETER_U, TUMBLER_FILL_30),
-
-     ("mocap_new_cups/tumbler/70/spill-free/", "mocap_new_cups/tumbler/70/spilled/",
-    TUMBLER_DIAMETER_B, TUMBLER_HEIGHT, TUMBLER_DIAMETER_U, TUMBLER_FILL_70),
+     ("basic_glass/30/spill-free/", "basic_glass/30/spilled/", BasicGlass(BasicGlass.low_fill)),
+     ("basic_glass/70/spill-free/", "basic_glass/70/spilled/", BasicGlass(BasicGlass.high_fill)),
      
-     ("mocap_new_cups/wineglass/30/spill-free/", "mocap_new_cups/wineglass/30/spilled/",
-    WINE_DIAMETER_B, WINE_HEIGHT, WINE_DIAMETER_U, WINE_FILL_30),
-     
-    ("mocap_new_cups/wineglass/70/spill-free/", "mocap_new_cups/wineglass/70/spilled/",
-    WINE_DIAMETER_B, WINE_HEIGHT, WINE_DIAMETER_U, WINE_FILL_70),]
+     ("curvy_wine_glass/30/spill-free/", "curvy_wine_glass/30/spilled/", CurvyWineGlass(CurvyWineGlass.low_fill)),
+    ("curvy_wine_glass/70/spill-free/", "curvy_wine_glass/70/spilled/", CurvyWineGlass(CurvyWineGlass.high_fill))]
 
 
 FILE_NAMES_AUGMENT_SPILL = [
-    ("mocap_new/big/30/spilled/", [(BIG_DIAMETER_B, BIG_HEIGHT, BIG_DIAMETER_U, BIG_FILL_80)]),
-    ("mocap_new/small/50/spilled/", [(SMALL_DIAMETER_B, SMALL_HEIGHT, SMALL_DIAMETER_U, SMALL_FILL_80)]),
-    ("mocap_new_cups/shorttumbler/30/spilled/", [(SHORT_TUMBLER_DIAMETER_B, SHORT_TUMBLER_HEIGHT, SHORT_TUMBLER_DIAMETER_U, SHORT_TUMBLER_FILL_70)]),
-    ("mocap_new_cups/talltumbler/50/spilled/", [(TALL_TUMBLER_DIAMETER_B, TALL_TUMBLER_HEIGHT, TALL_TUMBLER_DIAMETER_U, TALL_TUMBLER_FILL_80)]),
-    ("mocap_new_cups/tumbler/30/spilled/", [(TUMBLER_DIAMETER_B, TUMBLER_HEIGHT, TUMBLER_DIAMETER_U, TUMBLER_FILL_70)]),
-    ("mocap_new_cups/wineglass/30/spilled/", [(WINE_DIAMETER_B, WINE_HEIGHT, WINE_DIAMETER_U, WINE_FILL_70)]),
+    ("wine_glass/30/spilled/", [WineGlass(WineGlass.high_fill)]),
+    ("flute_glass/50/spilled/", [FluteGlass(FluteGlass.high_fill)]),
+    ("ribbed_cup/30/spilled/", [RibbedCup(RibbedCup.high_fill)]),
+    ("tall_cup/50/spilled/", [TallCup(TallCup.high_fill)]),
+    ("basic_glass/30/spilled/", [BasicGlass(BasicGlass.high_fill)]),
+    ("curvy_wine_glass/30/spilled/", [CurvyWineGlass(CurvyWineGlass.high_fill)]),
 ]
 
 FILE_NAMES_AUGMENT_SPILLFREE = [
-    ("mocap_new/big/80/spill-free/", [(BIG_DIAMETER_B, BIG_HEIGHT, BIG_DIAMETER_U, BIG_FILL_30)]),
-    ("mocap_new/small/80/spill-free/", [(SMALL_DIAMETER_B, SMALL_HEIGHT, SMALL_DIAMETER_U, SMALL_FILL_50)]),
-    ("mocap_new_cups/shorttumbler/70/spill-free/", [(SHORT_TUMBLER_DIAMETER_B, SHORT_TUMBLER_HEIGHT, SHORT_TUMBLER_DIAMETER_U, SHORT_TUMBLER_FILL_30)]),
-    ("mocap_new_cups/talltumbler/80/spill-free/", [(TALL_TUMBLER_DIAMETER_B, TALL_TUMBLER_HEIGHT, TALL_TUMBLER_DIAMETER_U, TALL_TUMBLER_FILL_50)]),
-    ("mocap_new_cups/tumbler/70/spill-free/", [(TUMBLER_DIAMETER_B, TUMBLER_HEIGHT, TUMBLER_DIAMETER_U, TUMBLER_FILL_30)]),
-    ("mocap_new_cups/wineglass/70/spill-free/", [(WINE_DIAMETER_B, WINE_HEIGHT, WINE_DIAMETER_U, WINE_FILL_30)]),
+    ("wine_glass/80/spill-free/", [WineGlass(WineGlass.low_fill)]),
+    ("flute_glass/80/spill-free/", [FluteGlass(FluteGlass.low_fill)]),
+    ("ribbed_cup/70/spill-free/", [RibbedCup(RibbedCup.low_fill)]),
+    ("tall_cup/80/spill-free/", [TallCup(TallCup.low_fill)]),
+    ("basic_glass/70/spill-free/", [BasicGlass(BasicGlass.low_fill)]),
+    ("curvy_wine_glass/70/spill-free/", [CurvyWineGlass(CurvyWineGlass.low_fill)]),
 ]
 
 def trim_noise(X):
@@ -175,8 +148,8 @@ def read_from_files(file_list=FILE_NAMES_NOSPILL_SPILL):
     Y = np.zeros((0, 1))
 
     for row in file_list:
-        nospill_file, spill_file = row[0], row[1]
-        radius_b, height, radius_u, fill_level = row[2], row[3], row[4], row[5]
+        nospill_file, spill_file, container = row[0], row[1], row[2]
+        radius_b, height, radius_u, fill_level = container.diameter_b, container.height, container.diameter_u, container.fill_level
 
         X_ns, Y_ns = handle_nospill(nospill_file, radius_b, height, radius_u, fill_level)
         X = np.concatenate((X, X_ns), axis=0)
@@ -191,20 +164,19 @@ def read_from_files(file_list=FILE_NAMES_NOSPILL_SPILL):
 def augment_data(X, Y):
     for row in FILE_NAMES_AUGMENT_SPILL:
         spill_file = row[0]
-        for prop in row[1]:
-            radius_b, height, radius_u, fill_level = prop[0], prop[1], prop[2], prop[3]
+        for container in row[1]:
+            radius_b, height, radius_u, fill_level = container.diameter_b, container.height, container.diameter_u, container.fill_level
             X_s, Y_s = handle_spill(spill_file, radius_b, height, radius_u, fill_level)
             X = np.concatenate((X, X_s), axis=0)
             Y = np.concatenate((Y, Y_s), axis=0)
 
     for row in FILE_NAMES_AUGMENT_SPILLFREE:
         spillfree_file = row[0]
-        for prop in row[1]:
-            radius_b, height, radius_u, fill_level = prop[0], prop[1], prop[2], prop[3]
+        for container in row[1]:
+            radius_b, height, radius_u, fill_level = container.diameter_b, container.height, container.diameter_u, container.fill_level
             X_s, Y_s = handle_nospill(spillfree_file, radius_b, height, radius_u, fill_level)
             X = np.concatenate((X, X_s), axis=0)
             Y = np.concatenate((Y, Y_s), axis=0)
-    
     return X, Y
 
 
@@ -284,11 +256,12 @@ def compute_delta_X(X):
 
 def process_panda_file(X, Y, filenames, spill_free):
     for fps in filenames:
-        filenames = fps[0]
-        properties = fps[1]
+        filenames, container = fps[0], fps[1]
+        properties = np.array([[container.diameter_b, container.height, container.diameter_u, container.fill_level]])
         properties = np.repeat(properties, X.shape[1], axis=0)
+
         for fn in filenames:
-            panda_file_path =  '/home/ava/projects/assets/cartesian/'+fn+'/cartesian_positions.bin'
+            panda_file_path =  f'{DIR_PREFIX}panda/cartesian/'+fn+'/cartesian_positions.bin'
             vectors = read_panda_vectors(panda_file_path)
             panda_traj = process_panda_to_model_input(vectors)
             panda_traj = np.concatenate((panda_traj, properties), axis=1)
@@ -304,22 +277,15 @@ def process_panda_file(X, Y, filenames, spill_free):
 def add_panda_trajectories(X, Y):
     filenames_props_NOSPILL = [
         (['01-09-2023 13-42-14', '01-09-2023 13-58-43', '01-09-2023 14-09-56',
-          '21-11-2023 14-05-35'], 
-        np.array([[BIG_DIAMETER_B, BIG_HEIGHT, BIG_DIAMETER_U, BIG_FILL_30]])),
-        
+          '21-11-2023 14-05-35'], WineGlass(WineGlass.low_fill)),
+
         (['10-09-2023 10-03-18', '10-09-2023 10-06-37', '10-09-2023 13-10-26',
           '10-09-2023 13-14-07', '21-11-2023 15-13-41', '21-11-2023 15-15-56'],
-        np.array([[SMALL_DIAMETER_B, SMALL_HEIGHT, SMALL_DIAMETER_U, SMALL_FILL_80]])),
-        
+           FluteGlass(FluteGlass.high_fill)),
         (['10-09-2023 13-30-09', '10-09-2023 13-32-29', '10-09-2023 13-39-37',
-          '21-11-2023 15-44-04', '21-11-2023 15-49-51'], 
-        np.array([[SMALL_DIAMETER_B, SMALL_HEIGHT, SMALL_DIAMETER_U, SMALL_FILL_50]])),
-
-        (['21-11-2023 17-23-58'], 
-        np.array([[TUMBLER_DIAMETER_B, TUMBLER_HEIGHT, TUMBLER_DIAMETER_U, TUMBLER_FILL_70]])),
-
-        (['21-11-2023 18-00-59', '21-11-2023 18-07-52'],
-        np.array([[TUMBLER_DIAMETER_B, TUMBLER_HEIGHT, TUMBLER_DIAMETER_U, TUMBLER_FILL_30]]))
+          '21-11-2023 15-44-04', '21-11-2023 15-49-51'], FluteGlass(FluteGlass.low_fill)),
+        (['21-11-2023 17-23-58'], BasicGlass(BasicGlass.high_fill)),
+        (['21-11-2023 18-00-59', '21-11-2023 18-07-52'], BasicGlass(BasicGlass.low_fill)),
     ] # 18 
 
     file_names_props_SPILL = [
@@ -332,7 +298,7 @@ def add_panda_trajectories(X, Y):
           '13-11-2023 17-08-32', '13-11-2023 17-09-56', '13-11-2023 17-11-11',
           '13-11-2023 17-20-14', '13-11-2023 17-23-14', '13-11-2023 17-27-18',
           '13-11-2023 17-30-59', '13-11-2023 17-32-32', '13-11-2023 17-33-44'], 
-          np.array([[BIG_DIAMETER_B, BIG_HEIGHT, BIG_DIAMETER_U, BIG_FILL_30]]))
+          WineGlass(WineGlass.low_fill))
     ] # 27
 
     # 18 + 27 = 45 panda trajectories
@@ -357,3 +323,4 @@ def process_data():
 
 if __name__ == "__main__":
     X, Y = process_data()
+    print(X.shape, Y.shape)

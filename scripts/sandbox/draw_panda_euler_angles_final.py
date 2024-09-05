@@ -3,12 +3,12 @@ from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
 from scipy.spatial.transform import Rotation as R
 
-from trajectory_model.classifier_predict_func_api import process_panda_to_model_input
+from trajectory_model.predict_api import process_panda_to_model_input
 from trajectory_model.helper.read import read_panda_vectors
 from trajectory_model.helper.helper import quat_to_euler
 # from trajectory_model.helper.rotate_quaternion import rotate_panda_to_match_orientation
 from trajectory_model.helper.new_rotate_quaternion import new_rotate_panda_to_match_orientation
-from trajectory_model.classifier_predict_func_api import process_panda_to_model_input
+from trajectory_model.predict_api import process_panda_to_model_input
 from trajectory_model.helper.read import read_panda_vectors
 from trajectory_model.helper.helper import quat_to_euler, get_start_and_end_points
 

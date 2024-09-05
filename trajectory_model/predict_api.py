@@ -1,19 +1,19 @@
 import numpy as np
-from trajectory_model.spill_free.model_func_api import get_SFC_model
-from trajectory_model.spill_free.constants import \
-    MAX_TRAJ_STEPS, EMBED_LOC, BLANK_VAL, ROBOT_DT, \
-    BIG_DIAMETER_B, BIG_HEIGHT, BIG_DIAMETER_U, BIG_FILL_80, BIG_FILL_30, \
-    SMALL_DIAMETER_B, SMALL_HEIGHT, SMALL_DIAMETER_U, SMALL_FILL_80, SMALL_FILL_50, \
-    SHORT_TUMBLER_DIAMETER_B, SHORT_TUMBLER_HEIGHT, SHORT_TUMBLER_DIAMETER_U, SHORT_TUMBLER_FILL_30, SHORT_TUMBLER_FILL_70, \
-    TALL_TUMBLER_DIAMETER_B, TALL_TUMBLER_HEIGHT, TALL_TUMBLER_DIAMETER_U, TALL_TUMBLER_FILL_50, TALL_TUMBLER_FILL_80, \
-    TUMBLER_DIAMETER_B, TUMBLER_HEIGHT, TUMBLER_DIAMETER_U, TUMBLER_FILL_30, TUMBLER_FILL_70, \
-    WINE_DIAMETER_B, WINE_HEIGHT, WINE_DIAMETER_U, WINE_FILL_30, WINE_FILL_70
-from trajectory_model.helper.rotate_quaternion import rotate_panda_to_match_orientation
+from trajectory_model.SFC import get_SFC_model
+from trajectory_model.SFC.constants import \
+    MAX_TRAJ_STEPS, EMBED_LOC, BLANK_VAL, ROBOT_DT
+    # BIG_DIAMETER_B, BIG_HEIGHT, BIG_DIAMETER_U, BIG_FILL_80, BIG_FILL_30, \
+    # SMALL_DIAMETER_B, SMALL_HEIGHT, SMALL_DIAMETER_U, SMALL_FILL_80, SMALL_FILL_50, \
+    # SHORT_TUMBLER_DIAMETER_B, SHORT_TUMBLER_HEIGHT, SHORT_TUMBLER_DIAMETER_U, SHORT_TUMBLER_FILL_30, SHORT_TUMBLER_FILL_70, \
+    # TALL_TUMBLER_DIAMETER_B, TALL_TUMBLER_HEIGHT, TALL_TUMBLER_DIAMETER_U, TALL_TUMBLER_FILL_50, TALL_TUMBLER_FILL_80, \
+    # TUMBLER_DIAMETER_B, TUMBLER_HEIGHT, TUMBLER_DIAMETER_U, TUMBLER_FILL_30, TUMBLER_FILL_70, \
+    # WINE_DIAMETER_B, WINE_HEIGHT, WINE_DIAMETER_U, WINE_FILL_30, WINE_FILL_70
+from trajectory_model.common.rotate_quaternion import rotate_panda_to_match_orientation
 
 model = get_SFC_model()
 # orig_experiment_address = '/home/ava/projects/trajectory-model/weights/spill_classifier_func_api/2023-11-20 11:21:27_acc_0.91_loss_0.24_data_num_1517_epochs_400.h5'
-address = '/home/ava/projects/trajectory-model/weights/spill_classifier_func_api/best/2024-01-16 15:41:25_epoch_396_train_acc_0.93.h5'
-model.load_weights(address)
+# address = '/home/ava/projects/trajectory-model/weights/spill_classifier_func_api/best/2024-01-16 15:41:25_epoch_396_train_acc_0.93.h5'
+# model.load_weights(address)
 
 
 def translate(trajectory):
@@ -53,7 +53,7 @@ def process_panda_to_model_input(trajectory):
     trajectory = delta_xyz(trajectory)
     return trajectory
 
-
+# This function is imported using PyBind11 in the C++ code for motion planning
 def spilled(trajectory, properties=None):
     print("callling spilled...")
     trajectory = process_panda_to_model_input(trajectory)

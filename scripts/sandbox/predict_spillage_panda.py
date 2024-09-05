@@ -1,5 +1,5 @@
 import numpy as np
-from trajectory_model.classifier_predict_func_api import spilled
+from trajectory_model.predict_api import spilled
 from trajectory_model.helper.read import read_panda_vectors
 from trajectory_model.spill_free.constants import MAX_TRAJ_STEPS, EMBED_DIM, MOCAP_DT, \
     BIG_DIAMETER, BIG_HEIGHT, SMALL_DIAMETER, SMALL_HEIGHT, \
