@@ -4,50 +4,48 @@ import numpy as np
 from trajectory_model.SFC.constants import MAX_TRAJ_STEPS, EMBED_DIM, EMBED_LOC, EMBED_PROP, MOCAP_DT, BLANK_VAL
 from trajectory_model.process_data.containers import WineGlass, FluteGlass, BasicGlass, RibbedCup, TallCup, CurvyWineGlass
 
-from trajectory_model.common.read import read_panda_vectors
 from trajectory_model.predict_api import process_panda_to_model_input
-from trajectory_model.common import get_arguments
 
 
 DIR_PREFIX = 'data/'
 
 # nospill, spill, radius_buttom, height, radius_top, fill_level
 FILE_NAMES_NOSPILL_SPILL = \
-    [("wine_glass/80/spill-free/", "wine_glass/80/spilled/", WineGlass(WineGlass.high_fill)),
-     ("wine_glass/30/spill-free/", "wine_glass/30/spilled/", WineGlass(WineGlass.low_fill)),
+    [("mocap/wine_glass/80/spill-free/", "mocap/wine_glass/80/spilled/", WineGlass(WineGlass.high_fill)),
+     ("mocap/wine_glass/30/spill-free/", "mocap/wine_glass/30/spilled/", WineGlass(WineGlass.low_fill)),
 
-     ("flute_glass/80/spill-free/", "flute_glass/80/spilled/", FluteGlass(FluteGlass.high_fill)),
-     ("flute_glass/50/spill-free/", "flute_glass/50/spilled/", FluteGlass(FluteGlass.low_fill)),
+     ("mocap/flute_glass/80/spill-free/", "mocap/flute_glass/80/spilled/", FluteGlass(FluteGlass.high_fill)),
+     ("mocap/flute_glass/50/spill-free/", "mocap/flute_glass/50/spilled/", FluteGlass(FluteGlass.low_fill)),
 
-     ("ribbed_cup/30/spill-free/", "ribbed_cup/30/spilled/", RibbedCup(RibbedCup.low_fill)),
-     ("ribbed_cup/70/spill-free/", "ribbed_cup/70/spilled/", RibbedCup(RibbedCup.high_fill)),
+     ("mocap/ribbed_cup/30/spill-free/", "mocap/ribbed_cup/30/spilled/", RibbedCup(RibbedCup.low_fill)),
+     ("mocap/ribbed_cup/70/spill-free/", "mocap/ribbed_cup/70/spilled/", RibbedCup(RibbedCup.high_fill)),
      
-     ("tall_cup/50/spill-free/", "tall_cup/50/spilled/", TallCup(TallCup.low_fill)),
-     ("tall_cup/80/spill-free/", "tall_cup/80/spilled/", TallCup(TallCup.high_fill)),
+     ("mocap/tall_cup/50/spill-free/", "mocap/tall_cup/50/spilled/", TallCup(TallCup.low_fill)),
+     ("mocap/tall_cup/80/spill-free/", "mocap/tall_cup/80/spilled/", TallCup(TallCup.high_fill)),
      
-     ("basic_glass/30/spill-free/", "basic_glass/30/spilled/", BasicGlass(BasicGlass.low_fill)),
-     ("basic_glass/70/spill-free/", "basic_glass/70/spilled/", BasicGlass(BasicGlass.high_fill)),
+     ("mocap/basic_glass/30/spill-free/", "mocap/basic_glass/30/spilled/", BasicGlass(BasicGlass.low_fill)),
+     ("mocap/basic_glass/70/spill-free/", "mocap/basic_glass/70/spilled/", BasicGlass(BasicGlass.high_fill)),
      
-     ("curvy_wine_glass/30/spill-free/", "curvy_wine_glass/30/spilled/", CurvyWineGlass(CurvyWineGlass.low_fill)),
-    ("curvy_wine_glass/70/spill-free/", "curvy_wine_glass/70/spilled/", CurvyWineGlass(CurvyWineGlass.high_fill))]
+     ("mocap/curvy_wine_glass/30/spill-free/", "mocap/curvy_wine_glass/30/spilled/", CurvyWineGlass(CurvyWineGlass.low_fill)),
+    ("mocap/curvy_wine_glass/70/spill-free/", "mocap/curvy_wine_glass/70/spilled/", CurvyWineGlass(CurvyWineGlass.high_fill))]
 
 
 FILE_NAMES_AUGMENT_SPILL = [
-    ("wine_glass/30/spilled/", [WineGlass(WineGlass.high_fill)]),
-    ("flute_glass/50/spilled/", [FluteGlass(FluteGlass.high_fill)]),
-    ("ribbed_cup/30/spilled/", [RibbedCup(RibbedCup.high_fill)]),
-    ("tall_cup/50/spilled/", [TallCup(TallCup.high_fill)]),
-    ("basic_glass/30/spilled/", [BasicGlass(BasicGlass.high_fill)]),
-    ("curvy_wine_glass/30/spilled/", [CurvyWineGlass(CurvyWineGlass.high_fill)]),
+    ("mocap/wine_glass/30/spilled/", [WineGlass(WineGlass.high_fill)]),
+    ("mocap/flute_glass/50/spilled/", [FluteGlass(FluteGlass.high_fill)]),
+    ("mocap/ribbed_cup/30/spilled/", [RibbedCup(RibbedCup.high_fill)]),
+    ("mocap/tall_cup/50/spilled/", [TallCup(TallCup.high_fill)]),
+    ("mocap/basic_glass/30/spilled/", [BasicGlass(BasicGlass.high_fill)]),
+    ("mocap/curvy_wine_glass/30/spilled/", [CurvyWineGlass(CurvyWineGlass.high_fill)]),
 ]
 
 FILE_NAMES_AUGMENT_SPILLFREE = [
-    ("wine_glass/80/spill-free/", [WineGlass(WineGlass.low_fill)]),
-    ("flute_glass/80/spill-free/", [FluteGlass(FluteGlass.low_fill)]),
-    ("ribbed_cup/70/spill-free/", [RibbedCup(RibbedCup.low_fill)]),
-    ("tall_cup/80/spill-free/", [TallCup(TallCup.low_fill)]),
-    ("basic_glass/70/spill-free/", [BasicGlass(BasicGlass.low_fill)]),
-    ("curvy_wine_glass/70/spill-free/", [CurvyWineGlass(CurvyWineGlass.low_fill)]),
+    ("mocap/wine_glass/80/spill-free/", [WineGlass(WineGlass.low_fill)]),
+    ("mocap/flute_glass/80/spill-free/", [FluteGlass(FluteGlass.low_fill)]),
+    ("mocap/ribbed_cup/70/spill-free/", [RibbedCup(RibbedCup.low_fill)]),
+    ("mocap/tall_cup/80/spill-free/", [TallCup(TallCup.low_fill)]),
+    ("mocap/basic_glass/70/spill-free/", [BasicGlass(BasicGlass.low_fill)]),
+    ("mocap/curvy_wine_glass/70/spill-free/", [CurvyWineGlass(CurvyWineGlass.low_fill)]),
 ]
 
 def trim_noise(X):
@@ -254,6 +252,19 @@ def compute_delta_X(X):
             delta_X[e_id, i, 0:3] = X[e_id, i, 0:3] - X[e_id, i-1, 0:3]
     return delta_X
 
+
+def read_panda_trajectory(file_path):
+    trajectory = []
+    with open(file_path, mode='r') as file:
+        reader = csv.DictReader(file)
+        for row in reader:
+            keys = list(row.values())
+            x, y, z = np.float64(keys[0]), np.float64(keys[1]), np.float64(keys[2])
+            a, b, c, d = np.float64(keys[3]), np.float64(keys[4]), np.float64(keys[5]), np.float64(keys[6])
+            trajectory.append([x, y, z, a, b, c, d])
+    return trajectory
+
+
 def process_panda_file(X, Y, filenames, spill_free):
     for fps in filenames:
         filenames, container = fps[0], fps[1]
@@ -261,10 +272,12 @@ def process_panda_file(X, Y, filenames, spill_free):
         properties = np.repeat(properties, X.shape[1], axis=0)
 
         for fn in filenames:
-            panda_file_path =  f'{DIR_PREFIX}panda/cartesian/'+fn+'/cartesian_positions.bin'
-            vectors = read_panda_vectors(panda_file_path)
+            panda_file_path =  DIR_PREFIX+'panda/end_effector_space/'+fn+'/cartesian.csv'
+            vectors = read_panda_trajectory(panda_file_path)
             panda_traj = process_panda_to_model_input(vectors)
             panda_traj = np.concatenate((panda_traj, properties), axis=1)
+
+
             panda_traj = panda_traj[np.newaxis, :, :]
             X = np.concatenate((X, panda_traj), axis=0)
             if spill_free:
@@ -276,19 +289,16 @@ def process_panda_file(X, Y, filenames, spill_free):
 
 def add_panda_trajectories(X, Y):
     filenames_props_NOSPILL = [
-        (['01-09-2023 13-42-14', '01-09-2023 13-58-43', '01-09-2023 14-09-56',
-          '21-11-2023 14-05-35'], WineGlass(WineGlass.low_fill)),
-
+        (['01-09-2023 13-42-14', '01-09-2023 13-58-43', '01-09-2023 14-09-56', '21-11-2023 14-05-35'], WineGlass(WineGlass.low_fill)),
         (['10-09-2023 10-03-18', '10-09-2023 10-06-37', '10-09-2023 13-10-26',
-          '10-09-2023 13-14-07', '21-11-2023 15-13-41', '21-11-2023 15-15-56'],
-           FluteGlass(FluteGlass.high_fill)),
+          '10-09-2023 13-14-07', '21-11-2023 15-13-41', '21-11-2023 15-15-56'], FluteGlass(FluteGlass.high_fill)),
         (['10-09-2023 13-30-09', '10-09-2023 13-32-29', '10-09-2023 13-39-37',
           '21-11-2023 15-44-04', '21-11-2023 15-49-51'], FluteGlass(FluteGlass.low_fill)),
         (['21-11-2023 17-23-58'], BasicGlass(BasicGlass.high_fill)),
         (['21-11-2023 18-00-59', '21-11-2023 18-07-52'], BasicGlass(BasicGlass.low_fill)),
     ] # 18 
 
-    file_names_props_SPILL = [
+    filenames_props_SPILL = [
         (['13-11-2023 13-17-10', '13-11-2023 13-19-03', '13-11-2023 13-22-02',
           '13-11-2023 13-23-06', '13-11-2023 13-25-15', '13-11-2023 13-26-22',
           '13-11-2023 15-52-06', '13-11-2023 16-02-34', '13-11-2023 16-33-28',
@@ -304,7 +314,7 @@ def add_panda_trajectories(X, Y):
     # 18 + 27 = 45 panda trajectories
 
     X, Y = process_panda_file(X, Y, filenames_props_NOSPILL, spill_free=True)
-    X, Y = process_panda_file(X, Y, file_names_props_SPILL, spill_free=False)
+    X, Y = process_panda_file(X, Y, filenames_props_SPILL, spill_free=False)
     return X, Y
 
 
@@ -323,4 +333,4 @@ def process_data():
 
 if __name__ == "__main__":
     X, Y = process_data()
-    print(X.shape, Y.shape)
+    print("X shape: ", X.shape)
