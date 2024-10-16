@@ -8,8 +8,8 @@ class SaveBestAccuracy(tf.keras.callbacks.Callback):
                  X_train_traj=None,
                  X_train_prop=None, 
                  Y_train=None,
-                 min_val_acc=0.89,
-                 min_train_acc=0.89):
+                 min_val_acc=0.91,
+                 min_train_acc=0.91):
         super().__init__()
         self.args = args
         self.min_val_acc = min_val_acc

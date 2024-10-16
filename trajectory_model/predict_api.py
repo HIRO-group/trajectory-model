@@ -49,7 +49,7 @@ def process_panda_to_model_input(trajectory):
     trajectory = translate(trajectory)
     trajectory = fill_with_blank(trajectory)
     trajectory = rotate_panda_to_match_orientation(trajectory)
-    # trajectory = round_down(trajectory)
+    trajectory = round_down(trajectory)
     trajectory = delta_xyz(trajectory)
     return trajectory
 

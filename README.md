@@ -1,42 +1,28 @@
-## Train SFC
-```python main_SFC_func_api.py```
+## Setup
+```
+git clone git@github.com:HIRO-group/trajectory-model.git
+conda activate sfrrt
+cd trajectory-model
+pip install -e .
+```
 
-## Predict from SFC
-call func spilled(trajectory) from ```trajectory_model/classifier_predict.py```
+## Train Spill-Free Classifer (SFC)
+```python scripts/train_SFC.py```
 
-or
- 
- ### Using a Panda Trajectory
+## Predict Using SFC
+```python scripts/predict_SFC.py```
 
- ```python sandbox/predict_spillage_panda.py```
+## Calculate Container Tilt Angle
+```python scripts/calculate_tilt_angle.py```
 
- ### Using a Mocap File
- 
- ```python sandbox/predict_spillage_mocap.py```
+## Visualize Mocap Trajectories
+```python scripts/plot_mocap_trajectory.py```
 
-## Process data collected for SFC
-```python process_data/process_data_SFC.py```
+## Visualize Panda Trajectories
+```python scripts/plot_panda_trajectory.py```
 
-## Visualize data collected from mocap
-``` python sandbox/draw_mocap_file.py```
+## Consume Data Streamed By Natnet from Mocap
+```python scripts/consume_data_from_mocap.py```
 
-## Visualize cartesian positions from panda 
-``` python sandbox/draw_panda_path.py```
-
-## Visualize rotated cartesian positions from panda 
-``` python sandbox/draw_rot_panda_path.py```
-
-## Visualize cup orientation and rotated panda ee orientaion
-``` python sandbox/draw_panda_vs_cup.py```
-
-## Visualize cup trajectory vs rotated panda trajectory
-``` python sandbox/draw_panda_traj_vs_cup_traj.py```
-
-## Visualize probability distribution map
-``` python sandbox/draw_probability_distribution_map.py```
-
-## Plot euler angels for rotated panda trajectory
-```python sandbox/plot_euler_angles_from_rot_panda.py```
-
-## How to rotate panda ee frame to be in cup frame
-The equations are in this file: ```trajectory_model/helper/rotate_quaternion.py```
+## Convert Joint Angles to Cartesian
+```python scripts/convert_panda_joints_to_cartesian.py```

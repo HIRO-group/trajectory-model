@@ -100,8 +100,8 @@ def read_a_file(file_path, radius_b, height, radius_u, fill_level):
         for row in reader:
             keys = list(row.values())
             y, x, z = np.float64(keys[1]), np.float64(keys[2]), np.float64(keys[3])
-            a, b, c, d = np.float64(keys[4]), np.float64(keys[5]), np.float64(keys[6]), np.float64(keys[7])
-            embedding = np.array([[x, y, z, a, b, c, d, radius_b, height, radius_u, fill_level]])
+            a, b, c, w = np.float64(keys[4]), np.float64(keys[5]), np.float64(keys[6]), np.float64(keys[7])
+            embedding = np.array([[x, y, z, a, b, c, w, radius_b, height, radius_u, fill_level]])
             X[0, trajectory_index, :] = embedding
             trajectory_index += 1
     
@@ -260,8 +260,8 @@ def read_panda_trajectory(file_path):
         for row in reader:
             keys = list(row.values())
             x, y, z = np.float64(keys[0]), np.float64(keys[1]), np.float64(keys[2])
-            a, b, c, d = np.float64(keys[3]), np.float64(keys[4]), np.float64(keys[5]), np.float64(keys[6])
-            trajectory.append([x, y, z, a, b, c, d])
+            a, b, c, w = np.float64(keys[3]), np.float64(keys[4]), np.float64(keys[5]), np.float64(keys[6])
+            trajectory.append([x, y, z, a, b, c, w])
     return trajectory
 
 
@@ -289,13 +289,12 @@ def process_panda_file(X, Y, filenames, spill_free):
 
 def add_panda_trajectories(X, Y):
     filenames_props_NOSPILL = [
-        (['01-09-2023 13-42-14', '01-09-2023 13-58-43', '01-09-2023 14-09-56', '21-11-2023 14-05-35'], WineGlass(WineGlass.low_fill)),
+        (['01-09-2023 13-42-14', '01-09-2023 13-58-43', '01-09-2023 14-09-56'], WineGlass(WineGlass.low_fill)),
         (['10-09-2023 10-03-18', '10-09-2023 10-06-37', '10-09-2023 13-10-26',
-          '10-09-2023 13-14-07', '21-11-2023 15-13-41', '21-11-2023 15-15-56'], FluteGlass(FluteGlass.high_fill)),
-        (['10-09-2023 13-30-09', '10-09-2023 13-32-29', '10-09-2023 13-39-37',
-          '21-11-2023 15-44-04', '21-11-2023 15-49-51'], FluteGlass(FluteGlass.low_fill)),
-        (['21-11-2023 17-23-58'], BasicGlass(BasicGlass.high_fill)),
-        (['21-11-2023 18-00-59', '21-11-2023 18-07-52'], BasicGlass(BasicGlass.low_fill)),
+          '10-09-2023 13-14-07',], FluteGlass(FluteGlass.high_fill)),
+        (['10-09-2023 13-30-09', '10-09-2023 13-32-29', '10-09-2023 13-39-37'], FluteGlass(FluteGlass.low_fill)),
+        ([], BasicGlass(BasicGlass.high_fill)),
+        ([], BasicGlass(BasicGlass.low_fill)),
     ] # 18 
 
     filenames_props_SPILL = [
@@ -333,4 +332,3 @@ def process_data():
 
 if __name__ == "__main__":
     X, Y = process_data()
-    print("X shape: ", X.shape)

@@ -248,3 +248,6 @@ weights/
 
 plots/
 .vscode/
+scripts/predict_SFC_test.py
+artifacts/
+scripts/sandbox/*

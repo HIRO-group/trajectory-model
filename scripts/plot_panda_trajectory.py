@@ -1,13 +1,21 @@
 import numpy as np
-
+from scipy.spatial.transform import Rotation as R
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
 from trajectory_model.process_data.data_processor import read_panda_trajectory
-from trajectory_model.common.utils import calculate_endpoint
-
 from trajectory_model.predict_api import process_panda_to_model_input
 from trajectory_model.SFC.constants import BLANK_VAL
+
+
+def rotate_vector(vector, rotation_matrix):
+    return np.dot(rotation_matrix, vector)
+
+def calculate_endpoint(start, a, b, c, d):
+    rotation_matrix = R.from_quat([a, b, c, d]).as_matrix()
+    unit_vector = np.array([0, 0, 1])
+    endpoint = rotate_vector(unit_vector, rotation_matrix)
+    return start + endpoint
 
 
 def get_start_end_points(trajectory):
@@ -23,13 +31,13 @@ def get_start_end_points(trajectory):
     return start_points, end_points
 
 
-def plot_quivers(start_points, end_points):
+def plot_quivers(start_points, end_points, quiver_length=0.02):
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
 
     ax.quiver(start_points[:, 0], start_points[:, 1], start_points[:, 2],
                 end_points[:, 0], end_points[:, 1], end_points[:, 2],
-                length = 0.02, normalize = True)
+                length = quiver_length, normalize = True)
 
     ax.set_xlabel('x')
     ax.set_ylabel('y')
@@ -38,8 +46,10 @@ def plot_quivers(start_points, end_points):
 
 
 if __name__ == "__main__":
-    file_address = 'data/panda/end_effector_space/01-09-2023 11-21-50/cartesian.csv'
+    file_address = 'data/experiments/task_1/21-11-2023 12-07-50/cartesian.csv'
+    
     in_cup_frame = True
+    quiver_length = 0.02 # Manually set the length of the quiver arrows
 
     trajectory = read_panda_trajectory(file_address)
     trajectory = np.array([np.array(trajectory[i]) for i in range(0, len(trajectory))])
@@ -47,10 +57,5 @@ if __name__ == "__main__":
     if in_cup_frame:
         trajectory = process_panda_to_model_input(trajectory)
         trajectory = [tr for tr in trajectory if tr[0] < BLANK_VAL]
-        trajectory = trajectory[0:1]
-
-
     start_points, end_points = get_start_end_points(trajectory)
-
-
-    plot_quivers(start_points, end_points)
+    plot_quivers(start_points=start_points, end_points=end_points, quiver_length=quiver_length)

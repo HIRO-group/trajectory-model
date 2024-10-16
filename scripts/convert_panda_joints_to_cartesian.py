@@ -1,8 +1,8 @@
 import numpy as np
 import os
 import struct
-from scipy.spatial.transform import Rotation
 import csv
+from scipy.spatial.transform import Rotation
 
 from trajectory_model.common import perform_fk
 
