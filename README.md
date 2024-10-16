@@ -1,5 +1,5 @@
 # Clutter-Aware Spill-Free Liquid Transport via Learned Dynamics
-This is the repository for training the Spill-Free Classifier (SFC) model presented in the "Clutter-Aware Spill-Free Liquid Transport via Learned Dynamics" paper ([link](https://arxiv.org/abs/2408.00215)).
+This is the repository for training the Spill-Free Classifier (SFC) model presented in the *Clutter-Aware Spill-Free Liquid Transport via Learned Dynamics* paper ([link](https://arxiv.org/abs/2408.00215)).
 
 ## Data 
 [Data Directory](https://o365coloradoedu-my.sharepoint.com/:f:/g/personal/avab4907_colorado_edu/EhLxWaRCAXVNhUXhQXufFnwBKscaD8d4D3sEeYsNtqN_KA?e=ipJLA8)
