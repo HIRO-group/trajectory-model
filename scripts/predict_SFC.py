@@ -1,7 +1,7 @@
 import numpy as np
 from trajectory_model.SFC import get_SFC_model
 from trajectory_model.process_data.data_processor import read_panda_trajectory
-from trajectory_model.predict_api import process_panda_to_model_input
+from trajectory_model.process_data.panda_helper import process_panda_to_model_input
 from trajectory_model.common import get_arguments
 from trajectory_model.process_data.containers import WineGlass, FluteGlass, BasicGlass, RibbedCup, TallCup, CurvyWineGlass
 
@@ -9,7 +9,7 @@ def is_spill_free(args, x_traj, x_prop, msg=''):
     model = get_SFC_model()
     model.load_weights(args.load_weight_addr)
     prediction = model.predict({"trajectory": x_traj[None, :, :], "properties": x_prop[None, :],})[0][0]
-    print("Spill-Free? ", prediction, ', ', msg)
+    print("Spill-Free? ", prediction, ' ', msg)
     return prediction < 0.5
 
 

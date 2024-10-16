@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
 from trajectory_model.process_data.data_processor import read_panda_trajectory
-from trajectory_model.predict_api import process_panda_to_model_input
+from trajectory_model.process_data.panda_helper import process_panda_to_model_input
 from trajectory_model.SFC.constants import BLANK_VAL
 
 
@@ -46,7 +46,7 @@ def plot_quivers(start_points, end_points, quiver_length=0.02):
 
 
 if __name__ == "__main__":
-    file_address = 'data/experiments/task_1/21-11-2023 12-07-50/cartesian.csv'
+    file_address = 'data/panda/end_effector_space/01-09-2023 13-42-14/cartesian.csv'
     
     in_cup_frame = True
     quiver_length = 0.02 # Manually set the length of the quiver arrows

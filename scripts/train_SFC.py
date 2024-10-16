@@ -50,11 +50,6 @@ if __name__ == '__main__':
     args = get_arguments()
     X, Y = get_X_and_Y()
     model = get_SFC_model()
-
-    args.epochs = 2
-
-    # args.fit_model = False
-    # args.load_weight_addr = "weights/sfc/2024-10-15 11:06:15_acc0.93_loss0.19_epoch399.h5"
     
     if args.fit_model:
         train_model(args, model, X, Y)

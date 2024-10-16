@@ -1,15 +1,13 @@
 import os
 import csv
 import numpy as np
-from trajectory_model.SFC.constants import MAX_TRAJ_STEPS, EMBED_DIM, EMBED_LOC, EMBED_PROP, MOCAP_DT, BLANK_VAL
+from trajectory_model.SFC.constants import MAX_TRAJ_STEPS, EMBED_DIM, EMBED_LOC, MOCAP_DT, BLANK_VAL
 from trajectory_model.process_data.containers import WineGlass, FluteGlass, BasicGlass, RibbedCup, TallCup, CurvyWineGlass
-
-from trajectory_model.predict_api import process_panda_to_model_input
+from trajectory_model.process_data.panda_helper import process_panda_to_model_input
 
 
 DIR_PREFIX = 'data/'
 
-# nospill, spill, radius_buttom, height, radius_top, fill_level
 FILE_NAMES_NOSPILL_SPILL = \
     [("mocap/wine_glass/80/spill-free/", "mocap/wine_glass/80/spilled/", WineGlass(WineGlass.high_fill)),
      ("mocap/wine_glass/30/spill-free/", "mocap/wine_glass/30/spilled/", WineGlass(WineGlass.low_fill)),
@@ -276,8 +274,6 @@ def process_panda_file(X, Y, filenames, spill_free):
             vectors = read_panda_trajectory(panda_file_path)
             panda_traj = process_panda_to_model_input(vectors)
             panda_traj = np.concatenate((panda_traj, properties), axis=1)
-
-
             panda_traj = panda_traj[np.newaxis, :, :]
             X = np.concatenate((X, panda_traj), axis=0)
             if spill_free:
